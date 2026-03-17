@@ -3,10 +3,19 @@ import path from "node:path";
 import { pathToFileURL } from "node:url";
 import { LexicalIndexer } from "../indexing/lexical/index.js";
 import { runIngestionPipeline } from "../ingestion/pipeline.js";
+import { normalizePillarInput } from "../orchestration/pillars.js";
+import { OrchestrationService } from "../orchestration/service.js";
 import { loadIngestionConfig } from "../shared/config.js";
 import { RetrievalService } from "../retrieval/index.js";
 import { fileExists } from "../shared/fs.js";
-import type { RetrievalRequest } from "../shared/types.js";
+import { ProjectStore } from "../storage/project_store.js";
+import type {
+  AssistantGuideRequest,
+  InitializeProjectRequest,
+  RetrievalRequest,
+  UpdateDecisionGraphRequest,
+  UpdateDecisionsRequest,
+} from "../shared/types.js";
 
 export interface ApiServerOptions {
   repositoryRoot: string;
@@ -53,6 +62,11 @@ export async function createApiServer(options: ApiServerOptions) {
     return retrievalService;
   }
 
+  const orchestrationService = new OrchestrationService({
+    projectStore: new ProjectStore(repositoryRoot),
+    resolveRetrievalService: ensureRetrievalService,
+  });
+
   app.get("/health", async (_req, res) => {
     const service = await ensureRetrievalService();
     res.json({
@@ -95,6 +109,200 @@ export async function createApiServer(options: ApiServerOptions) {
       const message =
         error instanceof Error ? error.message : "Unknown retrieval error";
       res.status(500).json({ status: "error", message });
+    }
+  });
+
+  app.get("/projects", async (_req, res) => {
+    try {
+      const projects = await orchestrationService.listProjects();
+      res.json({ projects });
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : "Unknown project list error";
+      res.status(500).json({ status: "error", message });
+    }
+  });
+
+  app.get("/projects/:projectId", async (req, res) => {
+    try {
+      const project = await orchestrationService.getProject(req.params.projectId);
+      if (!project) {
+        res.status(404).json({ status: "error", message: "Project not found." });
+        return;
+      }
+      res.json({ project });
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : "Unknown project fetch error";
+      res.status(500).json({ status: "error", message });
+    }
+  });
+
+  app.post("/projects/intake", async (req, res) => {
+    try {
+      const request = (req.body ?? {}) as InitializeProjectRequest;
+      const project = await orchestrationService.initializeProject(request);
+      res.status(201).json({ project });
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : "Unknown project intake error";
+      res.status(400).json({ status: "error", message });
+    }
+  });
+
+  app.put("/projects/:projectId/decisions", async (req, res) => {
+    try {
+      const request = req.body as UpdateDecisionsRequest;
+      const updated = await orchestrationService.replaceProjectDecisions(
+        req.params.projectId,
+        request.decisions ?? [],
+      );
+      if (!updated) {
+        res.status(404).json({ status: "error", message: "Project not found." });
+        return;
+      }
+      res.json({ project: updated });
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : "Unknown decision update error";
+      res.status(400).json({ status: "error", message });
+    }
+  });
+
+  app.get("/projects/:projectId/decision-graph", async (req, res) => {
+    try {
+      const graph = await orchestrationService.getDecisionGraph(req.params.projectId);
+      if (!graph) {
+        res.status(404).json({ status: "error", message: "Project not found." });
+        return;
+      }
+      res.json({
+        projectId: req.params.projectId,
+        graph,
+      });
+    } catch (error) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : "Unknown decision graph retrieval error";
+      res.status(500).json({ status: "error", message });
+    }
+  });
+
+  app.put("/projects/:projectId/decision-graph", async (req, res) => {
+    try {
+      const request = (req.body ?? {}) as UpdateDecisionGraphRequest;
+      const updated = await orchestrationService.replaceDecisionGraph(
+        req.params.projectId,
+        {
+          decisions: request.decisions ?? [],
+          links: request.links ?? [],
+        },
+      );
+      if (!updated) {
+        res.status(404).json({ status: "error", message: "Project not found." });
+        return;
+      }
+      res.json(updated);
+    } catch (error) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : "Unknown decision graph update error";
+      res.status(400).json({ status: "error", message });
+    }
+  });
+
+  app.post("/projects/:projectId/pillars/:pillar/questions", async (req, res) => {
+    try {
+      const pillar = normalizePillarInput(req.params.pillar);
+      if (!pillar) {
+        res
+          .status(400)
+          .json({ status: "error", message: "Unsupported pillar value." });
+        return;
+      }
+
+      const guidance = await orchestrationService.generatePillarGuidance(
+        req.params.projectId,
+        pillar,
+      );
+      res.json(guidance);
+    } catch (error) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : "Unknown pillar guidance generation error";
+      if (message === "Project not found.") {
+        res.status(404).json({ status: "error", message });
+        return;
+      }
+      if (message.includes("Retrieval index is not ready")) {
+        res.status(400).json({ status: "error", message });
+        return;
+      }
+      res.status(500).json({ status: "error", message });
+    }
+  });
+
+  app.get("/projects/:projectId/conflicts", async (req, res) => {
+    try {
+      const analysis = await orchestrationService.analyzeProjectConflicts(
+        req.params.projectId,
+      );
+      res.json(analysis);
+    } catch (error) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : "Unknown conflict analysis generation error";
+      if (message === "Project not found.") {
+        res.status(404).json({ status: "error", message });
+        return;
+      }
+      res.status(500).json({ status: "error", message });
+    }
+  });
+
+  app.get("/projects/:projectId/outputs", async (req, res) => {
+    try {
+      const outputs = await orchestrationService.generateProjectOutputs(
+        req.params.projectId,
+      );
+      res.json({
+        projectId: req.params.projectId,
+        outputs,
+      });
+    } catch (error) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : "Unknown output generation error";
+      if (message === "Project not found.") {
+        res.status(404).json({ status: "error", message });
+        return;
+      }
+      res.status(500).json({ status: "error", message });
+    }
+  });
+
+  app.post("/assistant/guide", async (req, res) => {
+    try {
+      const request = (req.body ?? {}) as AssistantGuideRequest;
+      if (!request.phase || typeof request.phase !== "string") {
+        res.status(400).json({ status: "error", message: "phase is required." });
+        return;
+      }
+      const response = await orchestrationService.guideAssistant(request);
+      res.json(response);
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : "Unknown assistant guidance error";
+      if (message === "Project not found.") {
+        res.status(404).json({ status: "error", message });
+        return;
+      }
+      res.status(400).json({ status: "error", message });
     }
   });
 

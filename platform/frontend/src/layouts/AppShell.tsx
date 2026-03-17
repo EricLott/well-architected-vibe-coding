@@ -4,12 +4,10 @@ import { SidebarNav } from "../components/SidebarNav";
 import { useAppState } from "../state/AppContext";
 
 const navItems = [
-  { label: "Project", path: "/project" },
-  { label: "Intake", path: "/intake" },
-  { label: "Pillars", path: "/pillars" },
-  { label: "Decisions", path: "/decisions" },
-  { label: "Risks", path: "/risks" },
-  { label: "Outputs", path: "/outputs" },
+  { label: "Guided workspace", path: "/workspace" },
+  { label: "Decision graph", path: "/decisions" },
+  { label: "Risk analysis", path: "/risks" },
+  { label: "Output pack", path: "/outputs" },
   { label: "Settings", path: "/settings" },
 ];
 
@@ -29,7 +27,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           <p className="brand-kicker">Architecture-first</p>
           <h1>Well-Architected Vibe Coding</h1>
           <p className="brand-copy">
-            Structured planning before code generation.
+            Guided pillar decisions before implementation.
           </p>
         </div>
         <SidebarNav items={navItems} />

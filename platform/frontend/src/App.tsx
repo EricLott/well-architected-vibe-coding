@@ -1,63 +1,91 @@
 import { Navigate, Route, Routes } from "react-router-dom";
+import { useProjectBootstrap } from "./hooks/useProjectBootstrap";
 import { AppShell } from "./layouts/AppShell";
-import { IntakePage } from "./pages/IntakePage";
-import { PlaceholderPage } from "./pages/PlaceholderPage";
+import { DecisionsPage } from "./pages/DecisionsPage";
+import { GuidedWorkspacePage } from "./pages/GuidedWorkspacePage";
+import { LandingIdeaPage } from "./pages/LandingIdeaPage";
+import { OutputsPage } from "./pages/OutputsPage";
+import { PillarsPage } from "./pages/PillarsPage";
 import { ProjectWorkspacePage } from "./pages/ProjectWorkspacePage";
+import { RisksPage } from "./pages/RisksPage";
+import { SettingsPage } from "./pages/SettingsPage";
+import { useAppState } from "./state/AppContext";
 
 export function App() {
+  useProjectBootstrap();
+  const state = useAppState();
+
   return (
-    <AppShell>
+    <>
+      {state.appLoading ? (
+        <p className="inline-info-banner">Loading persisted project state...</p>
+      ) : null}
+      {state.appError ? (
+        <p className="inline-error-banner" role="alert">
+          {state.appError}
+        </p>
+      ) : null}
+
       <Routes>
-        <Route path="/" element={<Navigate replace to="/intake" />} />
-        <Route path="/intake" element={<IntakePage />} />
-        <Route path="/project" element={<ProjectWorkspacePage />} />
+        <Route path="/" element={<LandingIdeaPage />} />
         <Route
-          path="/pillars"
+          path="/workspace"
           element={
-            <PlaceholderPage
-              title="Pillars workspace"
-              description="This area will host pillar-by-pillar exploration and tradeoff guidance."
-            />
-          }
-        />
-        <Route
-          path="/decisions"
-          element={
-            <PlaceholderPage
-              title="Decision register"
-              description="This area will track architecture decisions, status, rationale, and linked risks."
-            />
-          }
-        />
-        <Route
-          path="/risks"
-          element={
-            <PlaceholderPage
-              title="Risk register"
-              description="This area will centralize unresolved risks and mitigation plans."
-            />
-          }
-        />
-        <Route
-          path="/outputs"
-          element={
-            <PlaceholderPage
-              title="Outputs"
-              description="This area will package architecture summaries and implementation-ready prompts."
-            />
+            <AppShell>
+              <GuidedWorkspacePage />
+            </AppShell>
           }
         />
         <Route
           path="/settings"
           element={
-            <PlaceholderPage
-              title="Settings"
-              description="This area will hold environment, provider, and project preferences."
-            />
+            <AppShell>
+              <SettingsPage />
+            </AppShell>
           }
         />
-        <Route path="*" element={<Navigate replace to="/intake" />} />
+        <Route
+          path="/project"
+          element={
+            <AppShell>
+              <ProjectWorkspacePage />
+            </AppShell>
+          }
+        />
+        <Route
+          path="/pillars"
+          element={
+            <AppShell>
+              <PillarsPage />
+            </AppShell>
+          }
+        />
+        <Route
+          path="/decisions"
+          element={
+            <AppShell>
+              <DecisionsPage />
+            </AppShell>
+          }
+        />
+        <Route
+          path="/risks"
+          element={
+            <AppShell>
+              <RisksPage />
+            </AppShell>
+          }
+        />
+        <Route
+          path="/outputs"
+          element={
+            <AppShell>
+              <OutputsPage />
+            </AppShell>
+          }
+        />
+        <Route path="*" element={<Navigate replace to="/" />} />
       </Routes>
-    </AppShell>
+    </>
   );
 }

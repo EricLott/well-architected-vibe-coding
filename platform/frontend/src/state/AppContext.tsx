@@ -1,6 +1,19 @@
 import { createContext, useContext, useReducer } from "react";
 import type { Dispatch, ReactNode } from "react";
-import type { AppState, ProjectState, RetrievalResult } from "../types/app";
+import type {
+  AiSettings,
+  AppState,
+  AssistantGuideResponse,
+  ConflictAnalysis,
+  DecisionGraph,
+  DecisionLink,
+  GeneratedOutputs,
+  Pillar,
+  PillarGuidance,
+  ProjectState,
+  RetrievalResult,
+} from "../types/app";
+import { defaultAiSettings, loadAiSettings } from "../services/aiSettingsStorage";
 
 const initialState: AppState = {
   currentPhase: "idea-intake",
@@ -24,9 +37,34 @@ const initialState: AppState = {
   retrievedGuidance: [],
   retrievalLoading: false,
   retrievalError: null,
+  appLoading: false,
+  appError: null,
+  selectedPillar: "Security",
+  pillarGuidance: null,
+  pillarLoading: false,
+  pillarError: null,
+  decisionSaving: false,
+  decisionError: null,
+  decisionLinks: [],
+  decisionGraph: null,
+  graphLoading: false,
+  graphError: null,
+  conflicts: null,
+  conflictLoading: false,
+  conflictError: null,
+  outputs: null,
+  outputsLoading: false,
+  outputsError: null,
+  aiSettings: typeof window !== "undefined" ? loadAiSettings() : defaultAiSettings(),
+  guideLoading: false,
+  guideError: null,
+  guideResponse: null,
 };
 
 type AppAction =
+  | { type: "app-bootstrap-start" }
+  | { type: "app-bootstrap-success"; payload: ProjectState | null }
+  | { type: "app-bootstrap-failure"; payload: string }
   | { type: "set-intake-text"; payload: string }
   | { type: "start-intake" }
   | { type: "intake-success"; payload: ProjectState }
@@ -34,7 +72,27 @@ type AppAction =
   | { type: "set-retrieval-query"; payload: string }
   | { type: "start-retrieval" }
   | { type: "retrieval-success"; payload: RetrievalResult[] }
-  | { type: "retrieval-failure"; payload: string };
+  | { type: "retrieval-failure"; payload: string }
+  | { type: "set-selected-pillar"; payload: Pillar }
+  | { type: "start-pillar-guidance" }
+  | { type: "pillar-guidance-success"; payload: PillarGuidance }
+  | { type: "pillar-guidance-failure"; payload: string }
+  | { type: "start-decision-save" }
+  | { type: "decision-save-success"; payload: ProjectState }
+  | { type: "decision-save-failure"; payload: string }
+  | { type: "start-graph-load" }
+  | { type: "graph-load-success"; payload: DecisionGraph }
+  | { type: "graph-load-failure"; payload: string }
+  | { type: "start-conflict-analysis" }
+  | { type: "conflict-analysis-success"; payload: ConflictAnalysis }
+  | { type: "conflict-analysis-failure"; payload: string }
+  | { type: "start-outputs-generation" }
+  | { type: "outputs-generation-success"; payload: GeneratedOutputs }
+  | { type: "outputs-generation-failure"; payload: string }
+  | { type: "set-ai-settings"; payload: AiSettings }
+  | { type: "start-guide-request" }
+  | { type: "guide-request-success"; payload: AssistantGuideResponse }
+  | { type: "guide-request-failure"; payload: string };
 
 function mergeUnique(existing: string[], incoming: string[]): string[] {
   const seen = new Set<string>();
@@ -50,8 +108,79 @@ function mergeUnique(existing: string[], incoming: string[]): string[] {
   return merged;
 }
 
+function buildGraph(
+  decisions: AppState["decisions"],
+  links: DecisionLink[],
+): DecisionGraph {
+  return {
+    nodes: decisions,
+    links,
+    unresolvedDecisionIds: decisions
+      .filter((decision) => decision.status === "unresolved")
+      .map((decision) => decision.id),
+  };
+}
+
+function withInitializedProject(
+  state: AppState,
+  project: ProjectState,
+  options?: { keepIntakeSummary?: boolean },
+): AppState {
+  const decisionLinks = project.decisionLinks ?? [];
+  const decisions = project.decisions ?? [];
+  return {
+    ...state,
+    currentPhase: "project-initialized",
+    pillarFocus: project.currentFocus,
+    projectSummary: options?.keepIntakeSummary
+      ? state.projectSummary
+      : "Project initialized from your idea. Continue with pillar-guided architecture decisions before code generation.",
+    currentProject: project,
+    decisionLinks,
+    decisionGraph: buildGraph(decisions, decisionLinks),
+    decisions,
+    questions:
+      project.discoveryQuestions.length > 0
+        ? project.discoveryQuestions
+        : state.questions,
+    risks: mergeUnique(state.risks, project.risks),
+    openQuestions:
+      project.suggestedOpenQuestions.length > 0
+        ? project.suggestedOpenQuestions
+        : state.openQuestions,
+    nextStep: project.recommendedNextAction,
+  };
+}
+
 function appReducer(state: AppState, action: AppAction): AppState {
   switch (action.type) {
+    case "app-bootstrap-start":
+      return {
+        ...state,
+        appLoading: true,
+        appError: null,
+      };
+    case "app-bootstrap-success":
+      if (!action.payload) {
+        return {
+          ...state,
+          appLoading: false,
+          appError: null,
+        };
+      }
+      return {
+        ...withInitializedProject(state, action.payload, {
+          keepIntakeSummary: true,
+        }),
+        appLoading: false,
+        appError: null,
+      };
+    case "app-bootstrap-failure":
+      return {
+        ...state,
+        appLoading: false,
+        appError: action.payload,
+      };
     case "set-intake-text":
       return {
         ...state,
@@ -65,15 +194,7 @@ function appReducer(state: AppState, action: AppAction): AppState {
       };
     case "intake-success":
       return {
-        ...state,
-        currentPhase: "project-initialized",
-        projectSummary:
-          "Project initialized from your idea. Continue with pillar-guided architecture decisions before code generation.",
-        currentProject: action.payload,
-        questions: action.payload.discoveryQuestions,
-        risks: mergeUnique(state.risks, action.payload.risks),
-        openQuestions: action.payload.suggestedOpenQuestions,
-        nextStep: action.payload.recommendedNextAction,
+        ...withInitializedProject(state, action.payload),
         intakeLoading: false,
         intakeError: null,
       };
@@ -106,6 +227,133 @@ function appReducer(state: AppState, action: AppAction): AppState {
         ...state,
         retrievalLoading: false,
         retrievalError: action.payload,
+      };
+    case "set-selected-pillar":
+      return {
+        ...state,
+        selectedPillar: action.payload,
+      };
+    case "start-pillar-guidance":
+      return {
+        ...state,
+        pillarLoading: true,
+        pillarError: null,
+      };
+    case "pillar-guidance-success":
+      return {
+        ...state,
+        pillarLoading: false,
+        pillarError: null,
+        pillarGuidance: action.payload,
+        pillarFocus: `${action.payload.pillar} exploration`,
+      };
+    case "pillar-guidance-failure":
+      return {
+        ...state,
+        pillarLoading: false,
+        pillarError: action.payload,
+      };
+    case "start-decision-save":
+      return {
+        ...state,
+        decisionSaving: true,
+        decisionError: null,
+      };
+    case "decision-save-success":
+      return {
+        ...withInitializedProject(state, action.payload, {
+          keepIntakeSummary: true,
+        }),
+        decisionSaving: false,
+        decisionError: null,
+      };
+    case "decision-save-failure":
+      return {
+        ...state,
+        decisionSaving: false,
+        decisionError: action.payload,
+      };
+    case "start-graph-load":
+      return {
+        ...state,
+        graphLoading: true,
+        graphError: null,
+      };
+    case "graph-load-success":
+      return {
+        ...state,
+        graphLoading: false,
+        graphError: null,
+        decisionGraph: action.payload,
+        decisionLinks: action.payload.links,
+      };
+    case "graph-load-failure":
+      return {
+        ...state,
+        graphLoading: false,
+        graphError: action.payload,
+      };
+    case "start-conflict-analysis":
+      return {
+        ...state,
+        conflictLoading: true,
+        conflictError: null,
+      };
+    case "conflict-analysis-success":
+      return {
+        ...state,
+        conflictLoading: false,
+        conflictError: null,
+        conflicts: action.payload,
+      };
+    case "conflict-analysis-failure":
+      return {
+        ...state,
+        conflictLoading: false,
+        conflictError: action.payload,
+      };
+    case "start-outputs-generation":
+      return {
+        ...state,
+        outputsLoading: true,
+        outputsError: null,
+      };
+    case "outputs-generation-success":
+      return {
+        ...state,
+        outputsLoading: false,
+        outputsError: null,
+        outputs: action.payload,
+      };
+    case "outputs-generation-failure":
+      return {
+        ...state,
+        outputsLoading: false,
+        outputsError: action.payload,
+      };
+    case "set-ai-settings":
+      return {
+        ...state,
+        aiSettings: action.payload,
+      };
+    case "start-guide-request":
+      return {
+        ...state,
+        guideLoading: true,
+        guideError: null,
+      };
+    case "guide-request-success":
+      return {
+        ...state,
+        guideLoading: false,
+        guideError: null,
+        guideResponse: action.payload,
+      };
+    case "guide-request-failure":
+      return {
+        ...state,
+        guideLoading: false,
+        guideError: action.payload,
       };
     default:
       return state;

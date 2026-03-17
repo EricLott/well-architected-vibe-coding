@@ -58,6 +58,29 @@ npm run dev
 Notes:
 
 - Frontend dev server runs at `http://localhost:5173`
+- Landing page is idea-first at `/`
+- Guided pillar workspace is at `/workspace`
 - Retrieval preview calls `/retrieve` through a Vite proxy to `http://localhost:3000`
-- Project initialization/orchestration is mock-driven in phase 1 and ready for
-  endpoint replacement
+- Frontend calls `/projects` orchestration endpoints through the same proxy
+
+## Orchestration API (local)
+
+The API now includes local project orchestration and persistence endpoints:
+
+- `POST /projects/intake` initialize a project from idea text
+- `GET /projects` list persisted projects
+- `GET /projects/:projectId` fetch a project
+- `PUT /projects/:projectId/decisions` replace a project's decision list
+- `GET /projects/:projectId/decision-graph` read graph nodes/links
+- `PUT /projects/:projectId/decision-graph` update graph nodes/links
+- `POST /projects/:projectId/pillars/:pillar/questions` generate pillar-specific
+  guided questions (`reliability`, `security`, `cost-optimization`,
+  `operational-excellence`, `performance-efficiency`)
+- `GET /projects/:projectId/conflicts` run cross-pillar conflict analysis
+- `GET /projects/:projectId/outputs` generate architecture output package
+- `POST /assistant/guide` generate live guided next steps (heuristic fallback or
+  provider-backed using BYO OpenAI/Anthropic key passed per request)
+
+Project and decision state is persisted locally at:
+
+- `platform/artifacts/workspace/projects.json`

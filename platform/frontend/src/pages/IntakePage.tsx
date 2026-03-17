@@ -3,7 +3,7 @@ import { GroundingPreviewPanel } from "../components/GroundingPreviewPanel";
 import { IdeaIntakeForm } from "../components/IdeaIntakeForm";
 import { StatusCard } from "../components/StatusCard";
 import { useGuidancePreview } from "../hooks/useGuidancePreview";
-import { mockIntakeService } from "../services/intakeService";
+import { intakeService } from "../services/intakeService";
 import { useAppDispatch, useAppState } from "../state/AppContext";
 
 function getMessage(error: unknown): string {
@@ -22,7 +22,7 @@ export function IntakePage() {
   async function handleSubmit() {
     dispatch({ type: "start-intake" });
     try {
-      const project = await mockIntakeService.initializeProject(state.intakeText);
+      const project = await intakeService.initializeProject(state.intakeText);
       dispatch({ type: "intake-success", payload: project });
       navigate("/project");
     } catch (error) {
@@ -52,7 +52,11 @@ export function IntakePage() {
           <p>{state.questions[0]}</p>
         </StatusCard>
         <StatusCard title="Decisions">
-          <p>No decisions captured yet.</p>
+          <p>
+            {state.decisions.length === 0
+              ? "No decisions captured yet."
+              : `${state.decisions.length} decisions captured.`}
+          </p>
         </StatusCard>
         <StatusCard title="Risks" tone="warning">
           <p>{state.risks[0]}</p>

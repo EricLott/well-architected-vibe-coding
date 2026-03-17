@@ -9,6 +9,8 @@ export default defineConfig({
       "/retrieve": "http://localhost:3000",
       "/health": "http://localhost:3000",
       "/ingest": "http://localhost:3000",
+      "/projects": "http://localhost:3000",
+      "/assistant": "http://localhost:3000",
     },
   },
 });
