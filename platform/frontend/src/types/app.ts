@@ -1,9 +1,20 @@
-export type Pillar =
-  | "Reliability"
-  | "Security"
-  | "Cost Optimization"
-  | "Operational Excellence"
-  | "Performance Efficiency";
+export type Pillar = string;
+
+export type PillarCategory =
+  | "well-architected"
+  | "solution-architecture"
+  | "experience-design"
+  | "engineering-operations"
+  | "core"
+  | "ad-hoc";
+
+export interface PillarDefinition {
+  name: Pillar;
+  slug: string;
+  category: PillarCategory;
+  summary: string;
+  retrievalQueryHint: string;
+}
 
 export type DecisionStatus = "confirmed" | "proposed" | "unresolved";
 
@@ -52,6 +63,7 @@ export interface ProjectState {
   recommendedNextAction: string;
   decisions: DecisionItem[];
   decisionLinks: DecisionLink[];
+  additionalPillars: PillarDefinition[];
   createdAt: string;
   updatedAt: string;
 }
@@ -91,6 +103,10 @@ export type WorkflowPhase = "idea-intake" | "project-initialized";
 
 export interface ProjectListResponse {
   projects: ProjectState[];
+}
+
+export interface PillarCatalogResponse {
+  pillars: PillarDefinition[];
 }
 
 export interface ProjectResponse {
@@ -201,6 +217,25 @@ export interface AssistantGuideResponse {
   providerUsed: AiProvider | "heuristic";
   providerModel: string | null;
   warning: string | null;
+}
+
+export interface DecisionAssessment {
+  isDecision: boolean;
+  confidence: number;
+  reason: string;
+  title: string | null;
+  selectedOption: string | null;
+  rationale: string | null;
+  risks: string[];
+}
+
+export interface PillarChatTurnResponse {
+  project: ProjectState;
+  pillar: Pillar;
+  guidance: AssistantGuideResponse;
+  decisionLogged: boolean;
+  decision: DecisionItem | null;
+  decisionAssessment: DecisionAssessment;
 }
 
 export interface AppState {

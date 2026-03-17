@@ -5,10 +5,15 @@ import type {
   AssistantGuideResponse,
   ConflictAnalysisResponse,
   DecisionGraph,
+  DecisionStatus,
   DecisionItem,
   DecisionLink,
+  GenerateOutputPackRequest,
   GeneratedOutputs,
   InitializeProjectRequest,
+  PillarChatTurnRequest,
+  PillarChatTurnResponse,
+  PillarDefinition,
   PillarGuidanceResponse,
   PillarName,
   PillarQuestion,
@@ -16,79 +21,27 @@ import type {
   UpdateDecisionGraphRequest,
   RetrievalResult,
 } from "../shared/types.js";
-import { generateAssistantGuidance } from "./assistant.js";
+import {
+  assessDecisionCandidate,
+  generateAssistantGuidance,
+} from "./assistant.js";
 import { analyzeCrossPillarConflicts } from "./cross_pillar_reasoning.js";
 import { buildDecisionGraph } from "./decision_graph.js";
+import {
+  generateOutputPackArchive,
+  type OutputPackArchive,
+} from "./output_pack_generator.js";
 import { generateOutputs } from "./output_generator.js";
-import { getPillarFilterValue } from "./pillars.js";
+import {
+  buildPillarQueryHint,
+  getPillarFilterValue,
+  inferAdHocPillarsFromText,
+  mergePillarDefinitions,
+  getPillarDefinition,
+} from "./pillars.js";
 import { ProjectStore } from "../storage/project_store.js";
 
 type RetrievalServiceResolver = () => Promise<RetrievalService | null>;
-
-interface PillarQuestionTemplate {
-  why: string;
-  risk: string;
-  defaultOption: string;
-  fallbackQuestions: string[];
-}
-
-const pillarQuestionTemplates: Record<PillarName, PillarQuestionTemplate> = {
-  Reliability: {
-    why: "Reliability decisions define whether critical workflows continue during failures and recover without data loss.",
-    risk: "Skipping reliability design can cause avoidable downtime, failed transactions, and slow recovery during incidents.",
-    defaultOption:
-      "Start with retry patterns, health checks, graceful degradation, and a documented recovery runbook.",
-    fallbackQuestions: [
-      "Which workflow must stay available during dependency or regional failures?",
-      "What recovery time and recovery point objectives should guide architecture?",
-      "Where do we need graceful degradation to keep user-facing outcomes intact?",
-    ],
-  },
-  Security: {
-    why: "Security decisions establish trust boundaries for identities, data, and operational access early in the lifecycle.",
-    risk: "Skipping security architecture often leads to privilege sprawl, weak data protection, and expensive remediation later.",
-    defaultOption:
-      "Begin with least-privilege access, managed identity, and centralized secret/key management.",
-    fallbackQuestions: [
-      "What authentication and authorization model best matches user and admin roles?",
-      "How will sensitive data be classified, encrypted, and audited end-to-end?",
-      "Where should security checks be enforced in the request and deployment paths?",
-    ],
-  },
-  "Cost Optimization": {
-    why: "Cost decisions shape long-term sustainability and help avoid architecture choices that are operationally expensive at scale.",
-    risk: "Ignoring cost architecture can produce uncontrolled spend, over-provisioning, and delayed delivery due to budget shocks.",
-    defaultOption:
-      "Start with usage estimates, right-sized baselines, and cost visibility in deployment and operations.",
-    fallbackQuestions: [
-      "Which components are likely to drive the largest recurring cost?",
-      "What scaling model prevents over-provisioning while preserving service quality?",
-      "Which cost guardrails and alerts should be mandatory before production?",
-    ],
-  },
-  "Operational Excellence": {
-    why: "Operational excellence ensures the system can be observed, changed safely, and improved continuously by the team.",
-    risk: "Without operational discipline, release risk grows, incident response slows down, and knowledge becomes fragmented.",
-    defaultOption:
-      "Start with deployment standards, actionable telemetry, and clear ownership for each workload area.",
-    fallbackQuestions: [
-      "What operational metrics should signal system health and business success?",
-      "How will deployments and rollbacks be tested and executed safely?",
-      "Which runbooks are needed to reduce mean time to detect and recover?",
-    ],
-  },
-  "Performance Efficiency": {
-    why: "Performance choices set user experience expectations and ensure the system can scale to expected demand.",
-    risk: "Skipping performance design can cause latency regressions, capacity bottlenecks, and emergency scaling costs.",
-    defaultOption:
-      "Start with SLO-driven performance targets and plan caching, queuing, and autoscaling boundaries.",
-    fallbackQuestions: [
-      "What latency and throughput targets define acceptable user experience?",
-      "Which components are most likely to become bottlenecks first?",
-      "How will performance baselines and load tests be validated before release?",
-    ],
-  },
-};
 
 function normalizeText(value: string): string {
   return value.trim().replace(/\s+/g, " ");
@@ -169,6 +122,26 @@ function dedupe(values: string[]): string[] {
   return result;
 }
 
+function dedupePillarDefinitions(
+  pillars: PillarDefinition[],
+): PillarDefinition[] {
+  const bySlug = new Map<string, PillarDefinition>();
+  for (const pillar of pillars) {
+    bySlug.set(pillar.slug, pillar);
+  }
+  return [...bySlug.values()];
+}
+
+function adHocPillarsForProject(project: ProjectRecord): PillarDefinition[] {
+  return (project.additionalPillars ?? []).filter(
+    (pillar) => pillar.category === "ad-hoc",
+  );
+}
+
+function normalizeKey(value: string): string {
+  return normalizeText(value).toLowerCase();
+}
+
 function extractHeadingLabel(result: RetrievalResult): string {
   const heading = result.citation.heading_path
     .map((part) => part.trim())
@@ -180,34 +153,209 @@ function extractHeadingLabel(result: RetrievalResult): string {
   return result.citation.title;
 }
 
+function firstSentence(value: string): string {
+  const normalized = normalizeText(value).replace(/[#>*`]/g, "");
+  if (!normalized) {
+    return "";
+  }
+  const first = normalized.split(/(?<=[.!?])\s+/)[0] ?? normalized;
+  return first.slice(0, 240);
+}
+
+function summarizeContent(value: string): string {
+  const sentence = firstSentence(value);
+  if (sentence) {
+    return sentence;
+  }
+  return normalizeText(value).slice(0, 200);
+}
+
+function guidanceFocusLabel(result: RetrievalResult): string {
+  const parts = result.citation.heading_path
+    .map((part) => normalizeText(part))
+    .filter(Boolean);
+  const focus = parts[parts.length - 1] ?? "";
+  return focus || normalizeText(result.citation.title);
+}
+
+function startsWithQuestionPhrase(value: string): boolean {
+  return /^(what|why|how|should|can|could|would|do|does|is|are|when|where|which)\b/i.test(
+    value,
+  );
+}
+
+function isDeveloperExperiencePillar(pillar: PillarName): boolean {
+  const normalized = normalizeText(pillar).toLowerCase();
+  return (
+    normalized.includes("developer experience") ||
+    normalized.includes("(dx)") ||
+    normalized.endsWith(" dx")
+  );
+}
+
+function pillarStarterNudges(pillar: PillarName): string[] {
+  if (!isDeveloperExperiencePillar(pillar)) {
+    return [];
+  }
+  return [
+    "Set up a GitHub Actions workflow that runs lint, type checks, and tests on every pull request.",
+    "Protect the main branch with required status checks, at least one reviewer, and no direct pushes.",
+    "Add a pull request template and CODEOWNERS so architecture-sensitive changes always get the right reviewers.",
+  ];
+}
+
+function toActionNudge(value: string, pillar: PillarName): string {
+  const normalized = normalizeText(value).replace(/[?]+$/g, "").trim();
+  if (!normalized) {
+    return `Capture one concrete ${pillar} implementation decision and rationale.`;
+  }
+
+  const approachMatch = normalized.match(
+    /^what(?:'s| is)\s+your\s+approach\s+to\s+(.+)$/i,
+  );
+  if (approachMatch) {
+    return `Define your implementation approach for ${approachMatch[1]} and capture one explicit tradeoff.`;
+  }
+
+  const howWillMatch = normalized.match(/^how\s+will\s+you\s+(.+)$/i);
+  if (howWillMatch) {
+    return `Define how you'll ${howWillMatch[1]} and capture the owner and rollout plan.`;
+  }
+
+  if (startsWithQuestionPhrase(normalized)) {
+    if (isDeveloperExperiencePillar(pillar)) {
+      return pillarStarterNudges(pillar)[0];
+    }
+    return `Define one concrete ${pillar} implementation decision and capture its tradeoffs.`;
+  }
+
+  if (/[.!]$/.test(normalized)) {
+    return normalized;
+  }
+  return `${normalized}.`;
+}
+
+function guidanceNudge(pillar: PillarName, result: RetrievalResult): string {
+  if (isDeveloperExperiencePillar(pillar)) {
+    const keywordPool = `${extractHeadingLabel(result)} ${result.content}`.toLowerCase();
+    if (keywordPool.includes("automation")) {
+      return "Add GitHub Actions checks for lint, tests, and build validation on every pull request.";
+    }
+    if (
+      keywordPool.includes("local environment") ||
+      keywordPool.includes("development environment") ||
+      keywordPool.includes("container")
+    ) {
+      return "Standardize local development with a devcontainer or bootstrap script to keep onboarding friction low.";
+    }
+    if (
+      keywordPool.includes("security") ||
+      keywordPool.includes("secret") ||
+      keywordPool.includes("vulnerability")
+    ) {
+      return "Run secret scanning and dependency vulnerability checks as required pull request gates.";
+    }
+    if (keywordPool.includes("coding practices") || keywordPool.includes("standards")) {
+      return "Enforce coding standards with linting, formatting, and pre-commit hooks in CI.";
+    }
+    return "Define branch strategy, pull request gates, and CI checks so developer workflows stay fast and predictable.";
+  }
+
+  return `Capture one concrete implementation decision for ${guidanceFocusLabel(result)} and record the tradeoff.`;
+}
+
+function deriveRecommendedFocus(
+  pillar: PillarName,
+  guidance: RetrievalResult[],
+): string {
+  const topGuidance = guidance[0];
+  if (!topGuidance) {
+    return `Grounding is limited for ${pillar}. Clarify constraints first, then capture a proposed approach with explicit risks.`;
+  }
+  const heading = extractHeadingLabel(topGuidance);
+  const evidence = summarizeContent(topGuidance.content);
+  if (!evidence) {
+    return `Use "${heading}" as the first focus area for this pillar pass.`;
+  }
+  return `${heading}: ${evidence}`;
+}
+
 function buildGuidanceQuestions(
   pillar: PillarName,
   guidance: RetrievalResult[],
+  project: ProjectRecord,
 ): PillarQuestion[] {
-  const template = pillarQuestionTemplates[pillar];
-  const questionsFromGuidance = guidance.slice(0, 3).map((result, index) => {
+  const starterNudges = pillarStarterNudges(pillar).slice(0, 2).map((nudge) => ({
+    question: toActionNudge(nudge, pillar),
+    whyItMatters:
+      "Concrete implementation nudges keep this pillar discussion practical and execution-ready.",
+    riskIfIgnored:
+      "Staying abstract can delay decisions and increase rework during delivery.",
+    suggestedDefault: null,
+  }));
+
+  const questionsFromGuidance = guidance.slice(0, 3).map((result) => {
     const headingLabel = extractHeadingLabel(result);
+    const evidence = summarizeContent(result.content);
     return {
-      id: `question-${pillar.toLowerCase().replace(/\s+/g, "-")}-${index + 1}`,
-      pillar,
-      question: `How should "${headingLabel}" shape the architecture for this project?`,
-      whyItMatters: template.why,
-      riskIfIgnored: template.risk,
-      suggestedDefault: template.defaultOption,
+      question: toActionNudge(guidanceNudge(pillar, result), pillar),
+      whyItMatters:
+        evidence ||
+        `This topic appears in retrieved framework guidance for ${headingLabel}.`,
+      riskIfIgnored: `Leaving ${headingLabel} unresolved can introduce avoidable architectural risk and rework.`,
+      suggestedDefault: evidence ? `Start with: ${evidence}` : null,
     };
   });
 
-  if (questionsFromGuidance.length > 0) {
-    return questionsFromGuidance;
+  const combined = dedupe(
+    [...starterNudges, ...questionsFromGuidance].map((item) => item.question),
+  ).map((question) => {
+    const match =
+      [...starterNudges, ...questionsFromGuidance].find(
+        (item) => normalizeText(item.question).toLowerCase() === question.toLowerCase(),
+      ) ?? starterNudges[0];
+    return {
+      question,
+      whyItMatters: match?.whyItMatters ?? "",
+      riskIfIgnored: match?.riskIfIgnored ?? "",
+      suggestedDefault: match?.suggestedDefault ?? null,
+    };
+  });
+
+  if (combined.length > 0) {
+    return combined.slice(0, 4).map((question, index) => ({
+      ...question,
+      id: `question-${pillar.toLowerCase().replace(/\s+/g, "-")}-${index + 1}`,
+      pillar,
+    }));
   }
 
-  return template.fallbackQuestions.slice(0, 3).map((question, index) => ({
+  return [
+    {
+      question: toActionNudge(
+        `Define the initial ${pillar} approach for this project and document one implementation tradeoff.`,
+        pillar,
+      ),
+      whyItMatters: `A clear ${pillar.toLowerCase()} approach keeps implementation aligned with architecture intent.`,
+      riskIfIgnored:
+        "Skipping this decision can create conflicting assumptions and late-stage redesign.",
+      suggestedDefault: `Start from the project context: ${project.ideaText.slice(0, 160)}.`,
+    },
+    {
+      question: toActionNudge(
+        `Choose the first ${pillar.toLowerCase()} tradeoff to accept and document why.`,
+        pillar,
+      ),
+      whyItMatters:
+        "Explicit tradeoffs make constraints visible and avoid hidden design debt.",
+      riskIfIgnored:
+        "Unstated tradeoffs often create cross-pillar conflicts during delivery.",
+      suggestedDefault: null,
+    },
+  ].map((question, index) => ({
+    ...question,
     id: `question-${pillar.toLowerCase().replace(/\s+/g, "-")}-${index + 1}`,
     pillar,
-    question,
-    whyItMatters: template.why,
-    riskIfIgnored: template.risk,
-    suggestedDefault: template.defaultOption,
   }));
 }
 
@@ -251,6 +399,72 @@ export class OrchestrationService {
     this.resolveRetrievalService = options.resolveRetrievalService;
   }
 
+  private async refreshProjectAdHocPillars(
+    project: ProjectRecord,
+    signalText?: string,
+  ): Promise<ProjectRecord> {
+    const inferred = inferAdHocPillarsFromText(
+      [project.ideaText, signalText ?? ""].filter(Boolean).join(" "),
+    );
+    const mergedAdHoc = dedupePillarDefinitions([
+      ...adHocPillarsForProject(project),
+      ...inferred,
+    ]);
+    const previousSlugs = adHocPillarsForProject(project)
+      .map((pillar) => pillar.slug)
+      .sort();
+    const nextSlugs = mergedAdHoc.map((pillar) => pillar.slug).sort();
+    if (previousSlugs.join("|") === nextSlugs.join("|")) {
+      return project;
+    }
+
+    const persisted = await this.projectStore.upsertProject({
+      ...project,
+      additionalPillars: mergedAdHoc,
+      updatedAt: new Date().toISOString(),
+    });
+    return persisted;
+  }
+
+  private async ensureProjectHasPillar(
+    project: ProjectRecord,
+    pillar: PillarName,
+  ): Promise<ProjectRecord> {
+    const known = mergePillarDefinitions(project.additionalPillars ?? []).some(
+      (item) => normalizeKey(item.name) === normalizeKey(pillar),
+    );
+    if (known) {
+      return project;
+    }
+
+    const derived = getPillarDefinition(pillar);
+    if (derived.category !== "ad-hoc") {
+      return project;
+    }
+
+    const persisted = await this.projectStore.upsertProject({
+      ...project,
+      additionalPillars: dedupePillarDefinitions([
+        ...adHocPillarsForProject(project),
+        {
+          ...derived,
+          category: "ad-hoc",
+        },
+      ]),
+      updatedAt: new Date().toISOString(),
+    });
+    return persisted;
+  }
+
+  public async listProjectPillars(projectId: string): Promise<PillarDefinition[]> {
+    const project = await this.projectStore.getProject(projectId);
+    if (!project) {
+      throw new Error("Project not found.");
+    }
+    const refreshed = await this.refreshProjectAdHocPillars(project);
+    return mergePillarDefinitions(refreshed.additionalPillars ?? []);
+  }
+
   public async initializeProject(
     request: InitializeProjectRequest,
   ): Promise<ProjectRecord> {
@@ -271,6 +485,7 @@ export class OrchestrationService {
 
     const now = new Date().toISOString();
     const projectId = `project-${shortHash(`${now}:${ideaText}`, 16)}`;
+    const inferredAdHocPillars = inferAdHocPillarsFromText(ideaText);
     const project: ProjectRecord = {
       id: projectId,
       name: deriveProjectName(ideaText),
@@ -295,6 +510,7 @@ export class OrchestrationService {
         "Confirm user personas and non-functional priorities, then move to a security-focused decision pass.",
       decisions: [],
       decisionLinks: [],
+      additionalPillars: inferredAdHocPillars,
       createdAt: now,
       updatedAt: now,
     };
@@ -385,34 +601,60 @@ export class OrchestrationService {
     return generateOutputs(project, conflicts);
   }
 
-  public async generatePillarGuidance(
+  public async generateProjectOutputPack(
     projectId: string,
-    pillar: PillarName,
-  ): Promise<PillarGuidanceResponse> {
+    request?: GenerateOutputPackRequest,
+  ): Promise<OutputPackArchive> {
     const project = await this.projectStore.getProject(projectId);
     if (!project) {
       throw new Error("Project not found.");
     }
+    const retrieval = await this.resolveRetrievalService();
+    const conflicts = await analyzeCrossPillarConflicts(
+      project,
+      project.decisions,
+      project.decisionLinks ?? [],
+      retrieval,
+    );
+    return generateOutputPackArchive({
+      project,
+      conflicts,
+      providerConfig: request?.providerConfig,
+    });
+  }
+
+  public async generatePillarGuidance(
+    projectId: string,
+    pillar: PillarName,
+  ): Promise<PillarGuidanceResponse> {
+    const existingProject = await this.projectStore.getProject(projectId);
+    if (!existingProject) {
+      throw new Error("Project not found.");
+    }
+    const refreshedProject = await this.refreshProjectAdHocPillars(existingProject);
+    const project = await this.ensureProjectHasPillar(refreshedProject, pillar);
 
     const retrieval = await this.resolveRetrievalService();
     if (!retrieval) {
       throw new Error("Retrieval index is not ready. Run ingestion first.");
     }
 
+    const pillarFilter = getPillarFilterValue(pillar);
     const retrievedGuidance = retrieval.retrieve({
-      query: `${project.ideaText} ${pillar.toLowerCase()} architecture guidance`,
-      filters: {
-        pillar: [getPillarFilterValue(pillar)],
-      },
+      query: `${project.ideaText} ${buildPillarQueryHint(pillar)}`,
+      filters: pillarFilter
+        ? {
+            pillar: [pillarFilter],
+          }
+        : undefined,
       topK: 4,
     }).results;
 
-    const template = pillarQuestionTemplates[pillar];
     return {
       projectId: project.id,
       pillar,
-      recommendedFocus: template.defaultOption,
-      questions: buildGuidanceQuestions(pillar, retrievedGuidance),
+      recommendedFocus: deriveRecommendedFocus(pillar, retrievedGuidance),
+      questions: buildGuidanceQuestions(pillar, retrievedGuidance, project),
       retrievedGuidance,
     };
   }
@@ -433,5 +675,164 @@ export class OrchestrationService {
       project,
       retrievalService: retrieval,
     });
+  }
+
+  public async processPillarChatTurn(
+    projectId: string,
+    pillar: PillarName,
+    request: PillarChatTurnRequest,
+  ): Promise<PillarChatTurnResponse> {
+    const existingProject = await this.projectStore.getProject(projectId);
+    if (!existingProject) {
+      throw new Error("Project not found.");
+    }
+
+    const userMessage = normalizeText(request.message ?? "");
+    if (!userMessage) {
+      throw new Error("message is required.");
+    }
+    const previousAdHocSlugs = new Set(
+      adHocPillarsForProject(existingProject).map((item) => item.slug),
+    );
+    const refreshedProject = await this.refreshProjectAdHocPillars(
+      existingProject,
+      userMessage,
+    );
+    let project = await this.ensureProjectHasPillar(refreshedProject, pillar);
+    const newlyInferredPillars = adHocPillarsForProject(project).filter(
+      (item) => !previousAdHocSlugs.has(item.slug),
+    );
+
+    const guideRequest: AssistantGuideRequest = {
+      projectId,
+      phase: "pillar-guided-chat",
+      userMessage,
+      pillar,
+      providerConfig: request.providerConfig,
+    };
+    const retrieval = await this.resolveRetrievalService();
+    let guidance = await generateAssistantGuidance({
+      request: guideRequest,
+      project,
+      retrievalService: retrieval,
+    });
+    if (guidance.retrievedGuidance.length === 0 && !guidance.warning) {
+      guidance = {
+        ...guidance,
+        warning:
+          `Grounding for ${pillar} is weak. Capture this as proposed only and validate with additional source guidance before confirming.`,
+      };
+    }
+    if (newlyInferredPillars.length > 0) {
+      const names = newlyInferredPillars.map((item) => item.name).join(", ");
+      guidance = {
+        ...guidance,
+        nextActions: dedupe([
+          `New pillar identified: ${names}. Address it before implementation to avoid architecture drift.`,
+          ...guidance.nextActions,
+        ]).slice(0, 6),
+        warning:
+          guidance.warning ??
+          `Additional requirements detected (${names}).`,
+      };
+    }
+
+    let decisionAssessment = await assessDecisionCandidate({
+      request: guideRequest,
+      project,
+      retrievedGuidance: guidance.retrievedGuidance,
+    });
+    const hasGrounding = guidance.retrievedGuidance.length > 0;
+    if (!request.forceDecisionCapture && !hasGrounding && decisionAssessment.isDecision) {
+      decisionAssessment = {
+        ...decisionAssessment,
+        isDecision: false,
+        reason: `${decisionAssessment.reason} Auto-capture skipped because grounding is weak for this pillar.`,
+      };
+    }
+
+    const shouldLogDecision =
+      request.forceDecisionCapture ||
+      (hasGrounding &&
+        decisionAssessment.isDecision &&
+        decisionAssessment.confidence >= 0.55);
+
+    let updatedProject = project;
+    let loggedDecision: DecisionItem | null = null;
+
+    if (shouldLogDecision) {
+      const title = normalizeText(
+        decisionAssessment.title ?? `${pillar} approach`,
+      );
+      const selectedOption = normalizeText(
+        decisionAssessment.selectedOption ?? userMessage,
+      );
+      const status: DecisionStatus =
+        request.forceDecisionCapture || decisionAssessment.confidence < 0.8
+          ? "proposed"
+          : "confirmed";
+      const rationale = normalizeText(
+        decisionAssessment.rationale ||
+          guidance.summary ||
+          `Captured from ${pillar} guided chat.`,
+      );
+      const risks = dedupe([
+        ...decisionAssessment.risks,
+        ...guidance.questions.map((item) => item.riskIfIgnored),
+      ]).slice(0, 3);
+
+      const existingDecision = project.decisions.find(
+        (item) => item.pillar === pillar && normalizeKey(item.title) === normalizeKey(title),
+      );
+
+      const decision: DecisionItem = {
+        id:
+          existingDecision?.id ??
+          `decision-${pillar.toLowerCase().replace(/\s+/g, "-")}-${shortHash(`${title}:${selectedOption}`, 8)}`,
+        title,
+        description: `Captured from ${pillar} guided chat.`,
+        selectedOption,
+        status,
+        pillar,
+        rationale,
+        risks,
+        relatedDecisionIds: existingDecision?.relatedDecisionIds ?? [],
+      };
+
+      const updatedDecisions = existingDecision
+        ? project.decisions.map((item) =>
+            item.id === existingDecision.id
+              ? {
+                  ...item,
+                  title: decision.title,
+                  description: decision.description,
+                  selectedOption: decision.selectedOption,
+                  status: decision.status,
+                  rationale: decision.rationale,
+                  risks: decision.risks,
+                }
+              : item,
+          )
+        : [...project.decisions, decision];
+
+      const persisted = await this.projectStore.replaceProjectDecisions(
+        projectId,
+        updatedDecisions,
+      );
+      if (!persisted) {
+        throw new Error("Project not found.");
+      }
+      updatedProject = persisted;
+      loggedDecision = decision;
+    }
+
+    return {
+      project: updatedProject,
+      pillar,
+      guidance,
+      decisionLogged: Boolean(loggedDecision),
+      decision: loggedDecision,
+      decisionAssessment,
+    };
   }
 }

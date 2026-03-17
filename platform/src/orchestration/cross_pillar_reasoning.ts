@@ -173,9 +173,10 @@ async function hydrateGuidance(
     return conflict;
   }
 
-  const filters = {
-    pillar: conflict.involvedPillars.map((pillar) => getPillarFilterValue(pillar)),
-  };
+  const pillarFilters = conflict.involvedPillars
+    .map((pillar) => getPillarFilterValue(pillar))
+    .filter((value): value is string => Boolean(value));
+  const filters = pillarFilters.length > 0 ? { pillar: pillarFilters } : undefined;
   const query = `${project.ideaText} ${conflict.involvedPillars.join(
     " ",
   )} tradeoffs ${conflict.title}`;

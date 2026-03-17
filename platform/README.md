@@ -77,7 +77,7 @@ The API now includes local project orchestration and persistence endpoints:
   guided questions (`reliability`, `security`, `cost-optimization`,
   `operational-excellence`, `performance-efficiency`)
 - `GET /projects/:projectId/conflicts` run cross-pillar conflict analysis
-- `GET /projects/:projectId/outputs` generate architecture output package
+- `POST /projects/:projectId/outputs` generate and download `ai-implementation-system.zip`
 - `POST /assistant/guide` generate live guided next steps (heuristic fallback or
   provider-backed using BYO OpenAI/Anthropic key passed per request)
 

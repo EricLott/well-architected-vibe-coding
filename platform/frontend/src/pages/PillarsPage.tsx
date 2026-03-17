@@ -1,17 +1,14 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { EmptyStatePanel } from "../components/EmptyStatePanel";
 import { StatusCard } from "../components/StatusCard";
 import { projectService } from "../services/projectService";
 import { useAppDispatch, useAppState } from "../state/AppContext";
-import type { DecisionItem, DecisionStatus, Pillar } from "../types/app";
-
-const pillars: Pillar[] = [
-  "Reliability",
-  "Security",
-  "Cost Optimization",
-  "Operational Excellence",
-  "Performance Efficiency",
-];
+import type {
+  DecisionItem,
+  DecisionStatus,
+  Pillar,
+  PillarDefinition,
+} from "../types/app";
 
 interface DecisionDraftState {
   title: string;
@@ -52,11 +49,42 @@ export function PillarsPage() {
   const dispatch = useAppDispatch();
   const project = state.currentProject;
   const [draft, setDraft] = useState<DecisionDraftState>(createDecisionDraft);
+  const [pillarCatalog, setPillarCatalog] = useState<PillarDefinition[]>([]);
+  const pillars = useMemo<Pillar[]>(
+    () =>
+      pillarCatalog.length > 0
+        ? pillarCatalog.map((pillar) => pillar.name)
+        : [state.selectedPillar],
+    [pillarCatalog, state.selectedPillar],
+  );
 
   const hasGuidanceForSelection = useMemo(
     () => state.pillarGuidance?.pillar === state.selectedPillar,
     [state.pillarGuidance, state.selectedPillar],
   );
+
+  useEffect(() => {
+    const projectId = project?.id;
+    if (!projectId) {
+      return;
+    }
+    let active = true;
+    async function loadCatalog() {
+      try {
+        const definitions = await projectService.listPillars(projectId);
+        if (!active) {
+          return;
+        }
+        setPillarCatalog(definitions);
+      } catch {
+        // Keep page usable even if catalog fetch fails.
+      }
+    }
+    loadCatalog();
+    return () => {
+      active = false;
+    };
+  }, [project?.id]);
 
   if (!project) {
     return <EmptyStatePanel />;
@@ -117,7 +145,7 @@ export function PillarsPage() {
         <p className="section-kicker">Pillar workspace</p>
         <h2>Pillar-guided exploration</h2>
         <p>
-          Generate grounded questions per pillar and capture decisions that are
+          Generate grounded nudges per pillar and capture decisions that are
           persisted to local project storage.
         </p>
       </header>
@@ -162,7 +190,7 @@ export function PillarsPage() {
           <StatusCard title="Recommended focus" tone="accent">
             <p>{state.pillarGuidance.recommendedFocus}</p>
           </StatusCard>
-          <StatusCard title="Guided questions">
+          <StatusCard title="Guided nudges">
             <ul>
               {state.pillarGuidance.questions.map((question) => (
                 <li key={question.id}>

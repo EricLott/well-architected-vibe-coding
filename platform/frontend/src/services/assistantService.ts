@@ -1,6 +1,7 @@
 import type {
   AiSettings,
   AssistantGuideResponse,
+  Pillar,
   ProjectState,
 } from "../types/app";
 
@@ -17,12 +18,17 @@ export async function generateAssistantGuidance(options: {
   phase: string;
   userMessage: string;
   project: ProjectState | null;
+  pillar?: Pillar;
   aiSettings: AiSettings;
 }): Promise<AssistantGuideResponse> {
   const payload: Record<string, unknown> = {
     phase: options.phase,
     userMessage: options.userMessage,
   };
+
+  if (options.pillar) {
+    payload.pillar = options.pillar;
+  }
 
   if (options.project?.id) {
     payload.projectId = options.project.id;

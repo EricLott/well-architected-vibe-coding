@@ -7,7 +7,6 @@ import type {
   ConflictAnalysis,
   DecisionGraph,
   DecisionLink,
-  GeneratedOutputs,
   Pillar,
   PillarGuidance,
   ProjectState,
@@ -87,7 +86,7 @@ type AppAction =
   | { type: "conflict-analysis-success"; payload: ConflictAnalysis }
   | { type: "conflict-analysis-failure"; payload: string }
   | { type: "start-outputs-generation" }
-  | { type: "outputs-generation-success"; payload: GeneratedOutputs }
+  | { type: "outputs-generation-success" }
   | { type: "outputs-generation-failure"; payload: string }
   | { type: "set-ai-settings"; payload: AiSettings }
   | { type: "start-guide-request" }
@@ -149,6 +148,8 @@ function withInitializedProject(
         ? project.suggestedOpenQuestions
         : state.openQuestions,
     nextStep: project.recommendedNextAction,
+    outputs: null,
+    outputsError: null,
   };
 }
 
@@ -323,7 +324,6 @@ function appReducer(state: AppState, action: AppAction): AppState {
         ...state,
         outputsLoading: false,
         outputsError: null,
-        outputs: action.payload,
       };
     case "outputs-generation-failure":
       return {

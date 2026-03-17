@@ -176,12 +176,23 @@ export interface RetrievalResponse {
   results: RetrievalResult[];
 }
 
-export type PillarName =
-  | "Reliability"
-  | "Security"
-  | "Cost Optimization"
-  | "Operational Excellence"
-  | "Performance Efficiency";
+export type PillarName = string;
+
+export type PillarCategory =
+  | "well-architected"
+  | "solution-architecture"
+  | "experience-design"
+  | "engineering-operations"
+  | "core"
+  | "ad-hoc";
+
+export interface PillarDefinition {
+  name: PillarName;
+  slug: string;
+  category: PillarCategory;
+  summary: string;
+  retrievalQueryHint: string;
+}
 
 export type DecisionStatus = "confirmed" | "proposed" | "unresolved";
 
@@ -284,6 +295,10 @@ export interface OutputsResponse {
   outputs: GeneratedOutputs;
 }
 
+export interface GenerateOutputPackRequest {
+  providerConfig?: AssistantProviderConfig;
+}
+
 export type AiProvider = "openai" | "anthropic";
 
 export interface AssistantProviderConfig {
@@ -302,6 +317,7 @@ export interface AssistantGuideRequest {
   projectId?: string;
   phase: string;
   userMessage?: string;
+  pillar?: PillarName;
   providerConfig?: AssistantProviderConfig;
 }
 
@@ -317,6 +333,31 @@ export interface AssistantGuideResponse {
   warning: string | null;
 }
 
+export interface DecisionAssessment {
+  isDecision: boolean;
+  confidence: number;
+  reason: string;
+  title: string | null;
+  selectedOption: string | null;
+  rationale: string | null;
+  risks: string[];
+}
+
+export interface PillarChatTurnRequest {
+  message: string;
+  forceDecisionCapture?: boolean;
+  providerConfig?: AssistantProviderConfig;
+}
+
+export interface PillarChatTurnResponse {
+  project: ProjectRecord;
+  pillar: PillarName;
+  guidance: AssistantGuideResponse;
+  decisionLogged: boolean;
+  decision: DecisionItem | null;
+  decisionAssessment: DecisionAssessment;
+}
+
 export interface ProjectRecord {
   id: string;
   name: string;
@@ -330,6 +371,7 @@ export interface ProjectRecord {
   recommendedNextAction: string;
   decisions: DecisionItem[];
   decisionLinks: DecisionLink[];
+  additionalPillars: PillarDefinition[];
   createdAt: string;
   updatedAt: string;
 }
@@ -369,4 +411,8 @@ export interface PillarGuidanceResponse {
   recommendedFocus: string;
   questions: PillarQuestion[];
   retrievedGuidance: RetrievalResult[];
+}
+
+export interface PillarCatalogResponse {
+  pillars: PillarDefinition[];
 }

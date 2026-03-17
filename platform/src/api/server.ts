@@ -3,7 +3,7 @@ import path from "node:path";
 import { pathToFileURL } from "node:url";
 import { LexicalIndexer } from "../indexing/lexical/index.js";
 import { runIngestionPipeline } from "../ingestion/pipeline.js";
-import { normalizePillarInput } from "../orchestration/pillars.js";
+import { listPillarDefinitions, normalizePillarInput } from "../orchestration/pillars.js";
 import { OrchestrationService } from "../orchestration/service.js";
 import { loadIngestionConfig } from "../shared/config.js";
 import { RetrievalService } from "../retrieval/index.js";
@@ -11,7 +11,9 @@ import { fileExists } from "../shared/fs.js";
 import { ProjectStore } from "../storage/project_store.js";
 import type {
   AssistantGuideRequest,
+  GenerateOutputPackRequest,
   InitializeProjectRequest,
+  PillarChatTurnRequest,
   RetrievalRequest,
   UpdateDecisionGraphRequest,
   UpdateDecisionsRequest,
@@ -74,6 +76,29 @@ export async function createApiServer(options: ApiServerOptions) {
       retrievalReady: Boolean(service),
       lastIngestionSummary,
     });
+  });
+
+  app.get("/pillars", (_req, res) => {
+    res.json({
+      pillars: listPillarDefinitions(),
+    });
+  });
+
+  app.get("/projects/:projectId/pillars", async (req, res) => {
+    try {
+      const pillars = await orchestrationService.listProjectPillars(
+        req.params.projectId,
+      );
+      res.json({ pillars });
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : "Unknown pillar catalog error";
+      if (message === "Project not found.") {
+        res.status(404).json({ status: "error", message });
+        return;
+      }
+      res.status(500).json({ status: "error", message });
+    }
   });
 
   app.post("/ingest", async (_req, res) => {
@@ -215,7 +240,10 @@ export async function createApiServer(options: ApiServerOptions) {
 
   app.post("/projects/:projectId/pillars/:pillar/questions", async (req, res) => {
     try {
-      const pillar = normalizePillarInput(req.params.pillar);
+      const projectPillars = await orchestrationService.listProjectPillars(
+        req.params.projectId,
+      );
+      const pillar = normalizePillarInput(req.params.pillar, projectPillars);
       if (!pillar) {
         res
           .status(400)
@@ -245,6 +273,40 @@ export async function createApiServer(options: ApiServerOptions) {
     }
   });
 
+  app.post("/projects/:projectId/pillars/:pillar/chat", async (req, res) => {
+    try {
+      const projectPillars = await orchestrationService.listProjectPillars(
+        req.params.projectId,
+      );
+      const pillar = normalizePillarInput(req.params.pillar, projectPillars);
+      if (!pillar) {
+        res
+          .status(400)
+          .json({ status: "error", message: "Unsupported pillar value." });
+        return;
+      }
+      const request = (req.body ?? {}) as PillarChatTurnRequest;
+      const response = await orchestrationService.processPillarChatTurn(
+        req.params.projectId,
+        pillar,
+        request,
+      );
+      res.json(response);
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : "Unknown pillar chat turn error";
+      if (message === "Project not found.") {
+        res.status(404).json({ status: "error", message });
+        return;
+      }
+      if (message.includes("message is required")) {
+        res.status(400).json({ status: "error", message });
+        return;
+      }
+      res.status(400).json({ status: "error", message });
+    }
+  });
+
   app.get("/projects/:projectId/conflicts", async (req, res) => {
     try {
       const analysis = await orchestrationService.analyzeProjectConflicts(
@@ -264,15 +326,21 @@ export async function createApiServer(options: ApiServerOptions) {
     }
   });
 
-  app.get("/projects/:projectId/outputs", async (req, res) => {
+  app.post("/projects/:projectId/outputs", async (req, res) => {
     try {
-      const outputs = await orchestrationService.generateProjectOutputs(
+      const request = (req.body ?? {}) as GenerateOutputPackRequest;
+      const archive = await orchestrationService.generateProjectOutputPack(
         req.params.projectId,
+        request,
       );
-      res.json({
-        projectId: req.params.projectId,
-        outputs,
-      });
+      res.setHeader("Content-Type", archive.contentType);
+      res.setHeader(
+        "Content-Disposition",
+        `attachment; filename="${archive.fileName}"`,
+      );
+      res.setHeader("Content-Length", String(archive.bytes.length));
+      res.setHeader("Cache-Control", "no-store");
+      res.send(archive.bytes);
     } catch (error) {
       const message =
         error instanceof Error
@@ -280,6 +348,18 @@ export async function createApiServer(options: ApiServerOptions) {
           : "Unknown output generation error";
       if (message === "Project not found.") {
         res.status(404).json({ status: "error", message });
+        return;
+      }
+      if (message.includes("Unsupported provider")) {
+        res.status(400).json({ status: "error", message });
+        return;
+      }
+      if (
+        message.includes("OpenAI request failed") ||
+        message.includes("Anthropic request failed") ||
+        message.includes("could not be parsed as JSON")
+      ) {
+        res.status(502).json({ status: "error", message });
         return;
       }
       res.status(500).json({ status: "error", message });

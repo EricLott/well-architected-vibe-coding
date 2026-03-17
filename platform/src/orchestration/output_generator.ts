@@ -1,20 +1,21 @@
 import type {
   ConflictAnalysisResponse,
   GeneratedOutputs,
-  PillarName,
   ProjectRecord,
 } from "../shared/types.js";
+import { mergePillarDefinitions } from "./pillars.js";
 
-function byPillar(project: ProjectRecord): Record<PillarName, string[]> {
-  const grouped: Record<PillarName, string[]> = {
-    Reliability: [],
-    Security: [],
-    "Cost Optimization": [],
-    "Operational Excellence": [],
-    "Performance Efficiency": [],
-  };
+function byPillar(project: ProjectRecord): Record<string, string[]> {
+  const grouped: Record<string, string[]> = {};
+  const catalog = mergePillarDefinitions(project.additionalPillars ?? []);
+  for (const pillar of catalog) {
+    grouped[pillar.name] = [];
+  }
 
   for (const decision of project.decisions) {
+    if (!grouped[decision.pillar]) {
+      grouped[decision.pillar] = [];
+    }
     grouped[decision.pillar].push(`${decision.title}: ${decision.selectedOption}`);
   }
   return grouped;
@@ -36,22 +37,15 @@ function buildMasterSystemPrompt(
   const unresolved = project.decisions
     .filter((decision) => decision.status === "unresolved")
     .map((decision) => decision.title);
+  const pillarSections = mergePillarDefinitions(project.additionalPillars ?? []).map(
+    (pillar) => formatSection(`${pillar.name} decisions`, grouped[pillar.name] ?? []),
+  );
 
   const sections = [
     "You are implementing a system from an architecture-first specification. Respect decisions before writing code.",
     `Project: ${project.name}`,
     `Idea: ${project.ideaText}`,
-    formatSection("Reliability decisions", grouped.Reliability),
-    formatSection("Security decisions", grouped.Security),
-    formatSection("Cost optimization decisions", grouped["Cost Optimization"]),
-    formatSection(
-      "Operational excellence decisions",
-      grouped["Operational Excellence"],
-    ),
-    formatSection(
-      "Performance efficiency decisions",
-      grouped["Performance Efficiency"],
-    ),
+    ...pillarSections,
     formatSection("Open conflicts", conflictLines),
     formatSection("Unresolved decisions", unresolved),
     formatSection("Open questions", project.suggestedOpenQuestions),
@@ -109,14 +103,16 @@ export function generateOutputs(
   conflicts: ConflictAnalysisResponse,
 ): GeneratedOutputs {
   const grouped = byPillar(project);
+  const catalog = mergePillarDefinitions(project.additionalPillars ?? []);
   const strengths: string[] = [];
   const gaps: string[] = [];
 
-  for (const [pillar, decisions] of Object.entries(grouped)) {
+  for (const pillar of catalog) {
+    const decisions = grouped[pillar.name] ?? [];
     if (decisions.length > 0) {
-      strengths.push(`${pillar}: ${decisions.length} decision(s) captured.`);
+      strengths.push(`${pillar.name}: ${decisions.length} decision(s) captured.`);
     } else {
-      gaps.push(`${pillar}: no explicit decisions captured yet.`);
+      gaps.push(`${pillar.name}: no explicit decisions captured yet.`);
     }
   }
 

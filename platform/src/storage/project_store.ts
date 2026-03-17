@@ -19,6 +19,7 @@ function withProjectDefaults(project: ProjectRecord): ProjectRecord {
   return {
     ...project,
     decisionLinks: project.decisionLinks ?? [],
+    additionalPillars: project.additionalPillars ?? [],
   };
 }
 
