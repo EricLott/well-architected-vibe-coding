@@ -1,0 +1,259 @@
+{
+  "source": {
+    "absolutePath": "C:\\Users\\EricL\\source\\repos\\Well-Architected-Vibe-Coding\\well-architected-vibe-coding\\well-architected\\security\\data-classification.md",
+    "repoRelativePath": "well-architected/security/data-classification.md",
+    "docsRelativePath": "security/data-classification.md"
+  },
+  "frontMatter": {
+    "title": "Architecture strategies for data classification",
+    "description": "Learn about data classification and how to apply it to your workloads. Categorize data based on its sensitivity levels, information type, and scope of compliance so that you can apply the correct level of protection.",
+    "author": "PageWriter-MSFT",
+    "ms.author": "prwilk",
+    "ms.date": "11/15/2023",
+    "ms.topic": "concept-article"
+  },
+  "title": "Architecture strategies for data classification",
+  "rawBody": "# Architecture strategies for data classification\n\n**Applies to Azure Well-Architected Framework Security checklist recommendation:**\n\n|**SE:03**|Classify and consistently apply sensitivity labels on all workload data and systems involved in data processing. Use classification to influence workload design, implementation, and security prioritization.|\n|---|---|\n\nThis guide describes the recommendations for data classification. Most workloads store various types of data. Not all data is equally sensitive. Data classification helps you categorize data based on its sensitivity level, information type, and scope of compliance so you can apply the correct level of protection. Protection includes access controls, retention policies for different information types, and so on. While the actual security controls based on data classification are out of scope for this article, it provides recommendations for categorizing data based on the preceding criteria set by your organization.\n\n**Definitions**\n\n| Term | Definition |\n|---|---|\n| Classification |A process to categorize workload assets by sensitivity levels, information type, compliance requirements, and other criteria provided by the organization. |\n| Metadata | An implementation for applying taxonomy to assets. |\n| Taxonomy | A system to organize classified data by using an agreed upon structure. Typically, a hierarchical depiction of data classification. It has named entities that indicate categorization criteria. |\n\n\n\nData classification is a crucial exercise that often drives building a system of record and its function. Classification also helps you correctly size security assurances and helps the triage team expedite discovery during incident response. A prerequisite to the design process is to clearly understand whether data should be treated as confidential, restricted, public, or any other sensitivity classification. It's also essential to determine the locations where data is stored, because the data might be distributed across multiple environments.\n\nData discovery is necessary to locate the data. Without that knowledge, most designs adopt a middle-ground approach, which might or might not serve the security requirements. Data can be overprotected, resulting in cost and performance inefficiencies. Or it might not be protected enough, which adds to the attack surface.\n\nData classification is often a cumbersome exercise. There are tools available that can discover data assets and suggest classifications. But don't just rely on tooling. Have a process in place where team members diligently do the exercises. Then use tooling to automate when that's practical.\n\nAlong with these best practices, see [Create a well-designed data classification framework](/compliance/assurance/assurance-create-data-classification-framework).\n\n## Understand organization-defined taxonomy\n\n*Taxonomy* is a hierarchical depiction of data classification. It has named entities that indicate the categorization criteria.\n\nIn general, there isn't a universal standard for classification or for defining taxonomy. It's driven by an organization's motivation for protecting data. Taxonomy might capture compliance requirements, promised features for the workload users, or other criteria driven by business needs.\n\nHere are some example classification labels for sensitivity levels, information type, and scope of compliance.\n\n| Sensitivity | Information type | Scope of compliance |\n|--------|--------| -------- |\n| Public, General, Confidential, Highly Confidential, Secret, Top Secret, Sensitive | Financial, Credit Card, Name, Contact Info, Credentials, Banking, Networking, SSN, Health fields, Date of Birth, Intellectual Property, personal data | HIPAA, PCI, CCPA, SOX, RTB |\n\nAs a workload owner, rely on your organization to provide you with a well-defined taxonomy. All workload roles must have a shared understanding of the structure, nomenclature, and definition of the sensitivity levels. Don't define your own classification system.  \n\n## Define the classification scope\n\nMost organizations have a diverse set of labels.\n\n:::image type=\"content\" source=\"images/data-classification/data-classification.svg\" alt-text=\"Diagram that shows an example of an organization's sensitivity labels.\" lightbox=\"images/data-classification/data-classification-high-res.png\":::\n\nClearly identify which data assets and components are in-scope and out-of-scope for each sensitivity level. You should have a clear objective on the outcome. The objective could be quicker triage, accelerated disaster recovery, or regulatory audits. When you clearly understand the objectives, it ensures you correctly size your classification efforts.\n\nStart with these simple questions and expand as necessary based on your system complexity:\n\n- What's the origin of data and information type?\n- What's the expected restriction based on access? For example, is it public information data, regulatory, or other expected use cases?  \n- What's the data footprint? Where is data stored? How long should the data be retained?\n- Which components of the architecture interact with the data?\n- How does the data move through the system?\n- What information is expected in the audit reports?\n- Do you need to classify preproduction data?\n\n### Take inventory of your data stores\n\nIf you have an existing system, take inventory of all data stores and components that are in scope. On the other hand, if you're designing a new system, create a data flow dimension of the architecture and have an initial categorization per taxonomy definitions. Classification applies to the system as a whole. It's distinctly different from classifying configuration secrets and nonsecrets.\n\n### Define your scope\n\nBe granular and explicit when defining the scope. Suppose your data store is a tabular system. You want to classify sensitivity at the table level or even the columns within the table. Also, be sure to extend classification to nondata store components that might be related or have a part in processing the data. For example, have you classified the backup of your highly sensitive data store? If you're caching user-sensitive data, is the caching data store in scope? If you use analytical data stores, how is the aggregated data classified?\n\n## Design according to classification labels\n\nClassification should influence your architectural decisions. The most obvious area is your segmentation strategy, which should consider the varied classification labels.\n\nFor example, the labels influence the traffic isolation boundaries. There might be critical flows where end-to-end transport layer security (TLS) is required, while other packets can be sent over HTTP. If there are messages transmitted over a message broker, certain messages might need to be signed.\n\n**For data at rest, the levels will affect the encryption choices**. You might choose to protect highly sensitive data through double encryption. Different application secrets might even require control with varied levels of protection. You might be able to justify storing secrets in a hardware security module (HSM) store, which offers higher restrictions. Compliance labels also dictate decisions about the right protection standards. For example, The PCI-DSS standard mandates the use of FIPS 140-2 Level 3 protection, which is available only with HSMs. In other cases, it might be acceptable for other secrets to be stored in a regular secret management store.\n\nIf you need to protect data in use, you might want to incorporate confidential computing in the architecture.\n\n**Classification information should move with the data as it transitions through the system** and across components of the workload. Data labeled as confidential should be treated as confidential by all components that interact with it. For example, be sure to protect personal data by removing or obfuscating it from any kind of application logs.\n\n**Classification impacts the design of your report** in the way data should be exposed. For example, based on your information type labels, do you need to apply a data masking algorithm for obfuscation as a result of the information type label? Which roles should have visibility into the raw data versus masked data? If there are any compliance requirements for reporting, how is data mapped to regulations and standards? When you have this understanding, it's easier to demonstrate compliance with specific requirements and generate reports for auditors.\n\nIt also impacts the data lifecycle management operations, such as data retention and decommissioning schedules.\n\n## Apply taxonomy for querying\n\nThere are many ways to apply taxonomy labels to the identified data. Using a classification schema with metadata is the most common way to indicate the labels. Standardization through schema makes sure that reporting is accurate, minimizes chances of variation, and avoids the creation of custom queries. Build automated checks to catch invalid entries.\n\nYou can apply labels manually, programmatically, or use a combination of both. The architecture design process should include design of the schema. Whether you have an existing system or are building a new one, when applying labels, maintain consistency in the key/value pairs.\n\nKeep in mind that not all data can be clearly classified. Make an explicit decision about how the data that can't be classified should be represented in reporting.\n\nThe actual implementation depends on the type of resources. Certain Azure resources have built-in classification systems. For example, Azure SQL Server has a classification engine, supports dynamic masking, and can generate reports based on metadata. Azure Service Bus supports including a message schema that can have attached metadata. When you design your implementation, evaluate the features supported by the platform and take advantage of them. Make sure metadata used for classification is isolated and stored separately from the data stores.\n\nThere are also specialized classification tools that can detect and apply labels automatically. These tools are connected to your data sources. Microsoft Purview has autodiscover capabilities. There are also third-party tools that offer similar capabilities. The discovery process should be validated through manual verification.\n\n**Review data classification regularly**. Classification maintenance should be built into operations, otherwise stale metadata can lead to erroneous results for the identified objectives and compliance issues.\n\n> :::image type=\"icon\" source=\"../_images/trade-off.svg\"::: **Tradeoff**: Be mindful of the cost tradeoff on tooling. Classification tools require training and can be complex.\n\nUltimately, classification must roll up to the organization through central teams. Get input from them about the expected report structure. Also, take advantage of centralized tools and processes to have organizational alignment and also alleviate operational costs.\n\n## Azure facilitation\n\nMicrosoft Purview unifies Azure Purview and Microsoft Purview solutions to provide visibility into data assets throughout your organization. For more information, see [What is Microsoft Purview?](/purview/purview)\n\nAzure SQL Database, Azure SQL Managed Instance, and Azure Synapse Analytics offer built-in classification features. Use these tools to discover, classify, label, and report the sensitive data in your databases. For more information, see [Data discovery and classification](/azure/azure-sql/database/data-discovery-and-classification-overview).\n\nFor data classified as highly confidential or requiring protection during processing operations, Azure Database for PostgreSQL supports [confidential computing](/azure/postgresql/flexible-server/concepts-confidential-computing) to provide hardware-based encryption for data in use. This technology enables organizations to protect sensitive data during processing operations while maintaining database performance, supporting compliance with stringent regulatory requirements for data protection in highly regulated industries.\n\n## Example\n\nThis example builds on the Information Technology (IT) environment established in the [security baseline (SE:01)](./establish-baseline.md). The example diagram below shows data stores where data is classified.   \n\n:::image type=\"content\" source=\"images/data-classification/data-classification-enterprise.svg\" alt-text=\"Diagram that shows an example of an organization's data classification.\" lightbox=\"images/data-classification/data-classification-enterprise.svg\":::\n\n1) Data stored on databases and disks should only be accessible to a few users, such as Administrators, Database administrators. Then, it's usual that common users or customers' final clients have access only to layers that are exposed to the internet, such as applications or jump boxes.\n\n2) Applications communicate with the databases or data stored on disks, such as object storage or file servers.\n\n3) In some cases, data might be stored in an on-premises environment and the public cloud. Both need to be classified consistently.\n\n4) In an operator use case, remote administrators need access jump boxes on the cloud or a virtual machine running the workload. Access permissions should be given as per the data classification labels.\n\n5) Data moves through the virtual machines to the backend databases and data should be treated with the same level of confidentiality throughout the traversal points.\n\n6) Workloads store data directly in virtual machine disks. Those disks are in scope for classification.\n\n7) In a hybrid environment, different personas may access workloads on-premises through different mechanisms to connect to different data storage technologies or databases. Access must be granted as per the classification labels.\n\n8) The on-premises servers connect to important data that need to be classified and protected such as file servers, object storage, and different types of databases, such as relational, NoSQL, and data warehouse.\n\n9) Microsoft Purview Compliance provides a solution to classify files and emails.\n\n10) Microsoft Defender for Cloud provides a solution that helps your company to track compliance in your environment, including many of your services used to store data, mentioned in these use cases above.\n\n## Related links\n\n- [Data classification and sensitivity label taxonomy - Microsoft Service Assurance](/compliance/assurance/assurance-data-classification-and-labels)\n- [Create a well-designed data classification framework - Microsoft Service Assurance](/compliance/assurance/assurance-create-data-classification-framework)\n\n## Next step\n\nRefer to the complete set of recommendations.\n\n> [!div class=\"nextstepaction\"]\n> [Security checklist](checklist.md)\n\n<!-- Updated: October 13, 2025 for Azure Update 500795 -->",
+  "headings": [
+    {
+      "level": 1,
+      "text": "Architecture strategies for data classification",
+      "line": 1,
+      "path": [
+        "Architecture strategies for data classification"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Understand organization-defined taxonomy",
+      "line": 28,
+      "path": [
+        "Architecture strategies for data classification",
+        "Understand organization-defined taxonomy"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Define the classification scope",
+      "line": 42,
+      "path": [
+        "Architecture strategies for data classification",
+        "Define the classification scope"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Take inventory of your data stores",
+      "line": 60,
+      "path": [
+        "Architecture strategies for data classification",
+        "Define the classification scope",
+        "Take inventory of your data stores"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Define your scope",
+      "line": 64,
+      "path": [
+        "Architecture strategies for data classification",
+        "Define the classification scope",
+        "Define your scope"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Design according to classification labels",
+      "line": 68,
+      "path": [
+        "Architecture strategies for data classification",
+        "Design according to classification labels"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Apply taxonomy for querying",
+      "line": 84,
+      "path": [
+        "Architecture strategies for data classification",
+        "Apply taxonomy for querying"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Azure facilitation",
+      "line": 102,
+      "path": [
+        "Architecture strategies for data classification",
+        "Azure facilitation"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Example",
+      "line": 110,
+      "path": [
+        "Architecture strategies for data classification",
+        "Example"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Related links",
+      "line": 136,
+      "path": [
+        "Architecture strategies for data classification",
+        "Related links"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Next step",
+      "line": 141,
+      "path": [
+        "Architecture strategies for data classification",
+        "Next step"
+      ]
+    }
+  ],
+  "sections": [
+    {
+      "sectionOrder": 1,
+      "headingLevel": 1,
+      "headingText": "Architecture strategies for data classification",
+      "headingPath": [
+        "Architecture strategies for data classification"
+      ],
+      "markdown": "**Applies to Azure Well-Architected Framework Security checklist recommendation:**\n\n|**SE:03**|Classify and consistently apply sensitivity labels on all workload data and systems involved in data processing. Use classification to influence workload design, implementation, and security prioritization.|\n|---|---|\n\nThis guide describes the recommendations for data classification. Most workloads store various types of data. Not all data is equally sensitive. Data classification helps you categorize data based on its sensitivity level, information type, and scope of compliance so you can apply the correct level of protection. Protection includes access controls, retention policies for different information types, and so on. While the actual security controls based on data classification are out of scope for this article, it provides recommendations for categorizing data based on the preceding criteria set by your organization.\n\n**Definitions**\n\n| Term | Definition |\n|---|---|\n| Classification |A process to categorize workload assets by sensitivity levels, information type, compliance requirements, and other criteria provided by the organization. |\n| Metadata | An implementation for applying taxonomy to assets. |\n| Taxonomy | A system to organize classified data by using an agreed upon structure. Typically, a hierarchical depiction of data classification. It has named entities that indicate categorization criteria. |\n\n\n\nData classification is a crucial exercise that often drives building a system of record and its function. Classification also helps you correctly size security assurances and helps the triage team expedite discovery during incident response. A prerequisite to the design process is to clearly understand whether data should be treated as confidential, restricted, public, or any other sensitivity classification. It's also essential to determine the locations where data is stored, because the data might be distributed across multiple environments.\n\nData discovery is necessary to locate the data. Without that knowledge, most designs adopt a middle-ground approach, which might or might not serve the security requirements. Data can be overprotected, resulting in cost and performance inefficiencies. Or it might not be protected enough, which adds to the attack surface.\n\nData classification is often a cumbersome exercise. There are tools available that can discover data assets and suggest classifications. But don't just rely on tooling. Have a process in place where team members diligently do the exercises. Then use tooling to automate when that's practical.\n\nAlong with these best practices, see [Create a well-designed data classification framework](/compliance/assurance/assurance-create-data-classification-framework).",
+      "lineStart": 2,
+      "lineEnd": 27
+    },
+    {
+      "sectionOrder": 2,
+      "headingLevel": 2,
+      "headingText": "Understand organization-defined taxonomy",
+      "headingPath": [
+        "Architecture strategies for data classification",
+        "Understand organization-defined taxonomy"
+      ],
+      "markdown": "*Taxonomy* is a hierarchical depiction of data classification. It has named entities that indicate the categorization criteria.\n\nIn general, there isn't a universal standard for classification or for defining taxonomy. It's driven by an organization's motivation for protecting data. Taxonomy might capture compliance requirements, promised features for the workload users, or other criteria driven by business needs.\n\nHere are some example classification labels for sensitivity levels, information type, and scope of compliance.\n\n| Sensitivity | Information type | Scope of compliance |\n|--------|--------| -------- |\n| Public, General, Confidential, Highly Confidential, Secret, Top Secret, Sensitive | Financial, Credit Card, Name, Contact Info, Credentials, Banking, Networking, SSN, Health fields, Date of Birth, Intellectual Property, personal data | HIPAA, PCI, CCPA, SOX, RTB |\n\nAs a workload owner, rely on your organization to provide you with a well-defined taxonomy. All workload roles must have a shared understanding of the structure, nomenclature, and definition of the sensitivity levels. Don't define your own classification system.",
+      "lineStart": 29,
+      "lineEnd": 41
+    },
+    {
+      "sectionOrder": 3,
+      "headingLevel": 2,
+      "headingText": "Define the classification scope",
+      "headingPath": [
+        "Architecture strategies for data classification",
+        "Define the classification scope"
+      ],
+      "markdown": "Most organizations have a diverse set of labels.\n\n:::image type=\"content\" source=\"images/data-classification/data-classification.svg\" alt-text=\"Diagram that shows an example of an organization's sensitivity labels.\" lightbox=\"images/data-classification/data-classification-high-res.png\":::\n\nClearly identify which data assets and components are in-scope and out-of-scope for each sensitivity level. You should have a clear objective on the outcome. The objective could be quicker triage, accelerated disaster recovery, or regulatory audits. When you clearly understand the objectives, it ensures you correctly size your classification efforts.\n\nStart with these simple questions and expand as necessary based on your system complexity:\n\n- What's the origin of data and information type?\n- What's the expected restriction based on access? For example, is it public information data, regulatory, or other expected use cases?  \n- What's the data footprint? Where is data stored? How long should the data be retained?\n- Which components of the architecture interact with the data?\n- How does the data move through the system?\n- What information is expected in the audit reports?\n- Do you need to classify preproduction data?",
+      "lineStart": 43,
+      "lineEnd": 59
+    },
+    {
+      "sectionOrder": 4,
+      "headingLevel": 3,
+      "headingText": "Take inventory of your data stores",
+      "headingPath": [
+        "Architecture strategies for data classification",
+        "Define the classification scope",
+        "Take inventory of your data stores"
+      ],
+      "markdown": "If you have an existing system, take inventory of all data stores and components that are in scope. On the other hand, if you're designing a new system, create a data flow dimension of the architecture and have an initial categorization per taxonomy definitions. Classification applies to the system as a whole. It's distinctly different from classifying configuration secrets and nonsecrets.",
+      "lineStart": 61,
+      "lineEnd": 63
+    },
+    {
+      "sectionOrder": 5,
+      "headingLevel": 3,
+      "headingText": "Define your scope",
+      "headingPath": [
+        "Architecture strategies for data classification",
+        "Define the classification scope",
+        "Define your scope"
+      ],
+      "markdown": "Be granular and explicit when defining the scope. Suppose your data store is a tabular system. You want to classify sensitivity at the table level or even the columns within the table. Also, be sure to extend classification to nondata store components that might be related or have a part in processing the data. For example, have you classified the backup of your highly sensitive data store? If you're caching user-sensitive data, is the caching data store in scope? If you use analytical data stores, how is the aggregated data classified?",
+      "lineStart": 65,
+      "lineEnd": 67
+    },
+    {
+      "sectionOrder": 6,
+      "headingLevel": 2,
+      "headingText": "Design according to classification labels",
+      "headingPath": [
+        "Architecture strategies for data classification",
+        "Design according to classification labels"
+      ],
+      "markdown": "Classification should influence your architectural decisions. The most obvious area is your segmentation strategy, which should consider the varied classification labels.\n\nFor example, the labels influence the traffic isolation boundaries. There might be critical flows where end-to-end transport layer security (TLS) is required, while other packets can be sent over HTTP. If there are messages transmitted over a message broker, certain messages might need to be signed.\n\n**For data at rest, the levels will affect the encryption choices**. You might choose to protect highly sensitive data through double encryption. Different application secrets might even require control with varied levels of protection. You might be able to justify storing secrets in a hardware security module (HSM) store, which offers higher restrictions. Compliance labels also dictate decisions about the right protection standards. For example, The PCI-DSS standard mandates the use of FIPS 140-2 Level 3 protection, which is available only with HSMs. In other cases, it might be acceptable for other secrets to be stored in a regular secret management store.\n\nIf you need to protect data in use, you might want to incorporate confidential computing in the architecture.\n\n**Classification information should move with the data as it transitions through the system** and across components of the workload. Data labeled as confidential should be treated as confidential by all components that interact with it. For example, be sure to protect personal data by removing or obfuscating it from any kind of application logs.\n\n**Classification impacts the design of your report** in the way data should be exposed. For example, based on your information type labels, do you need to apply a data masking algorithm for obfuscation as a result of the information type label? Which roles should have visibility into the raw data versus masked data? If there are any compliance requirements for reporting, how is data mapped to regulations and standards? When you have this understanding, it's easier to demonstrate compliance with specific requirements and generate reports for auditors.\n\nIt also impacts the data lifecycle management operations, such as data retention and decommissioning schedules.",
+      "lineStart": 69,
+      "lineEnd": 83
+    },
+    {
+      "sectionOrder": 7,
+      "headingLevel": 2,
+      "headingText": "Apply taxonomy for querying",
+      "headingPath": [
+        "Architecture strategies for data classification",
+        "Apply taxonomy for querying"
+      ],
+      "markdown": "There are many ways to apply taxonomy labels to the identified data. Using a classification schema with metadata is the most common way to indicate the labels. Standardization through schema makes sure that reporting is accurate, minimizes chances of variation, and avoids the creation of custom queries. Build automated checks to catch invalid entries.\n\nYou can apply labels manually, programmatically, or use a combination of both. The architecture design process should include design of the schema. Whether you have an existing system or are building a new one, when applying labels, maintain consistency in the key/value pairs.\n\nKeep in mind that not all data can be clearly classified. Make an explicit decision about how the data that can't be classified should be represented in reporting.\n\nThe actual implementation depends on the type of resources. Certain Azure resources have built-in classification systems. For example, Azure SQL Server has a classification engine, supports dynamic masking, and can generate reports based on metadata. Azure Service Bus supports including a message schema that can have attached metadata. When you design your implementation, evaluate the features supported by the platform and take advantage of them. Make sure metadata used for classification is isolated and stored separately from the data stores.\n\nThere are also specialized classification tools that can detect and apply labels automatically. These tools are connected to your data sources. Microsoft Purview has autodiscover capabilities. There are also third-party tools that offer similar capabilities. The discovery process should be validated through manual verification.\n\n**Review data classification regularly**. Classification maintenance should be built into operations, otherwise stale metadata can lead to erroneous results for the identified objectives and compliance issues.\n\n> :::image type=\"icon\" source=\"../_images/trade-off.svg\"::: **Tradeoff**: Be mindful of the cost tradeoff on tooling. Classification tools require training and can be complex.\n\nUltimately, classification must roll up to the organization through central teams. Get input from them about the expected report structure. Also, take advantage of centralized tools and processes to have organizational alignment and also alleviate operational costs.",
+      "lineStart": 85,
+      "lineEnd": 101
+    },
+    {
+      "sectionOrder": 8,
+      "headingLevel": 2,
+      "headingText": "Azure facilitation",
+      "headingPath": [
+        "Architecture strategies for data classification",
+        "Azure facilitation"
+      ],
+      "markdown": "Microsoft Purview unifies Azure Purview and Microsoft Purview solutions to provide visibility into data assets throughout your organization. For more information, see [What is Microsoft Purview?](/purview/purview)\n\nAzure SQL Database, Azure SQL Managed Instance, and Azure Synapse Analytics offer built-in classification features. Use these tools to discover, classify, label, and report the sensitive data in your databases. For more information, see [Data discovery and classification](/azure/azure-sql/database/data-discovery-and-classification-overview).\n\nFor data classified as highly confidential or requiring protection during processing operations, Azure Database for PostgreSQL supports [confidential computing](/azure/postgresql/flexible-server/concepts-confidential-computing) to provide hardware-based encryption for data in use. This technology enables organizations to protect sensitive data during processing operations while maintaining database performance, supporting compliance with stringent regulatory requirements for data protection in highly regulated industries.",
+      "lineStart": 103,
+      "lineEnd": 109
+    },
+    {
+      "sectionOrder": 9,
+      "headingLevel": 2,
+      "headingText": "Example",
+      "headingPath": [
+        "Architecture strategies for data classification",
+        "Example"
+      ],
+      "markdown": "This example builds on the Information Technology (IT) environment established in the [security baseline (SE:01)](./establish-baseline.md). The example diagram below shows data stores where data is classified.   \n\n:::image type=\"content\" source=\"images/data-classification/data-classification-enterprise.svg\" alt-text=\"Diagram that shows an example of an organization's data classification.\" lightbox=\"images/data-classification/data-classification-enterprise.svg\":::\n\n1) Data stored on databases and disks should only be accessible to a few users, such as Administrators, Database administrators. Then, it's usual that common users or customers' final clients have access only to layers that are exposed to the internet, such as applications or jump boxes.\n\n2) Applications communicate with the databases or data stored on disks, such as object storage or file servers.\n\n3) In some cases, data might be stored in an on-premises environment and the public cloud. Both need to be classified consistently.\n\n4) In an operator use case, remote administrators need access jump boxes on the cloud or a virtual machine running the workload. Access permissions should be given as per the data classification labels.\n\n5) Data moves through the virtual machines to the backend databases and data should be treated with the same level of confidentiality throughout the traversal points.\n\n6) Workloads store data directly in virtual machine disks. Those disks are in scope for classification.\n\n7) In a hybrid environment, different personas may access workloads on-premises through different mechanisms to connect to different data storage technologies or databases. Access must be granted as per the classification labels.\n\n8) The on-premises servers connect to important data that need to be classified and protected such as file servers, object storage, and different types of databases, such as relational, NoSQL, and data warehouse.\n\n9) Microsoft Purview Compliance provides a solution to classify files and emails.\n\n10) Microsoft Defender for Cloud provides a solution that helps your company to track compliance in your environment, including many of your services used to store data, mentioned in these use cases above.",
+      "lineStart": 111,
+      "lineEnd": 135
+    },
+    {
+      "sectionOrder": 10,
+      "headingLevel": 2,
+      "headingText": "Related links",
+      "headingPath": [
+        "Architecture strategies for data classification",
+        "Related links"
+      ],
+      "markdown": "- [Data classification and sensitivity label taxonomy - Microsoft Service Assurance](/compliance/assurance/assurance-data-classification-and-labels)\n- [Create a well-designed data classification framework - Microsoft Service Assurance](/compliance/assurance/assurance-create-data-classification-framework)",
+      "lineStart": 137,
+      "lineEnd": 140
+    },
+    {
+      "sectionOrder": 11,
+      "headingLevel": 2,
+      "headingText": "Next step",
+      "headingPath": [
+        "Architecture strategies for data classification",
+        "Next step"
+      ],
+      "markdown": "Refer to the complete set of recommendations.\n\n> [!div class=\"nextstepaction\"]\n> [Security checklist](checklist.md)\n\n<!-- Updated: October 13, 2025 for Azure Update 500795 -->",
+      "lineStart": 142,
+      "lineEnd": 148
+    }
+  ],
+  "localLinks": [
+    "./establish-baseline.md",
+    "checklist.md"
+  ],
+  "lastModified": "2026-03-17T16:22:13.739Z"
+}

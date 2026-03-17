@@ -1,0 +1,452 @@
+{
+  "source": {
+    "absolutePath": "C:\\Users\\EricL\\source\\repos\\Well-Architected-Vibe-Coding\\well-architected-vibe-coding\\well-architected\\sustainability\\sustainability-application-platform.md",
+    "repoRelativePath": "well-architected/sustainability/sustainability-application-platform.md",
+    "docsRelativePath": "sustainability/sustainability-application-platform.md"
+  },
+  "frontMatter": {
+    "title": "Application platform considerations for sustainable workloads on Azure",
+    "description": "This design area explores application platform and infrastructure considerations for sustainable workloads on Azure.",
+    "author": "lnyswonger",
+    "ms.author": "lnyswonger",
+    "ms.topic": "concept-article",
+    "ms.date": "10/12/2022"
+  },
+  "title": "Application platform considerations for sustainable workloads on Azure",
+  "rawBody": "# Application platform considerations for sustainable workloads on Azure\n\nDesigning and building sustainable workloads requires understanding the platform where you're deploying the applications. Review the considerations and recommendations in this section to know how to make better informed platform-related decisions around sustainability.\n\n> [!IMPORTANT]\n> This article is part of the [Azure Well-Architected sustainable workload](index.yml) series. If you aren't familiar with this series, we recommend you start with [what is a sustainable workload?](sustainability-get-started.md#what-is-a-sustainable-workload)\n\n## Platform and service updates\n\nKeep platform and services up to date to leverage the latest performance improvements and energy optimizations.\n\n### Review platform and service updates regularly\n\nPlatform updates enable you to use the latest functionality and features to help increase efficiency. Running on outdated software can result in running a suboptimal workload with unnecessary performance issues. New software tends to be more efficient in general.\n\n*Green Software Foundation alignment: [Energy efficiency](sustainability-design-principles.md#energy-efficiency)*\n\n**Recommendation:**\n\n- Upgrade to newer and more efficient services as they become available.\n- Consider backward compatibility and hardware reusability. An upgrade may not be the most efficient solution if the hardware or the OS isn't supported.\n- Make use of [Azure Automation Update Management](/azure/automation/update-management/manage-updates-for-vm) to ensure software updates are deployed to Azure VMs.\n\n## Regional differences\n\nThe Microsoft Azure data centers are geographically spread across the planet and powered using different energy sources. Making decisions around where to deploy your workloads can significantly impact the emissions your solutions produce.\n\nLearn more about [sustainability from the data center to the cloud with Azure](https://www.microsoft.com/sustainability/azure). See region-specific sustainability information in the [Microsoft data center sustainability fact sheets](https://infrastructuremap.microsoft.com/fact-sheets).\n\n### Deploy to low-carbon regions\n\nLearn about what Azure regions have a lower carbon footprint than others to make better-informed decisions about where and how our workloads process data.\n\n*Green Software Foundation alignment: [Carbon efficiency](sustainability-design-principles.md#carbon-efficiency)*\n\n**Recommendation:**\n\n- Use less carbon because the data centers where you deploy the workload are more likely to be powered by renewable and low-carbon energy sources.\n- Consider these potential tradeoffs:\n  - The effort and time it takes to move to a low-carbon region.\n  - Migrating data between data centers may not be carbon efficient.\n  - Consider the cost for new regions, including low-carbon regions, which may be more expensive.\n  - If the workloads are latency sensitive, moving to a lower carbon region may not be an option.\n\n### Process when the carbon intensity is low\n\nSome regions on the planet are more carbon intense than others. Therefore it's essential to consider where we deploy our workloads and combine this with other business requirements.\n\n*Green Software Foundation alignment: [Carbon efficiency](sustainability-design-principles.md#carbon-efficiency), [Carbon awareness](sustainability-design-principles.md#carbon-awareness)*\n\n**Recommendation:**\n\n- Where you have the data available, consider optimizing workloads when knowing that the energy mix comes mostly from renewable energy sources.\n- If your application(s) allow it, consider moving workloads dynamically when the energy conditions change.\n  - For example, running specific workloads at night may be more beneficial when renewable sources are at their peak.\n\n### Choose data centers close to the customer\n\nDeploying cloud workloads to data centers is easy. However, consider the distance from a data center to the customer. Network traversal increases if the data center is a greater distance from the consumer.\n\n*Green Software Foundation alignment: [Energy efficiency](sustainability-design-principles.md#energy-efficiency)*\n\n**Recommendation:**\n\n- Consider deploying to data centers close to the consumer.\n\n### Run batch workloads during low-carbon intensity periods\n\nProactively designing batch processing of workloads can help with scheduling intensive work during low-carbon periods.\n\n*Green Software Foundation alignment: [Carbon awareness](sustainability-design-principles.md#carbon-awareness)*\n\n**Recommendation:**\n\n- Where you have the data available to you, plan your deployments to maximize compute utilization for running [batch workloads](/azure/architecture/data-guide/big-data/batch-processing) during low-carbon intensity periods.\n- Potential tradeoffs may include the effort and time it takes to move to a low-carbon region. Additionally, migrating data between data centers may not be carbon efficient, and the cost for new regions-including low—carbon regions—may be more expensive.\n\n## Modernization\n\nConsider these platform design decisions when choosing how to operate workloads. Leveraging managed services and highly optimized platforms in Azure helps build cloud-native applications that inherently contribute to a better sustainability posture.\n\n### Containerize workloads where applicable\n\nConsider options for containerizing workloads to reduce unnecessary resource allocation and to utilize the deployed resources better.\n\n*Green Software Foundation alignment: [Hardware efficiency](sustainability-design-principles.md#hardware-efficiency)*\n\n**Recommendation:**\n\n- Deploying apps as containers allows for bin packing and getting more out of a VM, ultimately reducing the need for duplication of libraries on the host OS.\n- Removes the overhead of managing an entire VM, and allows deploying more apps per physical machine. Containerization also optimizes server utilization rates and improves service reliability, lowering operational costs. Fewer servers are needed, and the existing servers can be better utilized.\n- Consider these tradeoffs: The benefit of containerization will only realize if the utilization is high. Additionally, provisioning an orchestrator such as [Azure Kubernetes Services](/azure/aks/) (AKS) or [Azure Red Had OpenShift](/azure/openshift/) (ARO) for only a few containers would likely lead to higher emissions overall.\n\n### Evaluate moving to PaaS and serverless workloads\n\nManaged services are highly optimized and operate on more efficient hardware than other options, contributing to a lower carbon impact.\n\n*Green Software Foundation alignment: [Hardware efficiency](sustainability-design-principles.md#hardware-efficiency), [Energy efficiency](sustainability-design-principles.md#energy-efficiency)*\n\n**Recommendation:**\n\n- Build a cloud-native app without managing the infrastructure, using a fully managed and inherently optimized platform. The platform handles scaling, availability, and performance, ultimately optimizing the hardware efficiency.\n- Review design principles for [Platform as a Service (PaaS)](/azure/architecture/guide/design-principles/managed-services) workloads.\n\n### Use Spot VMs where possible\n\nThink about the unused capacity in Azure data centers. Utilizing the otherwise wasted capacity—at significantly reduced prices—the workload contributes to a more sustainable platform design.\n\n*Green Software Foundation alignment: [Hardware efficiency](sustainability-design-principles.md#hardware-efficiency)*\n\n**Recommendation:**\n\n- By utilizing [Spot VMs](/azure/virtual-machines/spot-vms), you take advantage of unused capacity in Azure data centers while getting a significant discount on the VM.\n- Consider the tradeoff: When Azure needs the capacity back, the VMs get evicted. Learn more about the Spot VM [eviction policy](/azure/virtual-machines/spot-vms#eviction-policy).\n\n## Right sizing\n\nEnsuring workloads use all the allocated resources helps deliver a more sustainable workload. Oversized services are a common cause of more carbon emissions.\n\n### Turn off workloads outside of business hours\n\nOperating idle workloads wastes energy and contributes to added carbon emissions.\n\n*Green Software Foundation alignment: [Energy efficiency](sustainability-design-principles.md#energy-efficiency), [Hardware efficiency](sustainability-design-principles.md#hardware-efficiency)*\n\n**Recommendation:**\n\n- Dev and testing workloads should be turned off or downsized when not used. Instead of leaving them running, consider shutting them off outside regular business hours.\n  - Learn more about [starting/stopping VMs during off-hours](/azure/automation/automation-solution-vm-management).\n\n### Utilize auto-scaling and bursting capabilities\n\nIt's not uncommon with oversized compute workloads where much of the capacity is never utilized, ultimately leading to a waste of energy.\n\n*Green Software Foundation alignment: [Hardware efficiency](sustainability-design-principles.md#hardware-efficiency)*\n\n**Recommendation:**\n\n- Review [auto-scaling](/azure/architecture/best-practices/auto-scaling) guidance for Azure workloads.\n- Review the [B-series burstable virtual machine sizes](/azure/virtual-machines/sizes-b-series-burstable).\n- Consider that it may require tuning to prevent unnecessary scaling during short bursts of high demand, as opposed to a static increase in demand.\n- Consider the application architecture as part of scaling considerations. For example, [logical components should scale independently](sustainability-application-design.md#evaluate-moving-monoliths-to-a-microservice-architecture) to match the demand of that component, as opposed to scaling the entire application if only a portion of the components needs scaling.\n\n### Match the scalability needs\n\nConsider the platform and whether it meets the scalability needs of the solution. For example, having provisioned resources with a dedicated allocation may lead to unused or underutilized compute resources.\n\nExamples:\n\n- Provisioning an Azure App Service Environment (ASE) over an App Service plan may lead to having provisioned compute, whether utilized or not.\n- Choosing the Azure API Management Premium tier instead of the consumption tier leads to unused resources if you aren't utilizing it fully.\n\n*Green Software Foundation alignment: [Hardware efficiency](sustainability-design-principles.md#hardware-efficiency)*\n\n**Recommendation:**\n\n- Review the platform design decisions regarding scalability, and ensure the workload utilizes as much of the provisioned resources as possible.\n- Consider this tradeoff: Some services require a higher tier to access certain features and capabilities regardless of resource utilization.\n- Consider and prefer services that allow dynamic tier scaling where possible.\n\n### Evaluate Ampere Altra Arm-based processors for Virtual Machines\n\nThe Arm-based VMs represent a cost-effective and power-efficient option that doesn't compromise on the required performance.\n\n*Green Software Foundation alignment: [Energy efficiency](sustainability-design-principles.md#energy-efficiency)*\n\n**Recommendation:**\n\n- Evaluate if the Ampere Altra Arm-based VMs is a good option for your workloads.\n- Read more about [Azure Virtual Machines with Ampere Altra Arm–based processors](https://azure.microsoft.com/blog/azure-virtual-machines-with-ampere-altra-arm-based-processors-generally-available/) on Azure.\n\n### Delete zombie workloads\n\nConsider discovering unutilized workloads and resources and if there are any orphaned resources in your subscriptions.\n\n*Green Software Foundation alignment: [Hardware efficiency](sustainability-design-principles.md#hardware-efficiency), [Energy efficiency](sustainability-design-principles.md#energy-efficiency)*\n\n**Recommendation:**\n\n- Delete any orphaned workloads or resources if they're no longer necessary.\n\n## Next step\n\nReview the design considerations for deployment and testing.\n\n> [!div class=\"nextstepaction\"]\n> [Deployment and testing](sustainability-testing.md)",
+  "headings": [
+    {
+      "level": 1,
+      "text": "Application platform considerations for sustainable workloads on Azure",
+      "line": 1,
+      "path": [
+        "Application platform considerations for sustainable workloads on Azure"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Platform and service updates",
+      "line": 8,
+      "path": [
+        "Application platform considerations for sustainable workloads on Azure",
+        "Platform and service updates"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Review platform and service updates regularly",
+      "line": 12,
+      "path": [
+        "Application platform considerations for sustainable workloads on Azure",
+        "Platform and service updates",
+        "Review platform and service updates regularly"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Regional differences",
+      "line": 24,
+      "path": [
+        "Application platform considerations for sustainable workloads on Azure",
+        "Regional differences"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Deploy to low-carbon regions",
+      "line": 30,
+      "path": [
+        "Application platform considerations for sustainable workloads on Azure",
+        "Regional differences",
+        "Deploy to low-carbon regions"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Process when the carbon intensity is low",
+      "line": 45,
+      "path": [
+        "Application platform considerations for sustainable workloads on Azure",
+        "Regional differences",
+        "Process when the carbon intensity is low"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Choose data centers close to the customer",
+      "line": 57,
+      "path": [
+        "Application platform considerations for sustainable workloads on Azure",
+        "Regional differences",
+        "Choose data centers close to the customer"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Run batch workloads during low-carbon intensity periods",
+      "line": 67,
+      "path": [
+        "Application platform considerations for sustainable workloads on Azure",
+        "Regional differences",
+        "Run batch workloads during low-carbon intensity periods"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Modernization",
+      "line": 78,
+      "path": [
+        "Application platform considerations for sustainable workloads on Azure",
+        "Modernization"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Containerize workloads where applicable",
+      "line": 82,
+      "path": [
+        "Application platform considerations for sustainable workloads on Azure",
+        "Modernization",
+        "Containerize workloads where applicable"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Evaluate moving to PaaS and serverless workloads",
+      "line": 94,
+      "path": [
+        "Application platform considerations for sustainable workloads on Azure",
+        "Modernization",
+        "Evaluate moving to PaaS and serverless workloads"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Use Spot VMs where possible",
+      "line": 105,
+      "path": [
+        "Application platform considerations for sustainable workloads on Azure",
+        "Modernization",
+        "Use Spot VMs where possible"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Right sizing",
+      "line": 116,
+      "path": [
+        "Application platform considerations for sustainable workloads on Azure",
+        "Right sizing"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Turn off workloads outside of business hours",
+      "line": 120,
+      "path": [
+        "Application platform considerations for sustainable workloads on Azure",
+        "Right sizing",
+        "Turn off workloads outside of business hours"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Utilize auto-scaling and bursting capabilities",
+      "line": 131,
+      "path": [
+        "Application platform considerations for sustainable workloads on Azure",
+        "Right sizing",
+        "Utilize auto-scaling and bursting capabilities"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Match the scalability needs",
+      "line": 144,
+      "path": [
+        "Application platform considerations for sustainable workloads on Azure",
+        "Right sizing",
+        "Match the scalability needs"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Evaluate Ampere Altra Arm-based processors for Virtual Machines",
+      "line": 161,
+      "path": [
+        "Application platform considerations for sustainable workloads on Azure",
+        "Right sizing",
+        "Evaluate Ampere Altra Arm-based processors for Virtual Machines"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Delete zombie workloads",
+      "line": 172,
+      "path": [
+        "Application platform considerations for sustainable workloads on Azure",
+        "Right sizing",
+        "Delete zombie workloads"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Next step",
+      "line": 182,
+      "path": [
+        "Application platform considerations for sustainable workloads on Azure",
+        "Next step"
+      ]
+    }
+  ],
+  "sections": [
+    {
+      "sectionOrder": 1,
+      "headingLevel": 1,
+      "headingText": "Application platform considerations for sustainable workloads on Azure",
+      "headingPath": [
+        "Application platform considerations for sustainable workloads on Azure"
+      ],
+      "markdown": "Designing and building sustainable workloads requires understanding the platform where you're deploying the applications. Review the considerations and recommendations in this section to know how to make better informed platform-related decisions around sustainability.\n\n> [!IMPORTANT]\n> This article is part of the [Azure Well-Architected sustainable workload](index.yml) series. If you aren't familiar with this series, we recommend you start with [what is a sustainable workload?](sustainability-get-started.md#what-is-a-sustainable-workload)",
+      "lineStart": 2,
+      "lineEnd": 7
+    },
+    {
+      "sectionOrder": 2,
+      "headingLevel": 2,
+      "headingText": "Platform and service updates",
+      "headingPath": [
+        "Application platform considerations for sustainable workloads on Azure",
+        "Platform and service updates"
+      ],
+      "markdown": "Keep platform and services up to date to leverage the latest performance improvements and energy optimizations.",
+      "lineStart": 9,
+      "lineEnd": 11
+    },
+    {
+      "sectionOrder": 3,
+      "headingLevel": 3,
+      "headingText": "Review platform and service updates regularly",
+      "headingPath": [
+        "Application platform considerations for sustainable workloads on Azure",
+        "Platform and service updates",
+        "Review platform and service updates regularly"
+      ],
+      "markdown": "Platform updates enable you to use the latest functionality and features to help increase efficiency. Running on outdated software can result in running a suboptimal workload with unnecessary performance issues. New software tends to be more efficient in general.\n\n*Green Software Foundation alignment: [Energy efficiency](sustainability-design-principles.md#energy-efficiency)*\n\n**Recommendation:**\n\n- Upgrade to newer and more efficient services as they become available.\n- Consider backward compatibility and hardware reusability. An upgrade may not be the most efficient solution if the hardware or the OS isn't supported.\n- Make use of [Azure Automation Update Management](/azure/automation/update-management/manage-updates-for-vm) to ensure software updates are deployed to Azure VMs.",
+      "lineStart": 13,
+      "lineEnd": 23
+    },
+    {
+      "sectionOrder": 4,
+      "headingLevel": 2,
+      "headingText": "Regional differences",
+      "headingPath": [
+        "Application platform considerations for sustainable workloads on Azure",
+        "Regional differences"
+      ],
+      "markdown": "The Microsoft Azure data centers are geographically spread across the planet and powered using different energy sources. Making decisions around where to deploy your workloads can significantly impact the emissions your solutions produce.\n\nLearn more about [sustainability from the data center to the cloud with Azure](https://www.microsoft.com/sustainability/azure). See region-specific sustainability information in the [Microsoft data center sustainability fact sheets](https://infrastructuremap.microsoft.com/fact-sheets).",
+      "lineStart": 25,
+      "lineEnd": 29
+    },
+    {
+      "sectionOrder": 5,
+      "headingLevel": 3,
+      "headingText": "Deploy to low-carbon regions",
+      "headingPath": [
+        "Application platform considerations for sustainable workloads on Azure",
+        "Regional differences",
+        "Deploy to low-carbon regions"
+      ],
+      "markdown": "Learn about what Azure regions have a lower carbon footprint than others to make better-informed decisions about where and how our workloads process data.\n\n*Green Software Foundation alignment: [Carbon efficiency](sustainability-design-principles.md#carbon-efficiency)*\n\n**Recommendation:**\n\n- Use less carbon because the data centers where you deploy the workload are more likely to be powered by renewable and low-carbon energy sources.\n- Consider these potential tradeoffs:\n  - The effort and time it takes to move to a low-carbon region.\n  - Migrating data between data centers may not be carbon efficient.\n  - Consider the cost for new regions, including low-carbon regions, which may be more expensive.\n  - If the workloads are latency sensitive, moving to a lower carbon region may not be an option.",
+      "lineStart": 31,
+      "lineEnd": 44
+    },
+    {
+      "sectionOrder": 6,
+      "headingLevel": 3,
+      "headingText": "Process when the carbon intensity is low",
+      "headingPath": [
+        "Application platform considerations for sustainable workloads on Azure",
+        "Regional differences",
+        "Process when the carbon intensity is low"
+      ],
+      "markdown": "Some regions on the planet are more carbon intense than others. Therefore it's essential to consider where we deploy our workloads and combine this with other business requirements.\n\n*Green Software Foundation alignment: [Carbon efficiency](sustainability-design-principles.md#carbon-efficiency), [Carbon awareness](sustainability-design-principles.md#carbon-awareness)*\n\n**Recommendation:**\n\n- Where you have the data available, consider optimizing workloads when knowing that the energy mix comes mostly from renewable energy sources.\n- If your application(s) allow it, consider moving workloads dynamically when the energy conditions change.\n  - For example, running specific workloads at night may be more beneficial when renewable sources are at their peak.",
+      "lineStart": 46,
+      "lineEnd": 56
+    },
+    {
+      "sectionOrder": 7,
+      "headingLevel": 3,
+      "headingText": "Choose data centers close to the customer",
+      "headingPath": [
+        "Application platform considerations for sustainable workloads on Azure",
+        "Regional differences",
+        "Choose data centers close to the customer"
+      ],
+      "markdown": "Deploying cloud workloads to data centers is easy. However, consider the distance from a data center to the customer. Network traversal increases if the data center is a greater distance from the consumer.\n\n*Green Software Foundation alignment: [Energy efficiency](sustainability-design-principles.md#energy-efficiency)*\n\n**Recommendation:**\n\n- Consider deploying to data centers close to the consumer.",
+      "lineStart": 58,
+      "lineEnd": 66
+    },
+    {
+      "sectionOrder": 8,
+      "headingLevel": 3,
+      "headingText": "Run batch workloads during low-carbon intensity periods",
+      "headingPath": [
+        "Application platform considerations for sustainable workloads on Azure",
+        "Regional differences",
+        "Run batch workloads during low-carbon intensity periods"
+      ],
+      "markdown": "Proactively designing batch processing of workloads can help with scheduling intensive work during low-carbon periods.\n\n*Green Software Foundation alignment: [Carbon awareness](sustainability-design-principles.md#carbon-awareness)*\n\n**Recommendation:**\n\n- Where you have the data available to you, plan your deployments to maximize compute utilization for running [batch workloads](/azure/architecture/data-guide/big-data/batch-processing) during low-carbon intensity periods.\n- Potential tradeoffs may include the effort and time it takes to move to a low-carbon region. Additionally, migrating data between data centers may not be carbon efficient, and the cost for new regions-including low—carbon regions—may be more expensive.",
+      "lineStart": 68,
+      "lineEnd": 77
+    },
+    {
+      "sectionOrder": 9,
+      "headingLevel": 2,
+      "headingText": "Modernization",
+      "headingPath": [
+        "Application platform considerations for sustainable workloads on Azure",
+        "Modernization"
+      ],
+      "markdown": "Consider these platform design decisions when choosing how to operate workloads. Leveraging managed services and highly optimized platforms in Azure helps build cloud-native applications that inherently contribute to a better sustainability posture.",
+      "lineStart": 79,
+      "lineEnd": 81
+    },
+    {
+      "sectionOrder": 10,
+      "headingLevel": 3,
+      "headingText": "Containerize workloads where applicable",
+      "headingPath": [
+        "Application platform considerations for sustainable workloads on Azure",
+        "Modernization",
+        "Containerize workloads where applicable"
+      ],
+      "markdown": "Consider options for containerizing workloads to reduce unnecessary resource allocation and to utilize the deployed resources better.\n\n*Green Software Foundation alignment: [Hardware efficiency](sustainability-design-principles.md#hardware-efficiency)*\n\n**Recommendation:**\n\n- Deploying apps as containers allows for bin packing and getting more out of a VM, ultimately reducing the need for duplication of libraries on the host OS.\n- Removes the overhead of managing an entire VM, and allows deploying more apps per physical machine. Containerization also optimizes server utilization rates and improves service reliability, lowering operational costs. Fewer servers are needed, and the existing servers can be better utilized.\n- Consider these tradeoffs: The benefit of containerization will only realize if the utilization is high. Additionally, provisioning an orchestrator such as [Azure Kubernetes Services](/azure/aks/) (AKS) or [Azure Red Had OpenShift](/azure/openshift/) (ARO) for only a few containers would likely lead to higher emissions overall.",
+      "lineStart": 83,
+      "lineEnd": 93
+    },
+    {
+      "sectionOrder": 11,
+      "headingLevel": 3,
+      "headingText": "Evaluate moving to PaaS and serverless workloads",
+      "headingPath": [
+        "Application platform considerations for sustainable workloads on Azure",
+        "Modernization",
+        "Evaluate moving to PaaS and serverless workloads"
+      ],
+      "markdown": "Managed services are highly optimized and operate on more efficient hardware than other options, contributing to a lower carbon impact.\n\n*Green Software Foundation alignment: [Hardware efficiency](sustainability-design-principles.md#hardware-efficiency), [Energy efficiency](sustainability-design-principles.md#energy-efficiency)*\n\n**Recommendation:**\n\n- Build a cloud-native app without managing the infrastructure, using a fully managed and inherently optimized platform. The platform handles scaling, availability, and performance, ultimately optimizing the hardware efficiency.\n- Review design principles for [Platform as a Service (PaaS)](/azure/architecture/guide/design-principles/managed-services) workloads.",
+      "lineStart": 95,
+      "lineEnd": 104
+    },
+    {
+      "sectionOrder": 12,
+      "headingLevel": 3,
+      "headingText": "Use Spot VMs where possible",
+      "headingPath": [
+        "Application platform considerations for sustainable workloads on Azure",
+        "Modernization",
+        "Use Spot VMs where possible"
+      ],
+      "markdown": "Think about the unused capacity in Azure data centers. Utilizing the otherwise wasted capacity—at significantly reduced prices—the workload contributes to a more sustainable platform design.\n\n*Green Software Foundation alignment: [Hardware efficiency](sustainability-design-principles.md#hardware-efficiency)*\n\n**Recommendation:**\n\n- By utilizing [Spot VMs](/azure/virtual-machines/spot-vms), you take advantage of unused capacity in Azure data centers while getting a significant discount on the VM.\n- Consider the tradeoff: When Azure needs the capacity back, the VMs get evicted. Learn more about the Spot VM [eviction policy](/azure/virtual-machines/spot-vms#eviction-policy).",
+      "lineStart": 106,
+      "lineEnd": 115
+    },
+    {
+      "sectionOrder": 13,
+      "headingLevel": 2,
+      "headingText": "Right sizing",
+      "headingPath": [
+        "Application platform considerations for sustainable workloads on Azure",
+        "Right sizing"
+      ],
+      "markdown": "Ensuring workloads use all the allocated resources helps deliver a more sustainable workload. Oversized services are a common cause of more carbon emissions.",
+      "lineStart": 117,
+      "lineEnd": 119
+    },
+    {
+      "sectionOrder": 14,
+      "headingLevel": 3,
+      "headingText": "Turn off workloads outside of business hours",
+      "headingPath": [
+        "Application platform considerations for sustainable workloads on Azure",
+        "Right sizing",
+        "Turn off workloads outside of business hours"
+      ],
+      "markdown": "Operating idle workloads wastes energy and contributes to added carbon emissions.\n\n*Green Software Foundation alignment: [Energy efficiency](sustainability-design-principles.md#energy-efficiency), [Hardware efficiency](sustainability-design-principles.md#hardware-efficiency)*\n\n**Recommendation:**\n\n- Dev and testing workloads should be turned off or downsized when not used. Instead of leaving them running, consider shutting them off outside regular business hours.\n  - Learn more about [starting/stopping VMs during off-hours](/azure/automation/automation-solution-vm-management).",
+      "lineStart": 121,
+      "lineEnd": 130
+    },
+    {
+      "sectionOrder": 15,
+      "headingLevel": 3,
+      "headingText": "Utilize auto-scaling and bursting capabilities",
+      "headingPath": [
+        "Application platform considerations for sustainable workloads on Azure",
+        "Right sizing",
+        "Utilize auto-scaling and bursting capabilities"
+      ],
+      "markdown": "It's not uncommon with oversized compute workloads where much of the capacity is never utilized, ultimately leading to a waste of energy.\n\n*Green Software Foundation alignment: [Hardware efficiency](sustainability-design-principles.md#hardware-efficiency)*\n\n**Recommendation:**\n\n- Review [auto-scaling](/azure/architecture/best-practices/auto-scaling) guidance for Azure workloads.\n- Review the [B-series burstable virtual machine sizes](/azure/virtual-machines/sizes-b-series-burstable).\n- Consider that it may require tuning to prevent unnecessary scaling during short bursts of high demand, as opposed to a static increase in demand.\n- Consider the application architecture as part of scaling considerations. For example, [logical components should scale independently](sustainability-application-design.md#evaluate-moving-monoliths-to-a-microservice-architecture) to match the demand of that component, as opposed to scaling the entire application if only a portion of the components needs scaling.",
+      "lineStart": 132,
+      "lineEnd": 143
+    },
+    {
+      "sectionOrder": 16,
+      "headingLevel": 3,
+      "headingText": "Match the scalability needs",
+      "headingPath": [
+        "Application platform considerations for sustainable workloads on Azure",
+        "Right sizing",
+        "Match the scalability needs"
+      ],
+      "markdown": "Consider the platform and whether it meets the scalability needs of the solution. For example, having provisioned resources with a dedicated allocation may lead to unused or underutilized compute resources.\n\nExamples:\n\n- Provisioning an Azure App Service Environment (ASE) over an App Service plan may lead to having provisioned compute, whether utilized or not.\n- Choosing the Azure API Management Premium tier instead of the consumption tier leads to unused resources if you aren't utilizing it fully.\n\n*Green Software Foundation alignment: [Hardware efficiency](sustainability-design-principles.md#hardware-efficiency)*\n\n**Recommendation:**\n\n- Review the platform design decisions regarding scalability, and ensure the workload utilizes as much of the provisioned resources as possible.\n- Consider this tradeoff: Some services require a higher tier to access certain features and capabilities regardless of resource utilization.\n- Consider and prefer services that allow dynamic tier scaling where possible.",
+      "lineStart": 145,
+      "lineEnd": 160
+    },
+    {
+      "sectionOrder": 17,
+      "headingLevel": 3,
+      "headingText": "Evaluate Ampere Altra Arm-based processors for Virtual Machines",
+      "headingPath": [
+        "Application platform considerations for sustainable workloads on Azure",
+        "Right sizing",
+        "Evaluate Ampere Altra Arm-based processors for Virtual Machines"
+      ],
+      "markdown": "The Arm-based VMs represent a cost-effective and power-efficient option that doesn't compromise on the required performance.\n\n*Green Software Foundation alignment: [Energy efficiency](sustainability-design-principles.md#energy-efficiency)*\n\n**Recommendation:**\n\n- Evaluate if the Ampere Altra Arm-based VMs is a good option for your workloads.\n- Read more about [Azure Virtual Machines with Ampere Altra Arm–based processors](https://azure.microsoft.com/blog/azure-virtual-machines-with-ampere-altra-arm-based-processors-generally-available/) on Azure.",
+      "lineStart": 162,
+      "lineEnd": 171
+    },
+    {
+      "sectionOrder": 18,
+      "headingLevel": 3,
+      "headingText": "Delete zombie workloads",
+      "headingPath": [
+        "Application platform considerations for sustainable workloads on Azure",
+        "Right sizing",
+        "Delete zombie workloads"
+      ],
+      "markdown": "Consider discovering unutilized workloads and resources and if there are any orphaned resources in your subscriptions.\n\n*Green Software Foundation alignment: [Hardware efficiency](sustainability-design-principles.md#hardware-efficiency), [Energy efficiency](sustainability-design-principles.md#energy-efficiency)*\n\n**Recommendation:**\n\n- Delete any orphaned workloads or resources if they're no longer necessary.",
+      "lineStart": 173,
+      "lineEnd": 181
+    },
+    {
+      "sectionOrder": 19,
+      "headingLevel": 2,
+      "headingText": "Next step",
+      "headingPath": [
+        "Application platform considerations for sustainable workloads on Azure",
+        "Next step"
+      ],
+      "markdown": "Review the design considerations for deployment and testing.\n\n> [!div class=\"nextstepaction\"]\n> [Deployment and testing](sustainability-testing.md)",
+      "lineStart": 183,
+      "lineEnd": 187
+    }
+  ],
+  "localLinks": [
+    "index.yml",
+    "sustainability-application-design.md",
+    "sustainability-design-principles.md",
+    "sustainability-get-started.md",
+    "sustainability-testing.md"
+  ],
+  "lastModified": "2026-03-17T16:22:13.823Z"
+}

@@ -1,0 +1,319 @@
+{
+  "source": {
+    "absolutePath": "C:\\Users\\EricL\\source\\repos\\Well-Architected-Vibe-Coding\\well-architected-vibe-coding\\well-architected\\sustainability\\sustainability-operational-procedures.md",
+    "repoRelativePath": "well-architected/sustainability/sustainability-operational-procedures.md",
+    "docsRelativePath": "sustainability/sustainability-operational-procedures.md"
+  },
+  "frontMatter": {
+    "title": "Operational procedure considerations for sustainable workloads on Azure",
+    "description": "This design area explores operational procedures for sustainable workloads on Azure.",
+    "author": "lnyswonger",
+    "ms.author": "lnyswonger",
+    "ms.topic": "concept-article",
+    "ms.date": "10/12/2022"
+  },
+  "title": "Operational procedure considerations for sustainable workloads on Azure",
+  "rawBody": "# Operational procedure considerations for sustainable workloads on Azure\n\nThe discipline of green software and its implementation within cloud efficiency patterns is relatively recent, and no specific and universal standards have been agreed upon yet.\n\nThe [Green Software Foundation](https://greensoftware.foundation) works on creating and standardizing ways of making green software. However, it's vital that everyone considers this aspect in their daily work and that when designing, planning, and deploying Azure workloads, we consider the best practices that are already available and prepare our environment to incorporate new standards when ready.\n\nThis document will guide you through setting up an environment for measuring and continuously improving your Azure workloads' cost and carbon efficiency.\n\n> [!IMPORTANT]\n> This article is part of the [Azure Well-Architected sustainable workload](index.yml) series. If you aren't familiar with this series, we recommend you start with [what is a sustainable workload?](sustainability-get-started.md#what-is-a-sustainable-workload)\n\n## Measure and track carbon impact\n\nTo optimize or improve something, we first must decide what we want to change and how to measure it.\nIn this section, you'll learn about best practices and guidelines to measure and track the sustainability impact of your workloads.  \n\n### The Emissions Impact Dashboard\n\nAn essential aspect of working toward any sustainability goal is tracking and quantifying progress. If you can't track and measure the impact, you'll never be sure if the efforts are worthwhile. The Emissions Impact Dashboard is a Power BI dashboard that will give you a measure of the carbon impact of all your services and resource groups in your Azure subscription(s).\n\nThe Emissions Impact Dashboards produce insights in various forms, and allows for a wide range of reporting capabilities:\n\n- Series of visual representations in the dashboard itself.\n- Snapshot export to Excel, Power Point and PDF.\n- [Continuous export to Microsoft Sustainability Manager](/industry/sustainability/import-data-connectors#emissions-impact-dashboard-connector) and Dataverse.\n\n*Green Software Foundation alignment: [Measuring sustainability](sustainability-design-principles.md#measuring-sustainability)*\n\n**Recommendation:**\n\n- Use the [Emissions Impact Dashboard](https://appsource.microsoft.com/en-us/product/power-bi/coi-sustainability.emissions_impact_dashboard) to record current and future environmental impact.\n- Identify and track metrics to quantify the achievement of technical, business, and sustainability outcomes.\n- Rely on tooling to help measure the impact, and record any changes made to your workload.\n- Learn more about the Sustainability and Dataverse API access in the Microsoft Learn module [Access Microsoft Sustainability Manager data](/learn/modules/access-cloud-sustainability/).\n\n### Define emissions target\n\nThe [Software Carbon Intensity (SCI)](sustainability-design-methodology.md#measure-and-track-carbon-impact) is the score you're looking for to measure the carbon impact of your application(s) by adding the scalability and cost metrics to any carbon emissions measurement.\n\nIf you aren't using the Emissions Impact Dashboard, there are still ways of building carbon proxies that allow you to measure your application's impact on emissions.\n\nIt can be a challenge to build carbon proxies for existing applications. Therefore, we recommend planning for efficiency targets during the design phase of every workload. When adding new workloads to Azure, you should consider planning for costs and emissions that will add to your existing footprint. The main goal should always be not to emit carbon, so ideally, you should immediately find an optimization pattern to make up for the new emissions.\n\nThe next step is to define your target emissions, either for a single application or for your entire set of cloud workloads. The target can also include cost constraints, making it even easier to build upon since shrinking costs will give you some budget to optimize emissions. Once you know your target, the cloud efficiency continuous optimization process can start.\n\n*Green Software Foundation alignment: [Measuring sustainability](sustainability-design-principles.md#measuring-sustainability)*\n\n**Recommendations:**\n\n- Calculate your new workload's minimum cost and carbon emissions (where applicable).\n- Track progress with Service Level Objectives (SLO), Service Level Agreements (SLA), or other performance metrics.\n- Provide optimization patterns to accommodate the new application to your overall cloud efficiency score.\n\n### Identify the metrics and set improvement goals\n\nOnce you've defined your target, you'll need to identify a few metrics that you can measure to prove your changes had a positive effect on efficiency.\n\nThe metrics can, as an example, be derived from these categories:\n\n- Application performance metrics.\n- Cost optimization metrics.\n- Carbon emissions metrics (or proxies).\n\n*Green Software Foundation alignment: [Measuring sustainability](sustainability-design-principles.md#measuring-sustainability)*\n\n**Recommendation:**\n\n- Discuss with every application owner since the impact of optimizing can vary and might affect many users.\n- Make sure that any plan that impacts performance is agreed upon and communicated clearly to the app users so that they know that a lower performance may be necessary for the greater good of fewer carbon emissions.\n- If you've connected the Microsoft Emissions Impact Dashboard (EID) to your Microsoft Sustainability Manager (MSM) instance, you can use the [Goal Tracking feature in MSM](/industry/sustainability/reports-scorecards-goals) to define and track your goals by linking them to live data from EID.\n\n### Cost optimization as a proxy\n\nSometimes the ease of deploying cloud resources makes us forget what is useful and what is simply a waste of resources, money, and carbon. The message here's that experiments in the cloud can sometimes be costly in terms of overall cloud efficiency, not purely cost, while bringing no innovation.\n\nUse cloud resources wisely, considering any extra workload's carbon footprint.\n\nWhen defining your SCI, you can use carbon proxies to compensate for the lack of specific standards and measurements. One of the safest and most potent proxies for carbon emissions are your application(s) cost. Reducing unnecessary spending lowers the number of excessive emissions from deployed workloads as you're using fewer cloud resources.\n\nLinking cost performance metrics to carbon efficiency can be a sound strategy because you won't necessarily need to compromise on your defined workload Key Performance Indicators (KPI) by optimizing cost and reducing carbon emissions. However, you might decide that you're prepared to sacrifice a KPI towards your carbon goal, which can also be part of your strategy.\n\n*Green Software Foundation alignment: [Measuring sustainability](sustainability-design-principles.md#measuring-sustainability)*\n\n**Recommendation:**\n\n- Review the concept of [using a proxy solution to measure emissions](sustainability-design-methodology.md#use-a-proxy-solution-to-measure-emissions).\n- Leverage the guidance in the Azure Well-Architected Framework [Cost Optimization pillar](../cost-optimization/index.yml).\n\n### Defining policies\n\nAzure Policy is a powerful tool that can make some decisions for your cloud efficiency easier to implement. Consider defining one of more policies to keep your Azure virtual data center continuously optimized.\n\n*Green Software Foundation alignment: [Climate commitments](sustainability-design-principles.md#climate-commitments)*\n\n**Recommendation:**\n\n- Incorporate and use the [cost policies](/azure/cloud-adoption-framework/govern/cost-management/policy-statements) available in the Cloud Adoption Framework.\n- Leverage [built-in policies](/azure/governance/policy/samples/built-in-policies) relevant to cost in Azure Policy, as they're technically closely tied to sustainability.\n- Customize Azure Policy policies according to green software principles. For example, create a new [Azure Policy initiative](/azure/governance/policy/overview#initiative-definition) for \"Sustainability\".\n  - Consider this tradeoff: Enforcement of new policies must not impact any unplanned operational performance metric.\n\n## Community and knowledge sharing\n\nTeams needs to be constantly aware of new advancements in sustainability, so they leverage these learnings when implementing workloads.\n\nBuilding a community around cloud efficiency and green software is a good starting point to foster cloud efficiency awareness and culture across your organization.\n\n### Create a sustainability community\n\nCreating a sustainability community doesn't have to be a tedious task. Start with a small team that will invest some time in learning the sustainability status and the relevant information on green software. This team can also join the [Green Software Foundation](https://greensoftware.foundation/) and be part of the teams that create rules, standards, and more.\n\nThe Core cloud Efficiency team will have to be up to date with all the innovative tools and principles that drive your Azure workload's cost and carbon footprint.\n\n*Green Software Foundation alignment: [Climate commitments](sustainability-design-principles.md#climate-commitments)*\n\n**Recommendation:**\n\n- Define policies and targets, and communicate their efforts and goals with the rest of the organization.\n- Learn more by reading [how do I start a sustainability community in my organization?](https://devblogs.microsoft.com/sustainable-software/how-do-i-start-a-sustainability-community/)\n\n### Plan for learning\n\nMake time for the core team to learn about advancements in sustainable operations. Meanwhile, ensure that your entire organization starts thinking about green software and how to contribute to the sustainability picture with their daily choices.\n\n*Green Software Foundation alignment: [Climate commitments](sustainability-design-principles.md#climate-commitments)*\n\n**Recommendation:**\n\nReview these popular training and learning resources:\n\n- Use the self-paced learning module to [Learn about The Principles of Sustainable Software Engineering](/learn/modules/sustainable-software-engineering-overview/).\n- Use the self-paced learning path to [Get started with Microsoft Cloud for Sustainability](/learn/paths/get-started-sustainability/).\n- Find more resources in the [Microsoft Sustainability Learning Center](https://www.microsoft.com/sustainability/learning-center).\n\n### Share best practices across teams\n\nDriving adoption of sustainability efforts requires input and work from across the organization.\n\n*Green Software Foundation alignment: [Climate commitments](sustainability-design-principles.md#climate-commitments)*\n\n**Recommendation:**\n\n- Let team members share their workload and company-specific best practices for sustainable operations.\n- Set up a shared repository of best practices and guidance that have been tested in your environment with tangible results.\n- Consider frequent knowledge-sharing sessions or internal webinars for getting everyone up to speed.\n\n### Plan for incentives\n\nThe quickest way of enforcing policies and creating the right culture is by setting incentives for improving the environmental sustainability of a workload by either putting sustainability as a core KPI or adding it to the overall efficiency of the applications.\n\nMany software partners already include green software in their best practices. Therefore, ensure that your efficiency targets are defined and accepted when discussing the workload.\n\n*Green Software Foundation alignment: [Climate commitments](sustainability-design-principles.md#climate-commitments)*\n\n**Recommendations:**\n\n- Promote carbon-aware applications. Reward application owners if the measured carbon footprint meets the KPI.\n- Introduce gamification by creating a friendly culture of sustainability competition—track records to promote green workloads, SCI scoring, and any optimization or improvement on the score.\n- Consider introducing loyalty programs, where participants get incentives when they can prove the cloud efficiency of their applications.\n- Explore the opportunity to introduce badges like \"Carbon Aware\" and \"Carbon Optimized\".\n\n## Next step\n\nReview the design considerations for networking and connectivity.\n\n> [!div class=\"nextstepaction\"]\n> [Networking and connectivity](sustainability-networking.md)",
+  "headings": [
+    {
+      "level": 1,
+      "text": "Operational procedure considerations for sustainable workloads on Azure",
+      "line": 1,
+      "path": [
+        "Operational procedure considerations for sustainable workloads on Azure"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Measure and track carbon impact",
+      "line": 12,
+      "path": [
+        "Operational procedure considerations for sustainable workloads on Azure",
+        "Measure and track carbon impact"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "The Emissions Impact Dashboard",
+      "line": 17,
+      "path": [
+        "Operational procedure considerations for sustainable workloads on Azure",
+        "Measure and track carbon impact",
+        "The Emissions Impact Dashboard"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Define emissions target",
+      "line": 36,
+      "path": [
+        "Operational procedure considerations for sustainable workloads on Azure",
+        "Measure and track carbon impact",
+        "Define emissions target"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Identify the metrics and set improvement goals",
+      "line": 54,
+      "path": [
+        "Operational procedure considerations for sustainable workloads on Azure",
+        "Measure and track carbon impact",
+        "Identify the metrics and set improvement goals"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Cost optimization as a proxy",
+      "line": 72,
+      "path": [
+        "Operational procedure considerations for sustainable workloads on Azure",
+        "Measure and track carbon impact",
+        "Cost optimization as a proxy"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Defining policies",
+      "line": 89,
+      "path": [
+        "Operational procedure considerations for sustainable workloads on Azure",
+        "Measure and track carbon impact",
+        "Defining policies"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Community and knowledge sharing",
+      "line": 102,
+      "path": [
+        "Operational procedure considerations for sustainable workloads on Azure",
+        "Community and knowledge sharing"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Create a sustainability community",
+      "line": 108,
+      "path": [
+        "Operational procedure considerations for sustainable workloads on Azure",
+        "Community and knowledge sharing",
+        "Create a sustainability community"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Plan for learning",
+      "line": 121,
+      "path": [
+        "Operational procedure considerations for sustainable workloads on Azure",
+        "Community and knowledge sharing",
+        "Plan for learning"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Share best practices across teams",
+      "line": 135,
+      "path": [
+        "Operational procedure considerations for sustainable workloads on Azure",
+        "Community and knowledge sharing",
+        "Share best practices across teams"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Plan for incentives",
+      "line": 147,
+      "path": [
+        "Operational procedure considerations for sustainable workloads on Azure",
+        "Community and knowledge sharing",
+        "Plan for incentives"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Next step",
+      "line": 162,
+      "path": [
+        "Operational procedure considerations for sustainable workloads on Azure",
+        "Next step"
+      ]
+    }
+  ],
+  "sections": [
+    {
+      "sectionOrder": 1,
+      "headingLevel": 1,
+      "headingText": "Operational procedure considerations for sustainable workloads on Azure",
+      "headingPath": [
+        "Operational procedure considerations for sustainable workloads on Azure"
+      ],
+      "markdown": "The discipline of green software and its implementation within cloud efficiency patterns is relatively recent, and no specific and universal standards have been agreed upon yet.\n\nThe [Green Software Foundation](https://greensoftware.foundation) works on creating and standardizing ways of making green software. However, it's vital that everyone considers this aspect in their daily work and that when designing, planning, and deploying Azure workloads, we consider the best practices that are already available and prepare our environment to incorporate new standards when ready.\n\nThis document will guide you through setting up an environment for measuring and continuously improving your Azure workloads' cost and carbon efficiency.\n\n> [!IMPORTANT]\n> This article is part of the [Azure Well-Architected sustainable workload](index.yml) series. If you aren't familiar with this series, we recommend you start with [what is a sustainable workload?](sustainability-get-started.md#what-is-a-sustainable-workload)",
+      "lineStart": 2,
+      "lineEnd": 11
+    },
+    {
+      "sectionOrder": 2,
+      "headingLevel": 2,
+      "headingText": "Measure and track carbon impact",
+      "headingPath": [
+        "Operational procedure considerations for sustainable workloads on Azure",
+        "Measure and track carbon impact"
+      ],
+      "markdown": "To optimize or improve something, we first must decide what we want to change and how to measure it.\nIn this section, you'll learn about best practices and guidelines to measure and track the sustainability impact of your workloads.",
+      "lineStart": 13,
+      "lineEnd": 16
+    },
+    {
+      "sectionOrder": 3,
+      "headingLevel": 3,
+      "headingText": "The Emissions Impact Dashboard",
+      "headingPath": [
+        "Operational procedure considerations for sustainable workloads on Azure",
+        "Measure and track carbon impact",
+        "The Emissions Impact Dashboard"
+      ],
+      "markdown": "An essential aspect of working toward any sustainability goal is tracking and quantifying progress. If you can't track and measure the impact, you'll never be sure if the efforts are worthwhile. The Emissions Impact Dashboard is a Power BI dashboard that will give you a measure of the carbon impact of all your services and resource groups in your Azure subscription(s).\n\nThe Emissions Impact Dashboards produce insights in various forms, and allows for a wide range of reporting capabilities:\n\n- Series of visual representations in the dashboard itself.\n- Snapshot export to Excel, Power Point and PDF.\n- [Continuous export to Microsoft Sustainability Manager](/industry/sustainability/import-data-connectors#emissions-impact-dashboard-connector) and Dataverse.\n\n*Green Software Foundation alignment: [Measuring sustainability](sustainability-design-principles.md#measuring-sustainability)*\n\n**Recommendation:**\n\n- Use the [Emissions Impact Dashboard](https://appsource.microsoft.com/en-us/product/power-bi/coi-sustainability.emissions_impact_dashboard) to record current and future environmental impact.\n- Identify and track metrics to quantify the achievement of technical, business, and sustainability outcomes.\n- Rely on tooling to help measure the impact, and record any changes made to your workload.\n- Learn more about the Sustainability and Dataverse API access in the Microsoft Learn module [Access Microsoft Sustainability Manager data](/learn/modules/access-cloud-sustainability/).",
+      "lineStart": 18,
+      "lineEnd": 35
+    },
+    {
+      "sectionOrder": 4,
+      "headingLevel": 3,
+      "headingText": "Define emissions target",
+      "headingPath": [
+        "Operational procedure considerations for sustainable workloads on Azure",
+        "Measure and track carbon impact",
+        "Define emissions target"
+      ],
+      "markdown": "The [Software Carbon Intensity (SCI)](sustainability-design-methodology.md#measure-and-track-carbon-impact) is the score you're looking for to measure the carbon impact of your application(s) by adding the scalability and cost metrics to any carbon emissions measurement.\n\nIf you aren't using the Emissions Impact Dashboard, there are still ways of building carbon proxies that allow you to measure your application's impact on emissions.\n\nIt can be a challenge to build carbon proxies for existing applications. Therefore, we recommend planning for efficiency targets during the design phase of every workload. When adding new workloads to Azure, you should consider planning for costs and emissions that will add to your existing footprint. The main goal should always be not to emit carbon, so ideally, you should immediately find an optimization pattern to make up for the new emissions.\n\nThe next step is to define your target emissions, either for a single application or for your entire set of cloud workloads. The target can also include cost constraints, making it even easier to build upon since shrinking costs will give you some budget to optimize emissions. Once you know your target, the cloud efficiency continuous optimization process can start.\n\n*Green Software Foundation alignment: [Measuring sustainability](sustainability-design-principles.md#measuring-sustainability)*\n\n**Recommendations:**\n\n- Calculate your new workload's minimum cost and carbon emissions (where applicable).\n- Track progress with Service Level Objectives (SLO), Service Level Agreements (SLA), or other performance metrics.\n- Provide optimization patterns to accommodate the new application to your overall cloud efficiency score.",
+      "lineStart": 37,
+      "lineEnd": 53
+    },
+    {
+      "sectionOrder": 5,
+      "headingLevel": 3,
+      "headingText": "Identify the metrics and set improvement goals",
+      "headingPath": [
+        "Operational procedure considerations for sustainable workloads on Azure",
+        "Measure and track carbon impact",
+        "Identify the metrics and set improvement goals"
+      ],
+      "markdown": "Once you've defined your target, you'll need to identify a few metrics that you can measure to prove your changes had a positive effect on efficiency.\n\nThe metrics can, as an example, be derived from these categories:\n\n- Application performance metrics.\n- Cost optimization metrics.\n- Carbon emissions metrics (or proxies).\n\n*Green Software Foundation alignment: [Measuring sustainability](sustainability-design-principles.md#measuring-sustainability)*\n\n**Recommendation:**\n\n- Discuss with every application owner since the impact of optimizing can vary and might affect many users.\n- Make sure that any plan that impacts performance is agreed upon and communicated clearly to the app users so that they know that a lower performance may be necessary for the greater good of fewer carbon emissions.\n- If you've connected the Microsoft Emissions Impact Dashboard (EID) to your Microsoft Sustainability Manager (MSM) instance, you can use the [Goal Tracking feature in MSM](/industry/sustainability/reports-scorecards-goals) to define and track your goals by linking them to live data from EID.",
+      "lineStart": 55,
+      "lineEnd": 71
+    },
+    {
+      "sectionOrder": 6,
+      "headingLevel": 3,
+      "headingText": "Cost optimization as a proxy",
+      "headingPath": [
+        "Operational procedure considerations for sustainable workloads on Azure",
+        "Measure and track carbon impact",
+        "Cost optimization as a proxy"
+      ],
+      "markdown": "Sometimes the ease of deploying cloud resources makes us forget what is useful and what is simply a waste of resources, money, and carbon. The message here's that experiments in the cloud can sometimes be costly in terms of overall cloud efficiency, not purely cost, while bringing no innovation.\n\nUse cloud resources wisely, considering any extra workload's carbon footprint.\n\nWhen defining your SCI, you can use carbon proxies to compensate for the lack of specific standards and measurements. One of the safest and most potent proxies for carbon emissions are your application(s) cost. Reducing unnecessary spending lowers the number of excessive emissions from deployed workloads as you're using fewer cloud resources.\n\nLinking cost performance metrics to carbon efficiency can be a sound strategy because you won't necessarily need to compromise on your defined workload Key Performance Indicators (KPI) by optimizing cost and reducing carbon emissions. However, you might decide that you're prepared to sacrifice a KPI towards your carbon goal, which can also be part of your strategy.\n\n*Green Software Foundation alignment: [Measuring sustainability](sustainability-design-principles.md#measuring-sustainability)*\n\n**Recommendation:**\n\n- Review the concept of [using a proxy solution to measure emissions](sustainability-design-methodology.md#use-a-proxy-solution-to-measure-emissions).\n- Leverage the guidance in the Azure Well-Architected Framework [Cost Optimization pillar](../cost-optimization/index.yml).",
+      "lineStart": 73,
+      "lineEnd": 88
+    },
+    {
+      "sectionOrder": 7,
+      "headingLevel": 3,
+      "headingText": "Defining policies",
+      "headingPath": [
+        "Operational procedure considerations for sustainable workloads on Azure",
+        "Measure and track carbon impact",
+        "Defining policies"
+      ],
+      "markdown": "Azure Policy is a powerful tool that can make some decisions for your cloud efficiency easier to implement. Consider defining one of more policies to keep your Azure virtual data center continuously optimized.\n\n*Green Software Foundation alignment: [Climate commitments](sustainability-design-principles.md#climate-commitments)*\n\n**Recommendation:**\n\n- Incorporate and use the [cost policies](/azure/cloud-adoption-framework/govern/cost-management/policy-statements) available in the Cloud Adoption Framework.\n- Leverage [built-in policies](/azure/governance/policy/samples/built-in-policies) relevant to cost in Azure Policy, as they're technically closely tied to sustainability.\n- Customize Azure Policy policies according to green software principles. For example, create a new [Azure Policy initiative](/azure/governance/policy/overview#initiative-definition) for \"Sustainability\".\n  - Consider this tradeoff: Enforcement of new policies must not impact any unplanned operational performance metric.",
+      "lineStart": 90,
+      "lineEnd": 101
+    },
+    {
+      "sectionOrder": 8,
+      "headingLevel": 2,
+      "headingText": "Community and knowledge sharing",
+      "headingPath": [
+        "Operational procedure considerations for sustainable workloads on Azure",
+        "Community and knowledge sharing"
+      ],
+      "markdown": "Teams needs to be constantly aware of new advancements in sustainability, so they leverage these learnings when implementing workloads.\n\nBuilding a community around cloud efficiency and green software is a good starting point to foster cloud efficiency awareness and culture across your organization.",
+      "lineStart": 103,
+      "lineEnd": 107
+    },
+    {
+      "sectionOrder": 9,
+      "headingLevel": 3,
+      "headingText": "Create a sustainability community",
+      "headingPath": [
+        "Operational procedure considerations for sustainable workloads on Azure",
+        "Community and knowledge sharing",
+        "Create a sustainability community"
+      ],
+      "markdown": "Creating a sustainability community doesn't have to be a tedious task. Start with a small team that will invest some time in learning the sustainability status and the relevant information on green software. This team can also join the [Green Software Foundation](https://greensoftware.foundation/) and be part of the teams that create rules, standards, and more.\n\nThe Core cloud Efficiency team will have to be up to date with all the innovative tools and principles that drive your Azure workload's cost and carbon footprint.\n\n*Green Software Foundation alignment: [Climate commitments](sustainability-design-principles.md#climate-commitments)*\n\n**Recommendation:**\n\n- Define policies and targets, and communicate their efforts and goals with the rest of the organization.\n- Learn more by reading [how do I start a sustainability community in my organization?](https://devblogs.microsoft.com/sustainable-software/how-do-i-start-a-sustainability-community/)",
+      "lineStart": 109,
+      "lineEnd": 120
+    },
+    {
+      "sectionOrder": 10,
+      "headingLevel": 3,
+      "headingText": "Plan for learning",
+      "headingPath": [
+        "Operational procedure considerations for sustainable workloads on Azure",
+        "Community and knowledge sharing",
+        "Plan for learning"
+      ],
+      "markdown": "Make time for the core team to learn about advancements in sustainable operations. Meanwhile, ensure that your entire organization starts thinking about green software and how to contribute to the sustainability picture with their daily choices.\n\n*Green Software Foundation alignment: [Climate commitments](sustainability-design-principles.md#climate-commitments)*\n\n**Recommendation:**\n\nReview these popular training and learning resources:\n\n- Use the self-paced learning module to [Learn about The Principles of Sustainable Software Engineering](/learn/modules/sustainable-software-engineering-overview/).\n- Use the self-paced learning path to [Get started with Microsoft Cloud for Sustainability](/learn/paths/get-started-sustainability/).\n- Find more resources in the [Microsoft Sustainability Learning Center](https://www.microsoft.com/sustainability/learning-center).",
+      "lineStart": 122,
+      "lineEnd": 134
+    },
+    {
+      "sectionOrder": 11,
+      "headingLevel": 3,
+      "headingText": "Share best practices across teams",
+      "headingPath": [
+        "Operational procedure considerations for sustainable workloads on Azure",
+        "Community and knowledge sharing",
+        "Share best practices across teams"
+      ],
+      "markdown": "Driving adoption of sustainability efforts requires input and work from across the organization.\n\n*Green Software Foundation alignment: [Climate commitments](sustainability-design-principles.md#climate-commitments)*\n\n**Recommendation:**\n\n- Let team members share their workload and company-specific best practices for sustainable operations.\n- Set up a shared repository of best practices and guidance that have been tested in your environment with tangible results.\n- Consider frequent knowledge-sharing sessions or internal webinars for getting everyone up to speed.",
+      "lineStart": 136,
+      "lineEnd": 146
+    },
+    {
+      "sectionOrder": 12,
+      "headingLevel": 3,
+      "headingText": "Plan for incentives",
+      "headingPath": [
+        "Operational procedure considerations for sustainable workloads on Azure",
+        "Community and knowledge sharing",
+        "Plan for incentives"
+      ],
+      "markdown": "The quickest way of enforcing policies and creating the right culture is by setting incentives for improving the environmental sustainability of a workload by either putting sustainability as a core KPI or adding it to the overall efficiency of the applications.\n\nMany software partners already include green software in their best practices. Therefore, ensure that your efficiency targets are defined and accepted when discussing the workload.\n\n*Green Software Foundation alignment: [Climate commitments](sustainability-design-principles.md#climate-commitments)*\n\n**Recommendations:**\n\n- Promote carbon-aware applications. Reward application owners if the measured carbon footprint meets the KPI.\n- Introduce gamification by creating a friendly culture of sustainability competition—track records to promote green workloads, SCI scoring, and any optimization or improvement on the score.\n- Consider introducing loyalty programs, where participants get incentives when they can prove the cloud efficiency of their applications.\n- Explore the opportunity to introduce badges like \"Carbon Aware\" and \"Carbon Optimized\".",
+      "lineStart": 148,
+      "lineEnd": 161
+    },
+    {
+      "sectionOrder": 13,
+      "headingLevel": 2,
+      "headingText": "Next step",
+      "headingPath": [
+        "Operational procedure considerations for sustainable workloads on Azure",
+        "Next step"
+      ],
+      "markdown": "Review the design considerations for networking and connectivity.\n\n> [!div class=\"nextstepaction\"]\n> [Networking and connectivity](sustainability-networking.md)",
+      "lineStart": 163,
+      "lineEnd": 167
+    }
+  ],
+  "localLinks": [
+    "../cost-optimization/index.yml",
+    "index.yml",
+    "sustainability-design-methodology.md",
+    "sustainability-design-principles.md",
+    "sustainability-get-started.md",
+    "sustainability-networking.md"
+  ],
+  "lastModified": "2026-03-17T16:22:13.825Z"
+}

@@ -1,0 +1,224 @@
+{
+  "source": {
+    "absolutePath": "C:\\Users\\EricL\\source\\repos\\Well-Architected-Vibe-Coding\\well-architected-vibe-coding\\well-architected\\azure-vmware\\overview.md",
+    "repoRelativePath": "well-architected/azure-vmware/overview.md",
+    "docsRelativePath": "azure-vmware/overview.md"
+  },
+  "frontMatter": {
+    "title": "Azure VMware Solution workloads",
+    "description": "See general guidance and resources for using Azure VMware Solution to run an on-premises VMware technology stack on Azure.",
+    "author": "sblair01",
+    "ms.author": "prwilk",
+    "ms.date": "08/15/2023",
+    "ms.topic": "concept-article",
+    "ms.service": "azure-waf",
+    "ms.subservice": "waf-workload-azure-vmware"
+  },
+  "title": "Azure VMware Solution workloads",
+  "rawBody": "# Azure VMware Solution workloads\n\nThis guidance is intended for **workload owners**, **technical stakeholders**, and **business stakeholders**. Specifically, this guidance is appropriate for people who are integral in harnessing, developing, and upholding applications throughout the Azure VMware Solution private cloud lifecycle. This documentation provides prescriptive guidance and best practices for key design areas with a technical foundation in Azure Well-Architected Framework pillars. The recommendations center on Azure VMware Solution, a managed service for migrating on-premises VMware vSphere workloads to Azure.\n\nYou can use this workload documentation as your go-to resource for optimizing the lifecycle of particular applications in [Azure VMware Solution](/azure/azure-vmware/introduction).\n\n## What is an Azure VMware Solution workload?\n\nVMware is a leading provider of virtualization and cloud computing software and services. VMware collaborates with Microsoft Azure to offer Azure VMware Solution. This solution seamlessly integrates the VMware vSphere hypervisor with Azure dedicated BareMetal infrastructure. When you use this integration, you can take advantage of Azure native resources like virtual machines (VMs), storage disks, and network components. Azure VMware Solution allows workloads to migrate to Azure with minimal environmental modifications.\n\n:::image type=\"content\" source=\"./images/running-vmware-natively-on-azure.png\" alt-text=\"Architecture diagram that shows how Azure VMware Solution connects an on-premises system with VMware components and Azure services.\" border=\"false\":::\n\nWhen you use this unique hybrid environment, you can retain certain VMware vSphere workloads on-premises. But you also have the flexibility of extending to the cloud, where you can benefit from the following advantages:\n\n- Infrastructure that's suited for cloud-bursting scenarios\n- Azure native integrations\n- Disaster recovery locations\n\nAzure VMware Solution offers a consistent VMware solution infrastructure within Azure. When you employ this service, your team can use familiar VMware solution processes, skills, and tools like VMware vSphere, VMware HCX, and VMware NSX-T Data Center. You can also streamline the management of your cloud-based workloads.\n\n## The Well-Architected Framework approach\n\nA well-architected workload is structured to meet specific performance, reliability, security, and cost optimization objectives. By following architectural principles and guidelines specific to Azure VMware Solution, you can enhance end-user experiences and deliver consistency and reliability. This guidance addresses one Azure VMware Solution workload at a time. This approach optimizes specific applications in Azure VMware Solution, such as three-tier apps or virtual desktops.\n\n:::image type=\"content\" source=\"./images/well-architected-azure-vmware-solution-workload.png\" alt-text=\"Architecture diagram that shows how Azure VMware Solution uses tiers and stretched networks.\" border=\"false\":::\n\nThe Well-Architected Framework pillars also aim to involve modularity, separation of roles, and a way to improve operational productivity. This approach results in application workloads that avoid unnecessary complexities and unforeseen costs.\n\nConsider making your Azure VMware Solution application well-architected for the following reasons:\n\n- **Reliability and availability**. When you take advantage of fault tolerance mechanisms and redundancy measures, your application is more resilient to failure.\n- **Cost optimization**. Using Azure resources such as VMs helps you effectively manage expenses without compromising performance.\n- **Streamlined operations and simplified management**. You perform updates, troubleshooting, and monitoring operations more efficiently using streamlined processes.\n- **Future-proofing and integration with Azure services**. When your application is well architected, it can adapt to future changes and take advantage of new Azure and Azure VMware Solution offerings.\n\nIf you don't apply these principles to your Azure VMware Solution application, you might encounter various operational, performance, and security challenges. These challenges can significantly impede your application's success and limit your organization's ability to take full advantage of Azure VMware Solution benefits.\n\nAzure VMware Solution operates as a hybrid solution. As a result, an inadequately designed application can lead to intricate management challenges and complications in integrating with other Azure services. Poorly architected applications can suffer from many disadvantages:\n\n- Performance degradation\n- Inadequate scalability\n- Heightened security vulnerabilities\n- Escalated costs from inefficient resource utilization\n\nThese shortcomings can prevent your business from fully harnessing the opportunities Azure VMware Solution and Azure offer. They can also hinder support for critical initiatives.\n\n### Choose a migration approach\n\nCommon approaches for migrating or modernizing to the cloud are rehosting, refactoring, rearchitecting, and rebuilding. Each approach requires careful consideration.\n\nThe [modernization approach](https://azure.microsoft.com/resources/cloud-computing-dictionary/what-is-application-modernization), or updating current apps and data to a cloud-first model, can meet business needs at reduced costs. Consider modernizing based on the purpose of the application, life expectancy, supportability, cost, and service-level agreements (SLAs).\n\nYou can run multiple workloads in Azure VMware Solution. But it's important to assess whether there are Azure native offerings that are a better fit or more cost-effective than instantiating another Azure VMware Solution node.\n\nFor help with determining potential placement for migrated servers, take the [Azure migrate assessment for AVS](https://portal.azure.com/#view/Microsoft_Azure_Migrate/AmhResourceMenuBlade/~/serverGoal) tool. \n> [!NOTE]\n> Azure VMware Solution (AVS) assessment can only be created for virtual machines in the VMware vSphere environment. More information on the Azure Migrate assessment for AVS is detailed [here](/azure/migrate/how-to-create-azure-vmware-solution-assessment)\n> \n## What are the key design areas?\n\nAzure VMware Solution uses VMware and Microsoft propriety services. The following design areas focus on the technical decision points for infrastructure components that are part of a workload and their interactivity with the shared services.\n\n|Design area|Summary|\n|---|---|\n|[Application platform](./application-platform.md)| Optimize the performance, security, and manageability of application platforms that run on Azure VMware Solution. Efficiently manage VM sizing, application deployment, orchestration, connectivity, and access controls.|\n|[Infrastructure](./infrastructure.md)|Manage the underlying infrastructure of a workload. Examples include right-sizing VMs, designing for fault tolerance, defining traffic flow, and applying security best practices such as encryption and access controls.|\n|[Monitoring](./monitoring.md)|Gain insights into application behavior by monitoring resource utilization, health, availability, and capacity expansion. Use visualization tools to track trends and anomalies.|\n|[Networking](./networking.md)|Enable seamless connectivity and communication between resources. Efficiently allocate IP addresses to avoid conflicts. Isolate workloads for enhanced security and performance. Design for redundancy and high availability.|\n|[Operations](./operations.md)|Ensure that day-to-day management and maintenance of your Azure VMware Solution environment remains secure, efficient, and reliable over time.|\n|[Security](./security.md)|Implement security measures that help protect your workload from threats.|\n\n## Example workloads\n\nMany organizations run business applications, enterprise software, and legacy applications in on-premises VMware vSphere environments. When you use Azure VMware Solution to bring these applications to the cloud, you benefit from Azure's global infrastructure and service offerings. Examples of cloud applications include traditional three-tier web-based applications and virtual desktops.\n\nFor more information, see the following reference architectures:\n\n- [About Azure VMware Solution](/azure/azure-vmware/introduction)\n- [Deploy Horizon on Azure VMware Solution](/azure/azure-vmware/azure-vmware-solution-horizon)\n\n## Azure landing zones\n\nIn an enterprise setup, your workload shares platform resources that central teams manage. The design areas can provide points of integration with those shared resources. For a description of that integration, see [Integrate an Azure VMware Solution workload with Azure landing zones](landing-zone-integration.md).\n\nExamples that demonstrate architectural best practices back up this guidance. Use the following implementations as a starting point for your workload:\n\n- [Baseline architecture for Azure VMware Solution](/azure/cloud-adoption-framework/scenarios/azure-vmware/example-architectures). This article focuses on the networking design area. It includes various scenarios, such as handling internet ingress and egress traffic and handling traffic to an on-premises datacenter.\n- [Azure VMware Solution landing zone accelerator](/azure/cloud-adoption-framework/scenarios/azure-vmware/enterprise-scale-landing-zone).\n\nAn open-source collection of Azure Resource Manager and Bicep templates is available. It represents the strategic design path and target technical state for an Azure VMware Solution deployment.\n\n## Assessment\n\nUse the assessment tool to evaluate your design choices.\n\n> [!div class=\"nextstepaction\"]\n> [Assessment](./assessment.md)\n\n## Next steps\n\nStart by reviewing design principles.\n\n> [!div class=\"nextstepaction\"]\n> [Design principles](./design-principles.md)",
+  "headings": [
+    {
+      "level": 1,
+      "text": "Azure VMware Solution workloads",
+      "line": 1,
+      "path": [
+        "Azure VMware Solution workloads"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "What is an Azure VMware Solution workload?",
+      "line": 7,
+      "path": [
+        "Azure VMware Solution workloads",
+        "What is an Azure VMware Solution workload?"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "The Well-Architected Framework approach",
+      "line": 21,
+      "path": [
+        "Azure VMware Solution workloads",
+        "The Well-Architected Framework approach"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Choose a migration approach",
+      "line": 47,
+      "path": [
+        "Azure VMware Solution workloads",
+        "The Well-Architected Framework approach",
+        "Choose a migration approach"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "What are the key design areas?",
+      "line": 59,
+      "path": [
+        "Azure VMware Solution workloads",
+        "What are the key design areas?"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Example workloads",
+      "line": 72,
+      "path": [
+        "Azure VMware Solution workloads",
+        "Example workloads"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Azure landing zones",
+      "line": 81,
+      "path": [
+        "Azure VMware Solution workloads",
+        "Azure landing zones"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Assessment",
+      "line": 92,
+      "path": [
+        "Azure VMware Solution workloads",
+        "Assessment"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Next steps",
+      "line": 99,
+      "path": [
+        "Azure VMware Solution workloads",
+        "Next steps"
+      ]
+    }
+  ],
+  "sections": [
+    {
+      "sectionOrder": 1,
+      "headingLevel": 1,
+      "headingText": "Azure VMware Solution workloads",
+      "headingPath": [
+        "Azure VMware Solution workloads"
+      ],
+      "markdown": "This guidance is intended for **workload owners**, **technical stakeholders**, and **business stakeholders**. Specifically, this guidance is appropriate for people who are integral in harnessing, developing, and upholding applications throughout the Azure VMware Solution private cloud lifecycle. This documentation provides prescriptive guidance and best practices for key design areas with a technical foundation in Azure Well-Architected Framework pillars. The recommendations center on Azure VMware Solution, a managed service for migrating on-premises VMware vSphere workloads to Azure.\n\nYou can use this workload documentation as your go-to resource for optimizing the lifecycle of particular applications in [Azure VMware Solution](/azure/azure-vmware/introduction).",
+      "lineStart": 2,
+      "lineEnd": 6
+    },
+    {
+      "sectionOrder": 2,
+      "headingLevel": 2,
+      "headingText": "What is an Azure VMware Solution workload?",
+      "headingPath": [
+        "Azure VMware Solution workloads",
+        "What is an Azure VMware Solution workload?"
+      ],
+      "markdown": "VMware is a leading provider of virtualization and cloud computing software and services. VMware collaborates with Microsoft Azure to offer Azure VMware Solution. This solution seamlessly integrates the VMware vSphere hypervisor with Azure dedicated BareMetal infrastructure. When you use this integration, you can take advantage of Azure native resources like virtual machines (VMs), storage disks, and network components. Azure VMware Solution allows workloads to migrate to Azure with minimal environmental modifications.\n\n:::image type=\"content\" source=\"./images/running-vmware-natively-on-azure.png\" alt-text=\"Architecture diagram that shows how Azure VMware Solution connects an on-premises system with VMware components and Azure services.\" border=\"false\":::\n\nWhen you use this unique hybrid environment, you can retain certain VMware vSphere workloads on-premises. But you also have the flexibility of extending to the cloud, where you can benefit from the following advantages:\n\n- Infrastructure that's suited for cloud-bursting scenarios\n- Azure native integrations\n- Disaster recovery locations\n\nAzure VMware Solution offers a consistent VMware solution infrastructure within Azure. When you employ this service, your team can use familiar VMware solution processes, skills, and tools like VMware vSphere, VMware HCX, and VMware NSX-T Data Center. You can also streamline the management of your cloud-based workloads.",
+      "lineStart": 8,
+      "lineEnd": 20
+    },
+    {
+      "sectionOrder": 3,
+      "headingLevel": 2,
+      "headingText": "The Well-Architected Framework approach",
+      "headingPath": [
+        "Azure VMware Solution workloads",
+        "The Well-Architected Framework approach"
+      ],
+      "markdown": "A well-architected workload is structured to meet specific performance, reliability, security, and cost optimization objectives. By following architectural principles and guidelines specific to Azure VMware Solution, you can enhance end-user experiences and deliver consistency and reliability. This guidance addresses one Azure VMware Solution workload at a time. This approach optimizes specific applications in Azure VMware Solution, such as three-tier apps or virtual desktops.\n\n:::image type=\"content\" source=\"./images/well-architected-azure-vmware-solution-workload.png\" alt-text=\"Architecture diagram that shows how Azure VMware Solution uses tiers and stretched networks.\" border=\"false\":::\n\nThe Well-Architected Framework pillars also aim to involve modularity, separation of roles, and a way to improve operational productivity. This approach results in application workloads that avoid unnecessary complexities and unforeseen costs.\n\nConsider making your Azure VMware Solution application well-architected for the following reasons:\n\n- **Reliability and availability**. When you take advantage of fault tolerance mechanisms and redundancy measures, your application is more resilient to failure.\n- **Cost optimization**. Using Azure resources such as VMs helps you effectively manage expenses without compromising performance.\n- **Streamlined operations and simplified management**. You perform updates, troubleshooting, and monitoring operations more efficiently using streamlined processes.\n- **Future-proofing and integration with Azure services**. When your application is well architected, it can adapt to future changes and take advantage of new Azure and Azure VMware Solution offerings.\n\nIf you don't apply these principles to your Azure VMware Solution application, you might encounter various operational, performance, and security challenges. These challenges can significantly impede your application's success and limit your organization's ability to take full advantage of Azure VMware Solution benefits.\n\nAzure VMware Solution operates as a hybrid solution. As a result, an inadequately designed application can lead to intricate management challenges and complications in integrating with other Azure services. Poorly architected applications can suffer from many disadvantages:\n\n- Performance degradation\n- Inadequate scalability\n- Heightened security vulnerabilities\n- Escalated costs from inefficient resource utilization\n\nThese shortcomings can prevent your business from fully harnessing the opportunities Azure VMware Solution and Azure offer. They can also hinder support for critical initiatives.",
+      "lineStart": 22,
+      "lineEnd": 46
+    },
+    {
+      "sectionOrder": 4,
+      "headingLevel": 3,
+      "headingText": "Choose a migration approach",
+      "headingPath": [
+        "Azure VMware Solution workloads",
+        "The Well-Architected Framework approach",
+        "Choose a migration approach"
+      ],
+      "markdown": "Common approaches for migrating or modernizing to the cloud are rehosting, refactoring, rearchitecting, and rebuilding. Each approach requires careful consideration.\n\nThe [modernization approach](https://azure.microsoft.com/resources/cloud-computing-dictionary/what-is-application-modernization), or updating current apps and data to a cloud-first model, can meet business needs at reduced costs. Consider modernizing based on the purpose of the application, life expectancy, supportability, cost, and service-level agreements (SLAs).\n\nYou can run multiple workloads in Azure VMware Solution. But it's important to assess whether there are Azure native offerings that are a better fit or more cost-effective than instantiating another Azure VMware Solution node.\n\nFor help with determining potential placement for migrated servers, take the [Azure migrate assessment for AVS](https://portal.azure.com/#view/Microsoft_Azure_Migrate/AmhResourceMenuBlade/~/serverGoal) tool. \n> [!NOTE]\n> Azure VMware Solution (AVS) assessment can only be created for virtual machines in the VMware vSphere environment. More information on the Azure Migrate assessment for AVS is detailed [here](/azure/migrate/how-to-create-azure-vmware-solution-assessment)\n>",
+      "lineStart": 48,
+      "lineEnd": 58
+    },
+    {
+      "sectionOrder": 5,
+      "headingLevel": 2,
+      "headingText": "What are the key design areas?",
+      "headingPath": [
+        "Azure VMware Solution workloads",
+        "What are the key design areas?"
+      ],
+      "markdown": "Azure VMware Solution uses VMware and Microsoft propriety services. The following design areas focus on the technical decision points for infrastructure components that are part of a workload and their interactivity with the shared services.\n\n|Design area|Summary|\n|---|---|\n|[Application platform](./application-platform.md)| Optimize the performance, security, and manageability of application platforms that run on Azure VMware Solution. Efficiently manage VM sizing, application deployment, orchestration, connectivity, and access controls.|\n|[Infrastructure](./infrastructure.md)|Manage the underlying infrastructure of a workload. Examples include right-sizing VMs, designing for fault tolerance, defining traffic flow, and applying security best practices such as encryption and access controls.|\n|[Monitoring](./monitoring.md)|Gain insights into application behavior by monitoring resource utilization, health, availability, and capacity expansion. Use visualization tools to track trends and anomalies.|\n|[Networking](./networking.md)|Enable seamless connectivity and communication between resources. Efficiently allocate IP addresses to avoid conflicts. Isolate workloads for enhanced security and performance. Design for redundancy and high availability.|\n|[Operations](./operations.md)|Ensure that day-to-day management and maintenance of your Azure VMware Solution environment remains secure, efficient, and reliable over time.|\n|[Security](./security.md)|Implement security measures that help protect your workload from threats.|",
+      "lineStart": 60,
+      "lineEnd": 71
+    },
+    {
+      "sectionOrder": 6,
+      "headingLevel": 2,
+      "headingText": "Example workloads",
+      "headingPath": [
+        "Azure VMware Solution workloads",
+        "Example workloads"
+      ],
+      "markdown": "Many organizations run business applications, enterprise software, and legacy applications in on-premises VMware vSphere environments. When you use Azure VMware Solution to bring these applications to the cloud, you benefit from Azure's global infrastructure and service offerings. Examples of cloud applications include traditional three-tier web-based applications and virtual desktops.\n\nFor more information, see the following reference architectures:\n\n- [About Azure VMware Solution](/azure/azure-vmware/introduction)\n- [Deploy Horizon on Azure VMware Solution](/azure/azure-vmware/azure-vmware-solution-horizon)",
+      "lineStart": 73,
+      "lineEnd": 80
+    },
+    {
+      "sectionOrder": 7,
+      "headingLevel": 2,
+      "headingText": "Azure landing zones",
+      "headingPath": [
+        "Azure VMware Solution workloads",
+        "Azure landing zones"
+      ],
+      "markdown": "In an enterprise setup, your workload shares platform resources that central teams manage. The design areas can provide points of integration with those shared resources. For a description of that integration, see [Integrate an Azure VMware Solution workload with Azure landing zones](landing-zone-integration.md).\n\nExamples that demonstrate architectural best practices back up this guidance. Use the following implementations as a starting point for your workload:\n\n- [Baseline architecture for Azure VMware Solution](/azure/cloud-adoption-framework/scenarios/azure-vmware/example-architectures). This article focuses on the networking design area. It includes various scenarios, such as handling internet ingress and egress traffic and handling traffic to an on-premises datacenter.\n- [Azure VMware Solution landing zone accelerator](/azure/cloud-adoption-framework/scenarios/azure-vmware/enterprise-scale-landing-zone).\n\nAn open-source collection of Azure Resource Manager and Bicep templates is available. It represents the strategic design path and target technical state for an Azure VMware Solution deployment.",
+      "lineStart": 82,
+      "lineEnd": 91
+    },
+    {
+      "sectionOrder": 8,
+      "headingLevel": 2,
+      "headingText": "Assessment",
+      "headingPath": [
+        "Azure VMware Solution workloads",
+        "Assessment"
+      ],
+      "markdown": "Use the assessment tool to evaluate your design choices.\n\n> [!div class=\"nextstepaction\"]\n> [Assessment](./assessment.md)",
+      "lineStart": 93,
+      "lineEnd": 98
+    },
+    {
+      "sectionOrder": 9,
+      "headingLevel": 2,
+      "headingText": "Next steps",
+      "headingPath": [
+        "Azure VMware Solution workloads",
+        "Next steps"
+      ],
+      "markdown": "Start by reviewing design principles.\n\n> [!div class=\"nextstepaction\"]\n> [Design principles](./design-principles.md)",
+      "lineStart": 100,
+      "lineEnd": 104
+    }
+  ],
+  "localLinks": [
+    "./application-platform.md",
+    "./assessment.md",
+    "./design-principles.md",
+    "./infrastructure.md",
+    "./monitoring.md",
+    "./networking.md",
+    "./operations.md",
+    "./security.md",
+    "landing-zone-integration.md"
+  ],
+  "lastModified": "2026-03-17T16:22:13.451Z"
+}

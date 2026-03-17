@@ -1,0 +1,218 @@
+{
+  "source": {
+    "absolutePath": "C:\\Users\\EricL\\source\\repos\\Well-Architected-Vibe-Coding\\well-architected-vibe-coding\\well-architected\\sustainability\\sustainability-design-principles.md",
+    "repoRelativePath": "well-architected/sustainability/sustainability-design-principles.md",
+    "docsRelativePath": "sustainability/sustainability-design-principles.md"
+  },
+  "frontMatter": {
+    "title": "Design principles for sustainability workloads on Azure",
+    "description": "Understand the design principles for building a sustainable application on Microsoft Azure.",
+    "author": "lnyswonger",
+    "ms.author": "lnyswonger",
+    "ms.date": "10/12/2022",
+    "ms.topic": "concept-article"
+  },
+  "title": "Design principles for sustainability workloads on Azure",
+  "rawBody": "# Design principles of a sustainable workload\n\nThe sustainability design methodology provides a framework to record, report, and reduce or optimize the environmental impact of your workloads.\n\nTo achieve an increase in carbon efficiency, consider how your workload, directly and indirectly, can reduce carbon emissions through:\n\n- Using less physical and virtual resources\n- Using less energy\n- Using energy and resources more intelligently\n- Supporting older devices\n\nIt's important to effectively record, report, and reduce carbon emissions through actionable insights.\n\n- Gain transparency into your current carbon impact\n- Estimate savings\n- Take action to accelerate progress\n\nThese critical design principles for sustainability resonate and extend the quality pillars of the Azure Well-Architected Framework—[Reliability](../reliability/index.yml), [Security](../security/index.yml), [Cost Optimization](../cost-optimization/index.yml), [Operational Excellence](../operational-excellence/index.yml), and [Performance Efficiency](../performance-efficiency/index.yml).\n\n## Principles of green software\n\nMicrosoft is actively working toward sustainability targets, and empowers every organization to help reduce emissions and improve our environmental health. The Azure Well-Architected Framework workload for sustainability aligns with the [Green Software Principles](https://learn.greensoftware.foundation/practitioner/introduction/) from the [Green Software Foundation](https://greensoftware.foundation).\n\nThe principles of green software are the starting point to understand the [SCI model](sustainability-design-methodology.md#measure-and-track-carbon-impact) and how this will be included in our framework.\n\n## Carbon efficiency\n\n**Principle:** Emit the least amount of carbon possible.\n\nThe application or software must emit the least amount of carbon possible. A carbon efficient cloud application is one that is optimized, and the starting point is the cost – streamlining the application infrastructure and cost will ensure that no unnecessary resources are wasted in the cloud to run the software. But this isn't enough, as you might have cost-optimized your application but still waste tons of resources that emit carbon for no reason.\n\n- Read more about the [Carbon Efficiency principle](https://learn.greensoftware.foundation/practitioner/carbon-efficiency) from the Green Software Foundation.\n\n## Energy efficiency\n\n**Principle:** Use the least amount of energy possible.\n\nThe goal of this principle is that you build applications that are energy-efficient. This is a common pattern for mobile applications, since they must rely on a battery powered device and are optimizing its consumption. It's less common, however, for desktop or web applications, since until now, developers have never been asked to optimize the electricity consumption of their software.\n\n- Read more about the [Energy Efficiency principle](https://learn.greensoftware.foundation/practitioner/energy-efficiency) from the Green Software Foundation\n\n## Carbon awareness\n\n**Principle:** Do more when the electricity is cleaner and do less when the electricity is dirtier.\n\nWe need to make the application aware of how much carbon it's emitting. This way, we can react to specific conditions of energy supply using demand shifting and demand shaping techniques:\n\n|Technique|Description|\n|---|---|\nDemand shifting|Demand shifting means moving the workloads and resources to regions or data centers, or a time in the data center where the energy supply is high and the demand is lower and can be met by renewable energy. Delaying running apps to a time when there's less demand should result in lower carbon intensity.\n|Demand shaping|Demand shaping means changing the application's behavior and appearance to match the energy supply in real-time. A good practice is to build an eco-version of the app and keep it as a benchmark for demand shaping and carbon optimization.|\n\n- Read more about the [Carbon Awareness principle](https://learn.greensoftware.foundation/practitioner/carbon-awareness) from the Green Software Foundation.\n\n## Hardware efficiency\n\n**Principle:** Use the least amount of embodied carbon possible.\n\nEmbodied carbon is the carbon that was emitted to build a device. Therefore, a sustainable application will make sure older devices are supported and will maximize the efficiency of each device.  The goal is to build hardware-efficient applications.\n\nConsider the tradeoff that older devices can have power inefficiencies, and may not always be suitable.\n\n- Read more about the [Hardware Efficiency principle](https://learn.greensoftware.foundation/practitioner/hardware-efficiency) from the Green Software Foundation.\n\n## Measuring sustainability\n\n**Principle:** What you can't measure, you can't improve.\n\nMeasuring carbon emissions of a cloud application is a complex task, as it involves the whole ecosystem of the software: from the cloud infrastructure (where we have the emissions dashboards to help us out), to the network path that is crossed, to the edge technology and user devices. With the SCI, we aren't targeting a discrete measurement of carbon emissions, but a score that will change over time and with our optimization techniques.\n\n- Read more about the [Measurement](https://learn.greensoftware.foundation/practitioner/measurement) from the Green Software Foundation.\n\n## Climate commitments\n\n**Principle:** Understand the exact mechanism of reduction.\n\nMany corporations and groups have made commitments to the climate. They actively work toward new sustainability goals with a primary objective to remove, reduce and prevent carbon emissions.\n\nThere are several options for reducing the carbon footprint of any organization or entity. However, and aligned with the goal of the Green Software Foundation, our main direction should always be to avoid emitting carbon in the first place. This is what we call Abatement, or Carbon Elimination.\n\nOnce we've pursued this goal, there will still be emissions that can't be avoided. All the remaining carbon reduction methodologies will help us do so, offsetting (either compensating or neutralizing carbon).\n\nYour company's strategy can be a mix of all the possible methodologies and, depending on the final result, can reach a Net Zero target when carbon emissions are eliminated where possible and the residual emissions compensated.\n\nThe [SCI equation](sustainability-design-methodology.md#measure-and-track-carbon-impact) aims to eliminate emissions, which should always be the primary goal of a sustainable workload, and the score can only be reduced with abatement.\n\n- Read more about the [Climate Commitments](https://learn.greensoftware.foundation/practitioner/climate-commitments) from the Green Software Foundation.\n\n## Next steps\n\nReview the considerations for application design.\n\n> [!div class=\"nextstepaction\"]\n> [Application design](sustainability-application-design.md)",
+  "headings": [
+    {
+      "level": 1,
+      "text": "Design principles of a sustainable workload",
+      "line": 1,
+      "path": [
+        "Design principles of a sustainable workload"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Principles of green software",
+      "line": 20,
+      "path": [
+        "Design principles of a sustainable workload",
+        "Principles of green software"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Carbon efficiency",
+      "line": 26,
+      "path": [
+        "Design principles of a sustainable workload",
+        "Carbon efficiency"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Energy efficiency",
+      "line": 34,
+      "path": [
+        "Design principles of a sustainable workload",
+        "Energy efficiency"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Carbon awareness",
+      "line": 42,
+      "path": [
+        "Design principles of a sustainable workload",
+        "Carbon awareness"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Hardware efficiency",
+      "line": 55,
+      "path": [
+        "Design principles of a sustainable workload",
+        "Hardware efficiency"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Measuring sustainability",
+      "line": 65,
+      "path": [
+        "Design principles of a sustainable workload",
+        "Measuring sustainability"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Climate commitments",
+      "line": 73,
+      "path": [
+        "Design principles of a sustainable workload",
+        "Climate commitments"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Next steps",
+      "line": 89,
+      "path": [
+        "Design principles of a sustainable workload",
+        "Next steps"
+      ]
+    }
+  ],
+  "sections": [
+    {
+      "sectionOrder": 1,
+      "headingLevel": 1,
+      "headingText": "Design principles of a sustainable workload",
+      "headingPath": [
+        "Design principles of a sustainable workload"
+      ],
+      "markdown": "The sustainability design methodology provides a framework to record, report, and reduce or optimize the environmental impact of your workloads.\n\nTo achieve an increase in carbon efficiency, consider how your workload, directly and indirectly, can reduce carbon emissions through:\n\n- Using less physical and virtual resources\n- Using less energy\n- Using energy and resources more intelligently\n- Supporting older devices\n\nIt's important to effectively record, report, and reduce carbon emissions through actionable insights.\n\n- Gain transparency into your current carbon impact\n- Estimate savings\n- Take action to accelerate progress\n\nThese critical design principles for sustainability resonate and extend the quality pillars of the Azure Well-Architected Framework—[Reliability](../reliability/index.yml), [Security](../security/index.yml), [Cost Optimization](../cost-optimization/index.yml), [Operational Excellence](../operational-excellence/index.yml), and [Performance Efficiency](../performance-efficiency/index.yml).",
+      "lineStart": 2,
+      "lineEnd": 19
+    },
+    {
+      "sectionOrder": 2,
+      "headingLevel": 2,
+      "headingText": "Principles of green software",
+      "headingPath": [
+        "Design principles of a sustainable workload",
+        "Principles of green software"
+      ],
+      "markdown": "Microsoft is actively working toward sustainability targets, and empowers every organization to help reduce emissions and improve our environmental health. The Azure Well-Architected Framework workload for sustainability aligns with the [Green Software Principles](https://learn.greensoftware.foundation/practitioner/introduction/) from the [Green Software Foundation](https://greensoftware.foundation).\n\nThe principles of green software are the starting point to understand the [SCI model](sustainability-design-methodology.md#measure-and-track-carbon-impact) and how this will be included in our framework.",
+      "lineStart": 21,
+      "lineEnd": 25
+    },
+    {
+      "sectionOrder": 3,
+      "headingLevel": 2,
+      "headingText": "Carbon efficiency",
+      "headingPath": [
+        "Design principles of a sustainable workload",
+        "Carbon efficiency"
+      ],
+      "markdown": "**Principle:** Emit the least amount of carbon possible.\n\nThe application or software must emit the least amount of carbon possible. A carbon efficient cloud application is one that is optimized, and the starting point is the cost – streamlining the application infrastructure and cost will ensure that no unnecessary resources are wasted in the cloud to run the software. But this isn't enough, as you might have cost-optimized your application but still waste tons of resources that emit carbon for no reason.\n\n- Read more about the [Carbon Efficiency principle](https://learn.greensoftware.foundation/practitioner/carbon-efficiency) from the Green Software Foundation.",
+      "lineStart": 27,
+      "lineEnd": 33
+    },
+    {
+      "sectionOrder": 4,
+      "headingLevel": 2,
+      "headingText": "Energy efficiency",
+      "headingPath": [
+        "Design principles of a sustainable workload",
+        "Energy efficiency"
+      ],
+      "markdown": "**Principle:** Use the least amount of energy possible.\n\nThe goal of this principle is that you build applications that are energy-efficient. This is a common pattern for mobile applications, since they must rely on a battery powered device and are optimizing its consumption. It's less common, however, for desktop or web applications, since until now, developers have never been asked to optimize the electricity consumption of their software.\n\n- Read more about the [Energy Efficiency principle](https://learn.greensoftware.foundation/practitioner/energy-efficiency) from the Green Software Foundation",
+      "lineStart": 35,
+      "lineEnd": 41
+    },
+    {
+      "sectionOrder": 5,
+      "headingLevel": 2,
+      "headingText": "Carbon awareness",
+      "headingPath": [
+        "Design principles of a sustainable workload",
+        "Carbon awareness"
+      ],
+      "markdown": "**Principle:** Do more when the electricity is cleaner and do less when the electricity is dirtier.\n\nWe need to make the application aware of how much carbon it's emitting. This way, we can react to specific conditions of energy supply using demand shifting and demand shaping techniques:\n\n|Technique|Description|\n|---|---|\nDemand shifting|Demand shifting means moving the workloads and resources to regions or data centers, or a time in the data center where the energy supply is high and the demand is lower and can be met by renewable energy. Delaying running apps to a time when there's less demand should result in lower carbon intensity.\n|Demand shaping|Demand shaping means changing the application's behavior and appearance to match the energy supply in real-time. A good practice is to build an eco-version of the app and keep it as a benchmark for demand shaping and carbon optimization.|\n\n- Read more about the [Carbon Awareness principle](https://learn.greensoftware.foundation/practitioner/carbon-awareness) from the Green Software Foundation.",
+      "lineStart": 43,
+      "lineEnd": 54
+    },
+    {
+      "sectionOrder": 6,
+      "headingLevel": 2,
+      "headingText": "Hardware efficiency",
+      "headingPath": [
+        "Design principles of a sustainable workload",
+        "Hardware efficiency"
+      ],
+      "markdown": "**Principle:** Use the least amount of embodied carbon possible.\n\nEmbodied carbon is the carbon that was emitted to build a device. Therefore, a sustainable application will make sure older devices are supported and will maximize the efficiency of each device.  The goal is to build hardware-efficient applications.\n\nConsider the tradeoff that older devices can have power inefficiencies, and may not always be suitable.\n\n- Read more about the [Hardware Efficiency principle](https://learn.greensoftware.foundation/practitioner/hardware-efficiency) from the Green Software Foundation.",
+      "lineStart": 56,
+      "lineEnd": 64
+    },
+    {
+      "sectionOrder": 7,
+      "headingLevel": 2,
+      "headingText": "Measuring sustainability",
+      "headingPath": [
+        "Design principles of a sustainable workload",
+        "Measuring sustainability"
+      ],
+      "markdown": "**Principle:** What you can't measure, you can't improve.\n\nMeasuring carbon emissions of a cloud application is a complex task, as it involves the whole ecosystem of the software: from the cloud infrastructure (where we have the emissions dashboards to help us out), to the network path that is crossed, to the edge technology and user devices. With the SCI, we aren't targeting a discrete measurement of carbon emissions, but a score that will change over time and with our optimization techniques.\n\n- Read more about the [Measurement](https://learn.greensoftware.foundation/practitioner/measurement) from the Green Software Foundation.",
+      "lineStart": 66,
+      "lineEnd": 72
+    },
+    {
+      "sectionOrder": 8,
+      "headingLevel": 2,
+      "headingText": "Climate commitments",
+      "headingPath": [
+        "Design principles of a sustainable workload",
+        "Climate commitments"
+      ],
+      "markdown": "**Principle:** Understand the exact mechanism of reduction.\n\nMany corporations and groups have made commitments to the climate. They actively work toward new sustainability goals with a primary objective to remove, reduce and prevent carbon emissions.\n\nThere are several options for reducing the carbon footprint of any organization or entity. However, and aligned with the goal of the Green Software Foundation, our main direction should always be to avoid emitting carbon in the first place. This is what we call Abatement, or Carbon Elimination.\n\nOnce we've pursued this goal, there will still be emissions that can't be avoided. All the remaining carbon reduction methodologies will help us do so, offsetting (either compensating or neutralizing carbon).\n\nYour company's strategy can be a mix of all the possible methodologies and, depending on the final result, can reach a Net Zero target when carbon emissions are eliminated where possible and the residual emissions compensated.\n\nThe [SCI equation](sustainability-design-methodology.md#measure-and-track-carbon-impact) aims to eliminate emissions, which should always be the primary goal of a sustainable workload, and the score can only be reduced with abatement.\n\n- Read more about the [Climate Commitments](https://learn.greensoftware.foundation/practitioner/climate-commitments) from the Green Software Foundation.",
+      "lineStart": 74,
+      "lineEnd": 88
+    },
+    {
+      "sectionOrder": 9,
+      "headingLevel": 2,
+      "headingText": "Next steps",
+      "headingPath": [
+        "Design principles of a sustainable workload",
+        "Next steps"
+      ],
+      "markdown": "Review the considerations for application design.\n\n> [!div class=\"nextstepaction\"]\n> [Application design](sustainability-application-design.md)",
+      "lineStart": 90,
+      "lineEnd": 94
+    }
+  ],
+  "localLinks": [
+    "../cost-optimization/index.yml",
+    "../operational-excellence/index.yml",
+    "../performance-efficiency/index.yml",
+    "../reliability/index.yml",
+    "../security/index.yml",
+    "sustainability-application-design.md",
+    "sustainability-design-methodology.md"
+  ],
+  "lastModified": "2026-03-17T16:22:13.824Z"
+}

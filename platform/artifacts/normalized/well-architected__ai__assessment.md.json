@@ -1,0 +1,66 @@
+{
+  "source": {
+    "absolutePath": "C:\\Users\\EricL\\source\\repos\\Well-Architected-Vibe-Coding\\well-architected-vibe-coding\\well-architected\\ai\\assessment.md",
+    "repoRelativePath": "well-architected/ai/assessment.md",
+    "docsRelativePath": "ai/assessment.md"
+  },
+  "frontMatter": {
+    "title": "AI workload assessment",
+    "description": "See how to use the AI workload assessment to evaluate your workload's alignment with the best practices of the Azure Well-Architected Framework pillars.",
+    "author": "PageWriter-MSFT",
+    "ms.author": "prwilk",
+    "ms.date": "11/01/2024",
+    "ms.topic": "concept-article",
+    "ms.update-cycle": "180-days"
+  },
+  "title": "AI workload assessment",
+  "rawBody": "# Well-Architected Framework AI workload assessment\n\nThe [Azure Well-Architected Framework AI workload assessment](/assessments/ea306cce-c7fa-4a2b-89a6-bfefba6a9cf4) is a review tool that you can use to self-assess the readiness of your AI workload in production. Running an AI workload on Azure can be a complex process. The assessment is organized so that you can methodically check your workload's alignment with the best practices of the Well-Architected Framework pillars.\n\nFor best results, the team that completes the assessment should be well-versed in the architecture of your workload. That team should also have a strong understanding of cloud principles and patterns. These roles include but aren't limited to cloud architects, operators, and DevOps engineers.\n\nThe assessment is a set of questions that are based on the [AI workload design areas](./get-started.md#typical-architecture-pattern-and-design-areas). It's a method for checking the foundational design choices of your workload's architecture and your end-to-end operational approach.\n\n:::image type=\"content\" source=\"./images/assessment-question.png\" alt-text=\"Screenshot that shows a question in the AI workload assessment. A few answers are selected. On the left side, an outline of the assessment is visible.\" lightbox=\"./images/assessment-question.png\":::\n\nThese questions are designed to help you benchmark your workload's maturity and alignment with the recommended approach for operating an AI workload. The outcome of the assessment is a set of technical recommendations and documentation that provides guidance about how to implement a highly reliable solution on Azure.\n\n:::image type=\"content\" source=\"./images/assessment-recommendations.png\" alt-text=\"Screenshot that shows the guidance page of the AI assessment with recommended actions.\" lightbox=\"./images/assessment-recommendations.png\":::\n\n## Related content\n\nSee the following reference architecture, which describes design choices for a production-ready implementation:\n\n- [Baseline Azure AI Foundry chat reference architecture](/azure/architecture/ai-ml/architecture/baseline-azure-ai-foundry-chat)",
+  "headings": [
+    {
+      "level": 1,
+      "text": "Well-Architected Framework AI workload assessment",
+      "line": 1,
+      "path": [
+        "Well-Architected Framework AI workload assessment"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Related content",
+      "line": 15,
+      "path": [
+        "Well-Architected Framework AI workload assessment",
+        "Related content"
+      ]
+    }
+  ],
+  "sections": [
+    {
+      "sectionOrder": 1,
+      "headingLevel": 1,
+      "headingText": "Well-Architected Framework AI workload assessment",
+      "headingPath": [
+        "Well-Architected Framework AI workload assessment"
+      ],
+      "markdown": "The [Azure Well-Architected Framework AI workload assessment](/assessments/ea306cce-c7fa-4a2b-89a6-bfefba6a9cf4) is a review tool that you can use to self-assess the readiness of your AI workload in production. Running an AI workload on Azure can be a complex process. The assessment is organized so that you can methodically check your workload's alignment with the best practices of the Well-Architected Framework pillars.\n\nFor best results, the team that completes the assessment should be well-versed in the architecture of your workload. That team should also have a strong understanding of cloud principles and patterns. These roles include but aren't limited to cloud architects, operators, and DevOps engineers.\n\nThe assessment is a set of questions that are based on the [AI workload design areas](./get-started.md#typical-architecture-pattern-and-design-areas). It's a method for checking the foundational design choices of your workload's architecture and your end-to-end operational approach.\n\n:::image type=\"content\" source=\"./images/assessment-question.png\" alt-text=\"Screenshot that shows a question in the AI workload assessment. A few answers are selected. On the left side, an outline of the assessment is visible.\" lightbox=\"./images/assessment-question.png\":::\n\nThese questions are designed to help you benchmark your workload's maturity and alignment with the recommended approach for operating an AI workload. The outcome of the assessment is a set of technical recommendations and documentation that provides guidance about how to implement a highly reliable solution on Azure.\n\n:::image type=\"content\" source=\"./images/assessment-recommendations.png\" alt-text=\"Screenshot that shows the guidance page of the AI assessment with recommended actions.\" lightbox=\"./images/assessment-recommendations.png\":::",
+      "lineStart": 2,
+      "lineEnd": 14
+    },
+    {
+      "sectionOrder": 2,
+      "headingLevel": 2,
+      "headingText": "Related content",
+      "headingPath": [
+        "Well-Architected Framework AI workload assessment",
+        "Related content"
+      ],
+      "markdown": "See the following reference architecture, which describes design choices for a production-ready implementation:\n\n- [Baseline Azure AI Foundry chat reference architecture](/azure/architecture/ai-ml/architecture/baseline-azure-ai-foundry-chat)",
+      "lineStart": 16,
+      "lineEnd": 19
+    }
+  ],
+  "localLinks": [
+    "./get-started.md"
+  ],
+  "lastModified": "2026-03-17T16:22:13.389Z"
+}

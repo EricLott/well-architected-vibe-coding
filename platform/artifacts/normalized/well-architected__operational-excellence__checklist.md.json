@@ -1,0 +1,99 @@
+{
+  "source": {
+    "absolutePath": "C:\\Users\\EricL\\source\\repos\\Well-Architected-Vibe-Coding\\well-architected-vibe-coding\\well-architected\\operational-excellence\\checklist.md",
+    "repoRelativePath": "well-architected/operational-excellence/checklist.md",
+    "docsRelativePath": "operational-excellence/checklist.md"
+  },
+  "frontMatter": {
+    "title": "Design review checklist for Operational Excellence",
+    "description": "Learn how to incorporate an operational excellence approach in your workload for repeatable, reliable, and safe deployments of infrastructure and code.",
+    "author": "claytonsiemens77",
+    "ms.author": "csiemens",
+    "ms.date": "02/11/2026",
+    "ms.topic": "concept-article",
+    "ms.update-cycle": "1095-days"
+  },
+  "title": "Design review checklist for Operational Excellence",
+  "rawBody": "# Design review checklist for Operational Excellence  \n\nThis checklist presents a set of recommendations to help you build a culture of operational excellence. Start with a DevOps approach to integrate specializations from multiple disciplines. This approach creates a rigorous design and development practice. This approach leads to repeatable, reliable, and safe deployments of infrastructure and code.\n\nPrioritize human intervention in areas that benefit from it, and incorporate automation in other areas. Observability serves operational excellence by monitoring health events and also for validating the current workload design and implementation to inform future product development.\n\nIf you don't consider tradeoffs and recommendations for operational excellence, your workload might be at risk. Carefully consider the points covered in the following checklist to instill confidence in your design's success.\n\n## Checklist\n\n|&nbsp;|Code  |Recommendation  |\n|-|-|-|\n| &#9744; | [OE:01](devops-culture.md)  | **Define your standard practices to develop and operate your workload.** Align team members' specializations with clear practices for designing, deploying, and operating the workload to ensure accountability, continuous improvement, and a blameless culture that supports learning. |\n| &#9744; | [OE:02](formalize-operations-tasks.md) | Use standardization as a way to make routine, ad-hoc, and emergency operations consistent and predictable.   |\n| &#9744; | [OE:03](formalize-development-practices.md) | Formalize processes across the full software development lifecycle, from ideation to delivery, and make them transparent to the team and stakeholders.|\n| &#9744; | [OE:04](tools-processes.md) | **Enhance software development and quality assurance** by implementing industry-standard practices. Ensure clear role definitions and consistent processes by standardizing tools, source control, design patterns, documentation, and style guides.|\n| &#9744; | [OE:05](infrastructure-as-code-design.md) | **Use a standardized infrastructure as code (IaC) approach to prepare resources and configurations.** Use IaC to ensure consistent styles, modularization, and quality assurance. Prefer declarative over imperative approaches when practical. |\n| &#9744; | [OE:06](workload-supply-chain.md) | **Build a workload supply chain that drives changes** through predictable, automated pipelines. Ensure these pipelines test and promote changes across all environments and quality gates. Incorporate comprehensive testing.|\n| &#9744; | [OE:07](observability.md) <br> [OE:07](instrument-application.md)  | **Design and implement a monitoring system** to capture and expose telemetry, metrics, and logs from your infrastructure and code. Use this data to validate design choices and guide future design and business decisions.|\n| &#9744; | [OE:08](incident-response.md) | **Establish a clear, structured incident management process** with defined roles, documented procedures, and architecture designed for rapid detection, diagnosis, and recovery. |\n| &#9744; | [OE:09](automate-tasks.md) | **Automate tasks that are repetitive, procedural, and provide a clear return on investment.** Prefer off-the-shelf automation tools over custom solutions. Apply the Well-Architected Framework pillars to the design and implementation of all automation efforts.|\n| &#9744; | [OE:10](enable-automation.md) | **Design and implement automation upfront** for tasks like lifecycle management, bootstrapping, and governance. Avoid retrofitting automation later. Simplify your design by adopting platform-native automation functionality.|\n| &#9744; | [OE:11](safe-deployments.md) | **Clearly define your workload's safe deployment practices.** Focus on small, incremental releases with quality gates. Use modern deployment patterns and progressive exposure to manage risk. Plan for both routine and emergency deployments.|\n\n\n## Next steps\n\nWe recommend that you review the Operational Excellence tradeoffs to explore other concepts.\n\n> [!div class=\"nextstepaction\"]\n> [Operational Excellence tradeoffs](tradeoffs.md)",
+  "headings": [
+    {
+      "level": 1,
+      "text": "Design review checklist for Operational Excellence",
+      "line": 1,
+      "path": [
+        "Design review checklist for Operational Excellence"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Checklist",
+      "line": 9,
+      "path": [
+        "Design review checklist for Operational Excellence",
+        "Checklist"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Next steps",
+      "line": 26,
+      "path": [
+        "Design review checklist for Operational Excellence",
+        "Next steps"
+      ]
+    }
+  ],
+  "sections": [
+    {
+      "sectionOrder": 1,
+      "headingLevel": 1,
+      "headingText": "Design review checklist for Operational Excellence",
+      "headingPath": [
+        "Design review checklist for Operational Excellence"
+      ],
+      "markdown": "This checklist presents a set of recommendations to help you build a culture of operational excellence. Start with a DevOps approach to integrate specializations from multiple disciplines. This approach creates a rigorous design and development practice. This approach leads to repeatable, reliable, and safe deployments of infrastructure and code.\n\nPrioritize human intervention in areas that benefit from it, and incorporate automation in other areas. Observability serves operational excellence by monitoring health events and also for validating the current workload design and implementation to inform future product development.\n\nIf you don't consider tradeoffs and recommendations for operational excellence, your workload might be at risk. Carefully consider the points covered in the following checklist to instill confidence in your design's success.",
+      "lineStart": 2,
+      "lineEnd": 8
+    },
+    {
+      "sectionOrder": 2,
+      "headingLevel": 2,
+      "headingText": "Checklist",
+      "headingPath": [
+        "Design review checklist for Operational Excellence",
+        "Checklist"
+      ],
+      "markdown": "|&nbsp;|Code  |Recommendation  |\n|-|-|-|\n| &#9744; | [OE:01](devops-culture.md)  | **Define your standard practices to develop and operate your workload.** Align team members' specializations with clear practices for designing, deploying, and operating the workload to ensure accountability, continuous improvement, and a blameless culture that supports learning. |\n| &#9744; | [OE:02](formalize-operations-tasks.md) | Use standardization as a way to make routine, ad-hoc, and emergency operations consistent and predictable.   |\n| &#9744; | [OE:03](formalize-development-practices.md) | Formalize processes across the full software development lifecycle, from ideation to delivery, and make them transparent to the team and stakeholders.|\n| &#9744; | [OE:04](tools-processes.md) | **Enhance software development and quality assurance** by implementing industry-standard practices. Ensure clear role definitions and consistent processes by standardizing tools, source control, design patterns, documentation, and style guides.|\n| &#9744; | [OE:05](infrastructure-as-code-design.md) | **Use a standardized infrastructure as code (IaC) approach to prepare resources and configurations.** Use IaC to ensure consistent styles, modularization, and quality assurance. Prefer declarative over imperative approaches when practical. |\n| &#9744; | [OE:06](workload-supply-chain.md) | **Build a workload supply chain that drives changes** through predictable, automated pipelines. Ensure these pipelines test and promote changes across all environments and quality gates. Incorporate comprehensive testing.|\n| &#9744; | [OE:07](observability.md) <br> [OE:07](instrument-application.md)  | **Design and implement a monitoring system** to capture and expose telemetry, metrics, and logs from your infrastructure and code. Use this data to validate design choices and guide future design and business decisions.|\n| &#9744; | [OE:08](incident-response.md) | **Establish a clear, structured incident management process** with defined roles, documented procedures, and architecture designed for rapid detection, diagnosis, and recovery. |\n| &#9744; | [OE:09](automate-tasks.md) | **Automate tasks that are repetitive, procedural, and provide a clear return on investment.** Prefer off-the-shelf automation tools over custom solutions. Apply the Well-Architected Framework pillars to the design and implementation of all automation efforts.|\n| &#9744; | [OE:10](enable-automation.md) | **Design and implement automation upfront** for tasks like lifecycle management, bootstrapping, and governance. Avoid retrofitting automation later. Simplify your design by adopting platform-native automation functionality.|\n| &#9744; | [OE:11](safe-deployments.md) | **Clearly define your workload's safe deployment practices.** Focus on small, incremental releases with quality gates. Use modern deployment patterns and progressive exposure to manage risk. Plan for both routine and emergency deployments.|",
+      "lineStart": 10,
+      "lineEnd": 25
+    },
+    {
+      "sectionOrder": 3,
+      "headingLevel": 2,
+      "headingText": "Next steps",
+      "headingPath": [
+        "Design review checklist for Operational Excellence",
+        "Next steps"
+      ],
+      "markdown": "We recommend that you review the Operational Excellence tradeoffs to explore other concepts.\n\n> [!div class=\"nextstepaction\"]\n> [Operational Excellence tradeoffs](tradeoffs.md)",
+      "lineStart": 27,
+      "lineEnd": 31
+    }
+  ],
+  "localLinks": [
+    "automate-tasks.md",
+    "devops-culture.md",
+    "enable-automation.md",
+    "formalize-development-practices.md",
+    "formalize-operations-tasks.md",
+    "incident-response.md",
+    "infrastructure-as-code-design.md",
+    "instrument-application.md",
+    "observability.md",
+    "safe-deployments.md",
+    "tools-processes.md",
+    "tradeoffs.md",
+    "workload-supply-chain.md"
+  ],
+  "lastModified": "2026-03-17T16:22:13.673Z"
+}

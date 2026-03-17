@@ -1,0 +1,198 @@
+{
+  "source": {
+    "absolutePath": "C:\\Users\\EricL\\source\\repos\\Well-Architected-Vibe-Coding\\well-architected-vibe-coding\\well-architected\\mission-critical\\mission-critical-architecture-pattern.md",
+    "repoRelativePath": "well-architected/mission-critical/mission-critical-architecture-pattern.md",
+    "docsRelativePath": "mission-critical/mission-critical-architecture-pattern.md"
+  },
+  "frontMatter": {
+    "title": "Architecture pattern for mission-critical workloads on Azure",
+    "description": "The design areas represent the architecturally significant topics that must be discussed and designed for when defining a target architecture",
+    "author": "calcof",
+    "ms.author": "prwilk",
+    "ms.date": "05/06/2025",
+    "ms.topic": "concept-article"
+  },
+  "title": "Architecture pattern for mission-critical workloads on Azure",
+  "rawBody": "# Architecture pattern for mission-critical workloads on Azure\n\nThis article presents a key pattern for mission-critical architectures on Azure. Apply this pattern when you start your design process, and then select components that are best suited for your business requirements. The article recommends a *north star* design approach and includes other examples with common technology components.\n\nWe recommend that you evaluate [**the key design areas**](/azure/well-architected/mission-critical/mission-critical-overview#what-are-the-key-design-areas), define the critical user and system flows that use the  underlying components, and develop a matrix of Azure resources and their configuration while keeping in mind the following characteristics.\n\n|Characteristic|Considerations|\n|---|---|\n|Lifetime|What's the expected lifetime of the resource, relative to other resources in the solution? Should the resource outlive or share the lifetime with the entire system or region, or should it be temporary?|\n|State|What impact will the persisted state at this layer have on reliability or manageability? |\n|Reach|Is the resource required to be globally distributed? Can the resource communicate with other resources, located globally or within that region?|\n|Dependencies|What are the dependencies on other resources?|\n|Scale limits|What is the expected throughput for that resource? How much scale is provided by the resource to fit that demand? |\n|Availability/disaster recovery|What is the impact on availability from a disaster at this layer? Would it cause a systemic outage or only a localized capacity or availability issue?|\n\nBased on the preceding characteristics, classify and identify mission-critical resources. That activity can help track resource utilization and associated costs, while helping you focus optimization efforts where they matter most. We recommend that you _tag groups of resources deemed critical to your business_. Keep in mind that some of these resources may be shared across multiple workloads.\n \nFor information on Microsoft-recommended tags, see [Label mission-critical workloads](/azure/azure-resource-manager/management/tag-mission-critical-workload).\n\n## Core architecture pattern\n\n![Diagram showing a generic pattern for a mission-critical application.](./images/mission-critical-pattern.png)\n\n### Global resources\n\nCertain resources are globally shared by resources deployed within each region. Common examples are resources that are used to distribute traffic across multiple regions, store permanent state for the whole application, and monitor resources for them.\n\n|Characteristic|Considerations|\n|---|---|\n|Lifetime|These resources are expected to be long living (non-ephemeral). Their lifetime spans the life of the system or longer. Often the resources are managed with in-place data and control plane updates, assuming they support zero-downtime update operations.|\n|State| Because these resources exist for at least the lifetime of the system, this layer is often responsible for storing global, geo-replicated state.|\n|Reach|The resources should be globally distributed and replicated to the regions that host those resources. It’s recommended that these resources communicate with regional or other resources with low latency and the desired consistency.|\n|Dependencies|The resources should avoid dependencies on regional resources because their unavailability can be a cause for global failure. For example, certificates or secrets kept in a single vault could have global impact if there's a regional failure where the vault is located.|\n|Scale limits|Often these resources are singleton instances in the system, and they should be able to scale such that they can handle throughput of the system as a whole.|\n|Availability/disaster recovery|Regional and stamp resources can use global resources. It's critical that global resources are configured with high availability and disaster recovery for the health of the whole system.|\n\n### Regional stamp resources\n\nThe stamp contains the application and resources that participate in completing business transactions. A stamp typically corresponds to a deployment to an Azure region. Although a region can have more than one stamp.\n\n|Characteristic|Considerations|\n|---|---|\n|Lifetime|The resources are expected to have a short life span (ephemeral) with the intent that they can get added and removed dynamically while regional resources outside the stamp continue to persist. The ephemeral nature is needed to provide more resiliency, scale, and proximity to users. |\n|State| Because stamps are ephemeral and will be destroyed with each deployment, a stamp should be stateless as much as possible.|\n|Reach|Can communicate with regional and global resources. However, communication with other regions or other stamps should be avoided.|\n|Dependencies| The stamp resources must be independent. They're expected to have regional and global dependencies but shouldn't rely on components in other stamps in the same or other regions.  |\n|Scale limits|Throughput is established through testing. The throughput of the overall stamp is limited to the least performant resource. Stamp throughput needs to estimate the high-level of demand caused by a failover to another stamp.|\n|Availability/disaster recovery|Because of the temporary nature of stamps, disaster recovery is done by redeploying the stamp. If resources are in an unhealthy state, the stamp, as a whole, can be destroyed and redeployed.\n\n### Regional resources\n\nA system can have resources that are deployed in region but outlive the stamp resources. For example, observability resources that monitor resources at the regional level, including the stamps.\n\n|Characteristic|Consideration|\n|---|---|\n|Lifetime|The resources share the lifetime of the region and out live the stamp resources.|\n|State| State stored in a region can't live beyond the lifetime of the region. If state needs to be shared across regions, consider using a global data store.|\n|Reach|The resources don't need to be globally distributed. Direct communication with other regions should be avoided at all cost. |\n|Dependencies| The resources can have dependencies on global resources, but not on stamp resources because stamps are meant to be short lived. |\n|Scale limits|Determine the scale limit of regional resources by combining all stamps within the region.|\n\n## Baseline architectures for mission-critical workloads\n\nThese baseline examples serve as the recommended north star architecture for mission-critical applications. The baseline strongly recommends containerization and using a container orchestrator for the application platform. The baseline uses Azure Kubernetes Service (AKS).\n\n> Refer to [Well-Architected mission-critical workloads: Containerization](/azure/well-architected/mission-critical/mission-critical-application-platform#containerization).\n\n<ul class=\"columns is-multiline has-margin-left-none has-margin-bottom-none has-padding-top-medium\">\n    <li class=\"column is-one-third has-padding-top-small-mobile has-padding-bottom-small\">\n        <article class=\"card is-relative is-fullheight\">\n            <figure class=\"image has-margin-right-none has-margin-left-none has-margin-top-none has-margin-bottom-none\">\n                 <img role=\"presentation\" alt=\"Diagram shows a baseline mission-critical application.\" src=\"./images/mission-critical-architecture-online.png\">\n             </figure>\n             <div class=\"card-content has-text-overflow-ellipsis\">\n                 <div class=\"is-size-7 has-margin-top-none has-margin-bottom-none has-text-primary\">\n                    Baseline architecture\n                    <hr>\n                 </div>\n                    <div class=\"is-size-7 has-margin-top-small has-line-height-reset\">\n                        <p>If you're just starting your mission-critical journey, use this architecture as a reference. The workload is accessed over a public endpoint and doesn't require private network connectivity to other company resources.</p>\n                    </div>\n                </div>\n            </article>\n    </li>\n    <li class=\"column is-one-third has-padding-top-small-mobile has-padding-bottom-small\">\n        <article class=\"card is-relative is-fullheight\">\n            <figure class=\"image has-margin-right-none has-margin-left-none has-margin-top-none has-margin-bottom-none\">\n                 <img role=\"presentation\" alt=\"Diagram shows the baseline architecture extended with network controls.\" src=\"./images/mission-critical-architecture-network.svg\">\n            </figure>\n            <div class=\"card-content has-text-overflow-ellipsis\">\n                <div class=\"is-size-7 has-margin-top-none has-margin-bottom-none has-text-primary\">\n                    Baseline with network controls\n                    <hr>\n                </div>\n                <div class=\"is-size-7 has-margin-top-small has-line-height-reset\">\n                    <p>This architecture builds on the baseline architecture. The design is extended to provide strict network controls to prevent unauthorized public access from the internet to the workload resources.</p>\n                </div>\n            </div>\n        </article>\n    </li>\n    <li class=\"column is-one-third has-padding-top-small-mobile has-padding-bottom-small\">\n        <article class=\"card is-relative is-fullheight\">\n          <figure class=\"image has-margin-right-none has-margin-left-none has-margin-top-none has-margin-bottom-none\">\n             <img role=\"presentation\" alt=\"Diagram shows the baseline architecture deployed using Azure landing zones.\" src=\"./images/mission-critical-architecture-landing-zone.svg\">\n          </figure>\n          <div class=\"card-content has-text-overflow-ellipsis\">\n             <div class=\"is-size-7 has-margin-top-none has-margin-bottom-none has-text-primary\">\n                Baseline in Azure landing zones\n              <hr>\n             </div>\n             <div class=\"is-size-7 has-margin-top-small has-line-height-reset\">\n                   <p>This architecture is appropriate if you're deploying the workload in an enterprise setup where integration within a broader organization is required. The workload uses centralized shared services, needs on-premises connectivity, and integrates with other workloads within the enterprise. It's deployed in an Azure landing zone subscription that inherits from the Corp. management group.</p>\n             </div>\n          </div>\n       </article>\n    </li>\n  <li class=\"column is-one-third has-padding-top-small-mobile has-padding-bottom-small\">\n    <article class=\"card has-outline-hover is-relative is-fullheight\">\n        <figure class=\"image has-margin-right-none has-margin-left-none has-margin-top-none has-margin-bottom-none\">\n           <a class=\"is-undecorated is-full-height is-block\"\n             href=\"/azure/architecture/guide/networking/global-web-applications/mission-critical-app-service\">\n             <img role=\"presentation\" alt=\"App Services baseline architecture diagram.\" src=\"./images/app-service-architecture.png\">\n            </a>\n        </figure>\n        <div class=\"card-content has-text-overflow-ellipsis\">\n            <div class=\"is-size-7 has-margin-top-none has-margin-bottom-none has-text-primary\">\n              Baseline with App Services\n              <hr>                      \n            </div>\n            <div class=\"is-size-7 has-margin-top-small has-line-height-reset\">\n                <p>This architecture extends the baseline reference by considering App Services as the primary application hosting technology, providing an easy to use environment for container deployments.</p>\n            </div>\n        </div>\n    </article>\n</li>\n</ul>\n\n## Design areas\n\nWe recommend that you use the provided design guidance to navigate the key design decisions to reach an optimal solution. For information, see [What are the key design areas?](/azure/well-architected/mission-critical/mission-critical-overview#what-are-the-key-design-areas)\n\n## Next step\n\nReview the best practices for designing mission-critical application scenarios.\n\n> [!div class=\"nextstepaction\"]\n> [Application design](./mission-critical-application-design.md)",
+  "headings": [
+    {
+      "level": 1,
+      "text": "Architecture pattern for mission-critical workloads on Azure",
+      "line": 1,
+      "path": [
+        "Architecture pattern for mission-critical workloads on Azure"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Core architecture pattern",
+      "line": 20,
+      "path": [
+        "Architecture pattern for mission-critical workloads on Azure",
+        "Core architecture pattern"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Global resources",
+      "line": 24,
+      "path": [
+        "Architecture pattern for mission-critical workloads on Azure",
+        "Core architecture pattern",
+        "Global resources"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Regional stamp resources",
+      "line": 37,
+      "path": [
+        "Architecture pattern for mission-critical workloads on Azure",
+        "Core architecture pattern",
+        "Regional stamp resources"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Regional resources",
+      "line": 50,
+      "path": [
+        "Architecture pattern for mission-critical workloads on Azure",
+        "Core architecture pattern",
+        "Regional resources"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Baseline architectures for mission-critical workloads",
+      "line": 62,
+      "path": [
+        "Architecture pattern for mission-critical workloads on Azure",
+        "Baseline architectures for mission-critical workloads"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Design areas",
+      "line": 138,
+      "path": [
+        "Architecture pattern for mission-critical workloads on Azure",
+        "Design areas"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Next step",
+      "line": 142,
+      "path": [
+        "Architecture pattern for mission-critical workloads on Azure",
+        "Next step"
+      ]
+    }
+  ],
+  "sections": [
+    {
+      "sectionOrder": 1,
+      "headingLevel": 1,
+      "headingText": "Architecture pattern for mission-critical workloads on Azure",
+      "headingPath": [
+        "Architecture pattern for mission-critical workloads on Azure"
+      ],
+      "markdown": "This article presents a key pattern for mission-critical architectures on Azure. Apply this pattern when you start your design process, and then select components that are best suited for your business requirements. The article recommends a *north star* design approach and includes other examples with common technology components.\n\nWe recommend that you evaluate [**the key design areas**](/azure/well-architected/mission-critical/mission-critical-overview#what-are-the-key-design-areas), define the critical user and system flows that use the  underlying components, and develop a matrix of Azure resources and their configuration while keeping in mind the following characteristics.\n\n|Characteristic|Considerations|\n|---|---|\n|Lifetime|What's the expected lifetime of the resource, relative to other resources in the solution? Should the resource outlive or share the lifetime with the entire system or region, or should it be temporary?|\n|State|What impact will the persisted state at this layer have on reliability or manageability? |\n|Reach|Is the resource required to be globally distributed? Can the resource communicate with other resources, located globally or within that region?|\n|Dependencies|What are the dependencies on other resources?|\n|Scale limits|What is the expected throughput for that resource? How much scale is provided by the resource to fit that demand? |\n|Availability/disaster recovery|What is the impact on availability from a disaster at this layer? Would it cause a systemic outage or only a localized capacity or availability issue?|\n\nBased on the preceding characteristics, classify and identify mission-critical resources. That activity can help track resource utilization and associated costs, while helping you focus optimization efforts where they matter most. We recommend that you _tag groups of resources deemed critical to your business_. Keep in mind that some of these resources may be shared across multiple workloads.\n \nFor information on Microsoft-recommended tags, see [Label mission-critical workloads](/azure/azure-resource-manager/management/tag-mission-critical-workload).",
+      "lineStart": 2,
+      "lineEnd": 19
+    },
+    {
+      "sectionOrder": 2,
+      "headingLevel": 2,
+      "headingText": "Core architecture pattern",
+      "headingPath": [
+        "Architecture pattern for mission-critical workloads on Azure",
+        "Core architecture pattern"
+      ],
+      "markdown": "![Diagram showing a generic pattern for a mission-critical application.](./images/mission-critical-pattern.png)",
+      "lineStart": 21,
+      "lineEnd": 23
+    },
+    {
+      "sectionOrder": 3,
+      "headingLevel": 3,
+      "headingText": "Global resources",
+      "headingPath": [
+        "Architecture pattern for mission-critical workloads on Azure",
+        "Core architecture pattern",
+        "Global resources"
+      ],
+      "markdown": "Certain resources are globally shared by resources deployed within each region. Common examples are resources that are used to distribute traffic across multiple regions, store permanent state for the whole application, and monitor resources for them.\n\n|Characteristic|Considerations|\n|---|---|\n|Lifetime|These resources are expected to be long living (non-ephemeral). Their lifetime spans the life of the system or longer. Often the resources are managed with in-place data and control plane updates, assuming they support zero-downtime update operations.|\n|State| Because these resources exist for at least the lifetime of the system, this layer is often responsible for storing global, geo-replicated state.|\n|Reach|The resources should be globally distributed and replicated to the regions that host those resources. It’s recommended that these resources communicate with regional or other resources with low latency and the desired consistency.|\n|Dependencies|The resources should avoid dependencies on regional resources because their unavailability can be a cause for global failure. For example, certificates or secrets kept in a single vault could have global impact if there's a regional failure where the vault is located.|\n|Scale limits|Often these resources are singleton instances in the system, and they should be able to scale such that they can handle throughput of the system as a whole.|\n|Availability/disaster recovery|Regional and stamp resources can use global resources. It's critical that global resources are configured with high availability and disaster recovery for the health of the whole system.|",
+      "lineStart": 25,
+      "lineEnd": 36
+    },
+    {
+      "sectionOrder": 4,
+      "headingLevel": 3,
+      "headingText": "Regional stamp resources",
+      "headingPath": [
+        "Architecture pattern for mission-critical workloads on Azure",
+        "Core architecture pattern",
+        "Regional stamp resources"
+      ],
+      "markdown": "The stamp contains the application and resources that participate in completing business transactions. A stamp typically corresponds to a deployment to an Azure region. Although a region can have more than one stamp.\n\n|Characteristic|Considerations|\n|---|---|\n|Lifetime|The resources are expected to have a short life span (ephemeral) with the intent that they can get added and removed dynamically while regional resources outside the stamp continue to persist. The ephemeral nature is needed to provide more resiliency, scale, and proximity to users. |\n|State| Because stamps are ephemeral and will be destroyed with each deployment, a stamp should be stateless as much as possible.|\n|Reach|Can communicate with regional and global resources. However, communication with other regions or other stamps should be avoided.|\n|Dependencies| The stamp resources must be independent. They're expected to have regional and global dependencies but shouldn't rely on components in other stamps in the same or other regions.  |\n|Scale limits|Throughput is established through testing. The throughput of the overall stamp is limited to the least performant resource. Stamp throughput needs to estimate the high-level of demand caused by a failover to another stamp.|\n|Availability/disaster recovery|Because of the temporary nature of stamps, disaster recovery is done by redeploying the stamp. If resources are in an unhealthy state, the stamp, as a whole, can be destroyed and redeployed.",
+      "lineStart": 38,
+      "lineEnd": 49
+    },
+    {
+      "sectionOrder": 5,
+      "headingLevel": 3,
+      "headingText": "Regional resources",
+      "headingPath": [
+        "Architecture pattern for mission-critical workloads on Azure",
+        "Core architecture pattern",
+        "Regional resources"
+      ],
+      "markdown": "A system can have resources that are deployed in region but outlive the stamp resources. For example, observability resources that monitor resources at the regional level, including the stamps.\n\n|Characteristic|Consideration|\n|---|---|\n|Lifetime|The resources share the lifetime of the region and out live the stamp resources.|\n|State| State stored in a region can't live beyond the lifetime of the region. If state needs to be shared across regions, consider using a global data store.|\n|Reach|The resources don't need to be globally distributed. Direct communication with other regions should be avoided at all cost. |\n|Dependencies| The resources can have dependencies on global resources, but not on stamp resources because stamps are meant to be short lived. |\n|Scale limits|Determine the scale limit of regional resources by combining all stamps within the region.|",
+      "lineStart": 51,
+      "lineEnd": 61
+    },
+    {
+      "sectionOrder": 6,
+      "headingLevel": 2,
+      "headingText": "Baseline architectures for mission-critical workloads",
+      "headingPath": [
+        "Architecture pattern for mission-critical workloads on Azure",
+        "Baseline architectures for mission-critical workloads"
+      ],
+      "markdown": "These baseline examples serve as the recommended north star architecture for mission-critical applications. The baseline strongly recommends containerization and using a container orchestrator for the application platform. The baseline uses Azure Kubernetes Service (AKS).\n\n> Refer to [Well-Architected mission-critical workloads: Containerization](/azure/well-architected/mission-critical/mission-critical-application-platform#containerization).\n\n<ul class=\"columns is-multiline has-margin-left-none has-margin-bottom-none has-padding-top-medium\">\n    <li class=\"column is-one-third has-padding-top-small-mobile has-padding-bottom-small\">\n        <article class=\"card is-relative is-fullheight\">\n            <figure class=\"image has-margin-right-none has-margin-left-none has-margin-top-none has-margin-bottom-none\">\n                 <img role=\"presentation\" alt=\"Diagram shows a baseline mission-critical application.\" src=\"./images/mission-critical-architecture-online.png\">\n             </figure>\n             <div class=\"card-content has-text-overflow-ellipsis\">\n                 <div class=\"is-size-7 has-margin-top-none has-margin-bottom-none has-text-primary\">\n                    Baseline architecture\n                    <hr>\n                 </div>\n                    <div class=\"is-size-7 has-margin-top-small has-line-height-reset\">\n                        <p>If you're just starting your mission-critical journey, use this architecture as a reference. The workload is accessed over a public endpoint and doesn't require private network connectivity to other company resources.</p>\n                    </div>\n                </div>\n            </article>\n    </li>\n    <li class=\"column is-one-third has-padding-top-small-mobile has-padding-bottom-small\">\n        <article class=\"card is-relative is-fullheight\">\n            <figure class=\"image has-margin-right-none has-margin-left-none has-margin-top-none has-margin-bottom-none\">\n                 <img role=\"presentation\" alt=\"Diagram shows the baseline architecture extended with network controls.\" src=\"./images/mission-critical-architecture-network.svg\">\n            </figure>\n            <div class=\"card-content has-text-overflow-ellipsis\">\n                <div class=\"is-size-7 has-margin-top-none has-margin-bottom-none has-text-primary\">\n                    Baseline with network controls\n                    <hr>\n                </div>\n                <div class=\"is-size-7 has-margin-top-small has-line-height-reset\">\n                    <p>This architecture builds on the baseline architecture. The design is extended to provide strict network controls to prevent unauthorized public access from the internet to the workload resources.</p>\n                </div>\n            </div>\n        </article>\n    </li>\n    <li class=\"column is-one-third has-padding-top-small-mobile has-padding-bottom-small\">\n        <article class=\"card is-relative is-fullheight\">\n          <figure class=\"image has-margin-right-none has-margin-left-none has-margin-top-none has-margin-bottom-none\">\n             <img role=\"presentation\" alt=\"Diagram shows the baseline architecture deployed using Azure landing zones.\" src=\"./images/mission-critical-architecture-landing-zone.svg\">\n          </figure>\n          <div class=\"card-content has-text-overflow-ellipsis\">\n             <div class=\"is-size-7 has-margin-top-none has-margin-bottom-none has-text-primary\">\n                Baseline in Azure landing zones\n              <hr>\n             </div>\n             <div class=\"is-size-7 has-margin-top-small has-line-height-reset\">\n                   <p>This architecture is appropriate if you're deploying the workload in an enterprise setup where integration within a broader organization is required. The workload uses centralized shared services, needs on-premises connectivity, and integrates with other workloads within the enterprise. It's deployed in an Azure landing zone subscription that inherits from the Corp. management group.</p>\n             </div>\n          </div>\n       </article>\n    </li>\n  <li class=\"column is-one-third has-padding-top-small-mobile has-padding-bottom-small\">\n    <article class=\"card has-outline-hover is-relative is-fullheight\">\n        <figure class=\"image has-margin-right-none has-margin-left-none has-margin-top-none has-margin-bottom-none\">\n           <a class=\"is-undecorated is-full-height is-block\"\n             href=\"/azure/architecture/guide/networking/global-web-applications/mission-critical-app-service\">\n             <img role=\"presentation\" alt=\"App Services baseline architecture diagram.\" src=\"./images/app-service-architecture.png\">\n            </a>\n        </figure>\n        <div class=\"card-content has-text-overflow-ellipsis\">\n            <div class=\"is-size-7 has-margin-top-none has-margin-bottom-none has-text-primary\">\n              Baseline with App Services\n              <hr>                      \n            </div>\n            <div class=\"is-size-7 has-margin-top-small has-line-height-reset\">\n                <p>This architecture extends the baseline reference by considering App Services as the primary application hosting technology, providing an easy to use environment for container deployments.</p>\n            </div>\n        </div>\n    </article>\n</li>\n</ul>",
+      "lineStart": 63,
+      "lineEnd": 137
+    },
+    {
+      "sectionOrder": 7,
+      "headingLevel": 2,
+      "headingText": "Design areas",
+      "headingPath": [
+        "Architecture pattern for mission-critical workloads on Azure",
+        "Design areas"
+      ],
+      "markdown": "We recommend that you use the provided design guidance to navigate the key design decisions to reach an optimal solution. For information, see [What are the key design areas?](/azure/well-architected/mission-critical/mission-critical-overview#what-are-the-key-design-areas)",
+      "lineStart": 139,
+      "lineEnd": 141
+    },
+    {
+      "sectionOrder": 8,
+      "headingLevel": 2,
+      "headingText": "Next step",
+      "headingPath": [
+        "Architecture pattern for mission-critical workloads on Azure",
+        "Next step"
+      ],
+      "markdown": "Review the best practices for designing mission-critical application scenarios.\n\n> [!div class=\"nextstepaction\"]\n> [Application design](./mission-critical-application-design.md)",
+      "lineStart": 143,
+      "lineEnd": 147
+    }
+  ],
+  "localLinks": [
+    "./images/mission-critical-pattern.png",
+    "./mission-critical-application-design.md"
+  ],
+  "lastModified": "2026-03-17T16:22:13.667Z"
+}

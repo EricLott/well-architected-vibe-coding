@@ -1,0 +1,172 @@
+{
+  "source": {
+    "absolutePath": "C:\\Users\\EricL\\source\\repos\\Well-Architected-Vibe-Coding\\well-architected-vibe-coding\\well-architected\\azure-vmware\\design-principles.md",
+    "repoRelativePath": "well-architected/azure-vmware/design-principles.md",
+    "docsRelativePath": "azure-vmware/design-principles.md"
+  },
+  "frontMatter": {
+    "title": "Azure VMware Solution design principles",
+    "description": "Review the design principles of the Azure Well-Architected Framework. See how to apply these principles to Azure VMware Solution workloads.",
+    "author": "sblair01",
+    "ms.author": "sablair",
+    "ms.date": "08/10/2023",
+    "ms.topic": "concept-article",
+    "ms.service": "azure-waf",
+    "ms.subservice": "waf-workload-azure-vmware"
+  },
+  "title": "Azure VMware Solution design principles",
+  "rawBody": "# Azure VMware Solution design principles\n\nGuidance about well-architected Azure VMware Solution workloads is built on the Azure Well-Architected Framework and its five pillars of architectural excellence. The following table lists each pillar and a summary of its goals.\n\n| Well-Architected Framework pillar | Summary |\n| --- | --- |\n| Reliability | An Azure VMware Solution workload requires platform resiliency and high availability to protect critical business data. You can use the Well-Architected Framework to assess hybrid workloads that run in Azure VMware Solution and have an application footprint that extends to Azure native services. |\n| Security | This pillar is concerned with implementing measures that help protect your workload from threats. Examples include adding multiple security layers to your applications, including identity and access management (IAM), input validation, data sovereignty, and encryption for distributed denial-of-service (DDoS) mitigation. Other measures include blocking bad actors, preventing data exfiltration, and providing protection from operating system vulnerabilities. |\n| Cost optimization | A well-architected application deployment meets performance expectations while reducing the total cost of ownership. |\n| Performance efficiency | When your application demonstrates performance efficiency, it can optimize disk operations and has sufficient resources to scale with demand. It also minimizes network latency to make communication between the components of a distributed workload efficient. This pillar also includes load balancing, geographic placement, and caching mechanisms. |\n| Operational excellence | This pillar focuses on smooth operations and maximizing the value you derive from VMware deployments. These goals are achievable by combining automation, monitoring, security measures, disaster recovery planning, performance optimization, and effective documentation. |\n\n## Reliability\n\nBecause failures can occur on-premises and in the cloud, it's important to focus on resilience and availability when you design an Azure VMware Solution workload.\n\n- *Resiliency* is the ability to withstand infrastructure faults, transient errors, and demand spikes while continuing to operate (possibly in a degraded mode) without user-impacting downtime.\n  \n- *Availability* ensures uninterrupted uptime. High availability minimizes application downtime during critical maintenance activities. It also enhances recovery from incidents like virtual machine (VM) crashes, backend updates, extended downtimes, and ransomware attacks.\n\nAchieving reliability requires a comprehensive approach that spans architecture, operational procedures, automation, monitoring, regular testing, and validation.\n\n- **Define service-level agreements (SLAs)** to help ensure the reliability of your workload.\n- Scale workloads **vertically** by selecting a VM SKU that's appropriate for your workload's resources such as CPU and memory. Scale **horizontally** by adding VM instances.\n- **Design for high availability** by implementing redundancy and failover mechanisms to help ensure continuous operations. **Distribute traffic** by considering strategies such as load balancing to distribute traffic across multiple back-end sources.\n- **Implement fault-tolerant** storage to help ensure data integrity and availability by using technologies such as redundant array of independent disks (RAID) configurations or distributed storage systems.\n- **Understand backup and restore capabilities** for data recovery in case of accidental deletion, corruption, or other data loss scenarios. Documenting application dependencies and backup and restore procedures also helps to streamline recovery processes.\n\n## Security\n\nIn a shared-responsibility model:\n\n- Organizations are primarily responsible for managing and operating workloads.\n- Microsoft manages the physical and virtual infrastructure of Azure VMware Solution.\n\nWe strongly recommend that you regularly assess the services and technologies to ensure that your security posture adapts to the evolving threat landscape. Establishing a clear understanding of the shared responsibility model when you collaborate with vendors to implement suitable security measures is also essential.\n\nYou can employ several methods to secure your Azure VMware Solution environment:\n\n- Implement network isolation by using segments, virtual LANs, and network security groups for Azure native services.\n- Manage patches effectively.\n- Conduct environmental audits regularly.\n- Monitor security with a security information and event management (SIEM) solution like Microsoft Sentinel.\n- Implement encryption for data at rest and in transit.\n- Use robust IAM practices:\n  - Enforce multi-factor authentication.\n  - Integrate your workload with Microsoft Entra ID.\n  - Implement the principle of least privilege, and use role-based access control to assign roles.\n\n## Cost optimization\n\nMicrosoft and VMware make significant investments in:\n\n- The fast evolution of hardware.\n- The VMware hypervisor.\n- Azure native services.\n\nThese investments help provide more value for less. For example, they help suppress egress charges out of the software-defined datacenter (SDDC). They also incorporate enterprise licensing of several services into base costs.\n\nThe capabilities of Azure hardware expand frequently. As a result, opportunities regularly come up for Azure VMware Solution workloads to optimize costs, eliminate waste, and improve technologies such as purchasing reservations.\n\nConsider creating a plan for each of your Azure VMware Solution applications and its integration services. Each plan should contain the objectives and motivations for the workload. Organizational objectives and investment priorities should drive cost optimization initiatives for your application, application platform, and data platform.\n\n## Performance efficiency\n\nThis pillar focuses on optimizing workloads that run on Azure-dedicated hardware. That focus includes many aspects:\n\n- Allocating resources, which includes the ability to adjust CPU, storage, memory, and network resources to meet application demands.\n- Continuously monitoring performance and detecting anomalies by using tools such as VMware vRealize Operations Manager.\n- Configuring specific settings at the application layer to improve overall performance, such as:\n  - Query optimization at the data tier.\n  - In-memory caching of your application.\n  - The configuration of HTTP headers and the web tier.\n\nConsidering each of these aspects helps you build a well-architected application that delivers a consistent, cohesive user experience.\n\n## Operational excellence\n\nOperational excellence involves fully using the capabilities of Azure VMware Solution. Another part of operational excellence is adhering to well-architected best practices to secure, optimize, and scale workloads. This practice involves:\n\n- Having processes in place for installing up-to-date patches and upgrades.\n- Maintaining governance and compliance.\n- Analyzing the performance and health of your environment.\n- Following comprehensive processes.\n- Maintaining documentation that captures:\n  - Troubleshooting procedures.\n  - Disaster recovery plans.\n  - Remediation guidance on how to accelerate the process of resolving problems.\n\nThese steps help teams to collaborate in a way that's efficient and transparent.\n\n## Next steps\n\nThe design principles that are incorporated into Azure VMware Solution guidance cover specific design domains. Each design domain offers focused guidance that helps you quickly access the information that you need for enhanced productivity in a minimal amount of time. Consider the headings as navigational tools that guide you in the right direction for networking, core infrastructure, the application platform, monitoring, security, and operational procedures.\n\nStart by reviewing the design considerations for Azure infrastructure that are needed to support a workload.\n\n> [!div class=\"nextstepaction\"]\n> [Infrastructure](infrastructure.md)",
+  "headings": [
+    {
+      "level": 1,
+      "text": "Azure VMware Solution design principles",
+      "line": 1,
+      "path": [
+        "Azure VMware Solution design principles"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Reliability",
+      "line": 13,
+      "path": [
+        "Azure VMware Solution design principles",
+        "Reliability"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Security",
+      "line": 29,
+      "path": [
+        "Azure VMware Solution design principles",
+        "Security"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Cost optimization",
+      "line": 50,
+      "path": [
+        "Azure VMware Solution design principles",
+        "Cost optimization"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Performance efficiency",
+      "line": 64,
+      "path": [
+        "Azure VMware Solution design principles",
+        "Performance efficiency"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Operational excellence",
+      "line": 77,
+      "path": [
+        "Azure VMware Solution design principles",
+        "Operational excellence"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Next steps",
+      "line": 92,
+      "path": [
+        "Azure VMware Solution design principles",
+        "Next steps"
+      ]
+    }
+  ],
+  "sections": [
+    {
+      "sectionOrder": 1,
+      "headingLevel": 1,
+      "headingText": "Azure VMware Solution design principles",
+      "headingPath": [
+        "Azure VMware Solution design principles"
+      ],
+      "markdown": "Guidance about well-architected Azure VMware Solution workloads is built on the Azure Well-Architected Framework and its five pillars of architectural excellence. The following table lists each pillar and a summary of its goals.\n\n| Well-Architected Framework pillar | Summary |\n| --- | --- |\n| Reliability | An Azure VMware Solution workload requires platform resiliency and high availability to protect critical business data. You can use the Well-Architected Framework to assess hybrid workloads that run in Azure VMware Solution and have an application footprint that extends to Azure native services. |\n| Security | This pillar is concerned with implementing measures that help protect your workload from threats. Examples include adding multiple security layers to your applications, including identity and access management (IAM), input validation, data sovereignty, and encryption for distributed denial-of-service (DDoS) mitigation. Other measures include blocking bad actors, preventing data exfiltration, and providing protection from operating system vulnerabilities. |\n| Cost optimization | A well-architected application deployment meets performance expectations while reducing the total cost of ownership. |\n| Performance efficiency | When your application demonstrates performance efficiency, it can optimize disk operations and has sufficient resources to scale with demand. It also minimizes network latency to make communication between the components of a distributed workload efficient. This pillar also includes load balancing, geographic placement, and caching mechanisms. |\n| Operational excellence | This pillar focuses on smooth operations and maximizing the value you derive from VMware deployments. These goals are achievable by combining automation, monitoring, security measures, disaster recovery planning, performance optimization, and effective documentation. |",
+      "lineStart": 2,
+      "lineEnd": 12
+    },
+    {
+      "sectionOrder": 2,
+      "headingLevel": 2,
+      "headingText": "Reliability",
+      "headingPath": [
+        "Azure VMware Solution design principles",
+        "Reliability"
+      ],
+      "markdown": "Because failures can occur on-premises and in the cloud, it's important to focus on resilience and availability when you design an Azure VMware Solution workload.\n\n- *Resiliency* is the ability to withstand infrastructure faults, transient errors, and demand spikes while continuing to operate (possibly in a degraded mode) without user-impacting downtime.\n  \n- *Availability* ensures uninterrupted uptime. High availability minimizes application downtime during critical maintenance activities. It also enhances recovery from incidents like virtual machine (VM) crashes, backend updates, extended downtimes, and ransomware attacks.\n\nAchieving reliability requires a comprehensive approach that spans architecture, operational procedures, automation, monitoring, regular testing, and validation.\n\n- **Define service-level agreements (SLAs)** to help ensure the reliability of your workload.\n- Scale workloads **vertically** by selecting a VM SKU that's appropriate for your workload's resources such as CPU and memory. Scale **horizontally** by adding VM instances.\n- **Design for high availability** by implementing redundancy and failover mechanisms to help ensure continuous operations. **Distribute traffic** by considering strategies such as load balancing to distribute traffic across multiple back-end sources.\n- **Implement fault-tolerant** storage to help ensure data integrity and availability by using technologies such as redundant array of independent disks (RAID) configurations or distributed storage systems.\n- **Understand backup and restore capabilities** for data recovery in case of accidental deletion, corruption, or other data loss scenarios. Documenting application dependencies and backup and restore procedures also helps to streamline recovery processes.",
+      "lineStart": 14,
+      "lineEnd": 28
+    },
+    {
+      "sectionOrder": 3,
+      "headingLevel": 2,
+      "headingText": "Security",
+      "headingPath": [
+        "Azure VMware Solution design principles",
+        "Security"
+      ],
+      "markdown": "In a shared-responsibility model:\n\n- Organizations are primarily responsible for managing and operating workloads.\n- Microsoft manages the physical and virtual infrastructure of Azure VMware Solution.\n\nWe strongly recommend that you regularly assess the services and technologies to ensure that your security posture adapts to the evolving threat landscape. Establishing a clear understanding of the shared responsibility model when you collaborate with vendors to implement suitable security measures is also essential.\n\nYou can employ several methods to secure your Azure VMware Solution environment:\n\n- Implement network isolation by using segments, virtual LANs, and network security groups for Azure native services.\n- Manage patches effectively.\n- Conduct environmental audits regularly.\n- Monitor security with a security information and event management (SIEM) solution like Microsoft Sentinel.\n- Implement encryption for data at rest and in transit.\n- Use robust IAM practices:\n  - Enforce multi-factor authentication.\n  - Integrate your workload with Microsoft Entra ID.\n  - Implement the principle of least privilege, and use role-based access control to assign roles.",
+      "lineStart": 30,
+      "lineEnd": 49
+    },
+    {
+      "sectionOrder": 4,
+      "headingLevel": 2,
+      "headingText": "Cost optimization",
+      "headingPath": [
+        "Azure VMware Solution design principles",
+        "Cost optimization"
+      ],
+      "markdown": "Microsoft and VMware make significant investments in:\n\n- The fast evolution of hardware.\n- The VMware hypervisor.\n- Azure native services.\n\nThese investments help provide more value for less. For example, they help suppress egress charges out of the software-defined datacenter (SDDC). They also incorporate enterprise licensing of several services into base costs.\n\nThe capabilities of Azure hardware expand frequently. As a result, opportunities regularly come up for Azure VMware Solution workloads to optimize costs, eliminate waste, and improve technologies such as purchasing reservations.\n\nConsider creating a plan for each of your Azure VMware Solution applications and its integration services. Each plan should contain the objectives and motivations for the workload. Organizational objectives and investment priorities should drive cost optimization initiatives for your application, application platform, and data platform.",
+      "lineStart": 51,
+      "lineEnd": 63
+    },
+    {
+      "sectionOrder": 5,
+      "headingLevel": 2,
+      "headingText": "Performance efficiency",
+      "headingPath": [
+        "Azure VMware Solution design principles",
+        "Performance efficiency"
+      ],
+      "markdown": "This pillar focuses on optimizing workloads that run on Azure-dedicated hardware. That focus includes many aspects:\n\n- Allocating resources, which includes the ability to adjust CPU, storage, memory, and network resources to meet application demands.\n- Continuously monitoring performance and detecting anomalies by using tools such as VMware vRealize Operations Manager.\n- Configuring specific settings at the application layer to improve overall performance, such as:\n  - Query optimization at the data tier.\n  - In-memory caching of your application.\n  - The configuration of HTTP headers and the web tier.\n\nConsidering each of these aspects helps you build a well-architected application that delivers a consistent, cohesive user experience.",
+      "lineStart": 65,
+      "lineEnd": 76
+    },
+    {
+      "sectionOrder": 6,
+      "headingLevel": 2,
+      "headingText": "Operational excellence",
+      "headingPath": [
+        "Azure VMware Solution design principles",
+        "Operational excellence"
+      ],
+      "markdown": "Operational excellence involves fully using the capabilities of Azure VMware Solution. Another part of operational excellence is adhering to well-architected best practices to secure, optimize, and scale workloads. This practice involves:\n\n- Having processes in place for installing up-to-date patches and upgrades.\n- Maintaining governance and compliance.\n- Analyzing the performance and health of your environment.\n- Following comprehensive processes.\n- Maintaining documentation that captures:\n  - Troubleshooting procedures.\n  - Disaster recovery plans.\n  - Remediation guidance on how to accelerate the process of resolving problems.\n\nThese steps help teams to collaborate in a way that's efficient and transparent.",
+      "lineStart": 78,
+      "lineEnd": 91
+    },
+    {
+      "sectionOrder": 7,
+      "headingLevel": 2,
+      "headingText": "Next steps",
+      "headingPath": [
+        "Azure VMware Solution design principles",
+        "Next steps"
+      ],
+      "markdown": "The design principles that are incorporated into Azure VMware Solution guidance cover specific design domains. Each design domain offers focused guidance that helps you quickly access the information that you need for enhanced productivity in a minimal amount of time. Consider the headings as navigational tools that guide you in the right direction for networking, core infrastructure, the application platform, monitoring, security, and operational procedures.\n\nStart by reviewing the design considerations for Azure infrastructure that are needed to support a workload.\n\n> [!div class=\"nextstepaction\"]\n> [Infrastructure](infrastructure.md)",
+      "lineStart": 93,
+      "lineEnd": 99
+    }
+  ],
+  "localLinks": [
+    "infrastructure.md"
+  ],
+  "lastModified": "2026-03-17T16:22:13.432Z"
+}

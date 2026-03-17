@@ -1,0 +1,184 @@
+{
+  "source": {
+    "absolutePath": "C:\\Users\\EricL\\source\\repos\\Well-Architected-Vibe-Coding\\well-architected-vibe-coding\\well-architected\\saas\\get-started.md",
+    "repoRelativePath": "well-architected/saas/get-started.md",
+    "docsRelativePath": "saas/get-started.md"
+  },
+  "frontMatter": {
+    "title": "SaaS Workloads",
+    "description": "Overview of SaaS workloads on Azure.",
+    "author": "PageWriter-MSFT",
+    "ms.author": "prwilk",
+    "ms.date": "11/05/2025",
+    "ms.update-cycle": "1095-days",
+    "ms.topic": "concept-article",
+    "ms.collection": "learn-startups"
+  },
+  "title": "SaaS Workloads",
+  "rawBody": "# Azure Well-Architected SaaS workloads\n\nBuilding and operating software as a service (SaaS) on Microsoft Azure requires a different approach compared to other types of software. Independent software vendors (ISVs) have a unique position in the cloud ecosystem because their SaaS solutions drive their business. They sell their products to businesses, also known as *business-to-business (B2B)*, or to consumers, also known as *business-to-consumer (B2C)*. ISVs typically host and maintain the SaaS solution that they build. Their customers configure the product and manage the data.\n\nA solution built using the Well-Architected Framework ensures that the workload can operate at scale. This series of articles provide key insights for creating scalable, performant, reliable, and secure SaaS solutions on Azure. If you're not already familiar with the Well-Architected Framework, we suggest taking some time to learn its principles.\n\n> Refer to [**Microsoft Azure Well-Architected Framework pillars**](../pillars.md).\n\n## What is a SaaS workload?\n\nThe term *workload* refers to a collection of application resources that support a common business goal or the execution of a common business process, with multiple services, such as APIs and data stores, working together to deliver specific end-to-end functionality.\n\nThe term *SaaS* refers to the business model of delivering software as a service. As a vendor, you are responsible for delivering and operating the entire solution. You must carefully manage customer environments at scale while meeting requirements for customer isolation, security, and compliance. SaaS solutions often rely on a multitenant architecture, where resources are shared among multiple customers. This approach influences the design and deployment of resources, as well as the pricing model offered to customers.\n\n## What are the common challenges?\n\nMicrosoft Azure is an excellent platform for delivering SaaS, offering the necessary elasticity and scalability. It also provides features to automate various aspects of SaaS delivery. However, delivering SaaS on Azure comes with its own set of challenges:\n\n- Customer expectations are high, demanding quality, security, and resiliency. For B2B solutions, you essentially become an extension of your customers' IT departments, taking responsibility for keeping your solution operational and healthy. This requires a shift from merely developing software to operating it at scale.\n\n- Delivering SaaS means balancing your own business needs with those of your customers, which can sometimes conflict. You'll face pressure to reduce your cost of goods sold (COGS) and increase efficiency, while customers demand more from your solution.\n\n- SaaS often operates at high scale or with aggressive growth targets. As you scale, maintaining performance and reliability while reducing operational complexity is crucial. Manual operations are impractical, so automation and structured processes are necessary, requiring a degree of operational maturity.\n\n- Isolation is a critical requirement when you share infrastructure among your customers. Customers expect their data to be secure and to experience consistent performance and reliability, regardless of other customers' activities. As a vendor, you bear significant responsibility for protecting your customers' data and workloads, including from other customers.\n\n## What's the maturity model for building SaaS?\n\nOrganizations building SaaS products are typically:\n\n- **Startups or other small organizations.** Typically, there are fewer people, and fewer resources. No matter the size of the organization, SaaS requires some level of maturity to meet high customer expectations. Customers trust the organization to protect their data and other assets. They might also rely on the solution for important parts of their operations. Therefore, Operational Excellence and Reliability become key aspects of the solution.\n\n  Initially, startups should prioritize the most impactful elements for their customers. In parallel, they should plan for future architectural enhancements such as automation, tenant management, cost reduction, and improved security and reliability. Even though this may not seem practical at first, this strategic planning serves as a blueprint for gradual implementation and continuous improvement. As the startup grows, it should adapt and refine its processes, adopt new technologies, and meet evolving compliance standards to scale effectively and maintain customer trust.\n\n- **Established organizations.** Established organizations looking to modernize their existing solutions often migrate to a SaaS model. Even though the organization might have more resources, the challenges become complex. They must support existing customers while developing the new SaaS solution, which can create operational overhead. This transition requires changes in technical architecture, skill sets, and overall business operations. The focus should be on minimizing the impact on current customers and make sure they receive similar or improved reliability, security, and performance. Once the legacy solutions are less burdensome, the organization can prioritize new features and improvements.\n\n## How to use this guidance?\n\n**&#10004;** Start with [**Design Methodology**](./design-methodology.md), which outlines the rationale and recurring themes across technical and operational areas. This systematic approach helps define requirements and design strategies. Revisit this methodology when facing uncertain choices to stay aligned with the workload's overall goals. It also provides a framework for collaborating with marketing and sales teams to validate technical decisions and incorporate customer feedback for continuous improvement.\n\n**&#10004;** Proceed to [**Design Principles**](./design-methodology.md) to see how the SaaS design methodology aligns with the core Well-Architected Framework pillars, considering growth evolution. Evaluate the underlying principles for all pillars collectively, including the tradeoffs.\n\n**&#10004;** Focus on the **design areas** that have the biggest impact on your solution. Each area includes considerations and recommendations to guide you through the design decisions.\n\n|Design areas|\n|---|\n|[Billing and cost management](./billing-cost-management.md): Evaluate your billing strategy and its effect on your cost of goods sold (COGS). Model and anticipate cost changes as your SaaS business scales. Look for ways to optimize cloud resource expenses.|\n|[Governance](./governance.md): Manage and regulate your cloud service usage to establish a secure Azure environment.|\n|[Resource organization](./resource-organization.md): Plan how you'll deploy your resources to support your scale and cost requirements. |\n|[Identity and access management](./identity-access.md): Understand the challenges of managing identity in a multitenant SaaS environment. Choose an appropriate identity provider and consider the need for federation with your customers' identity systems.|\n|[Compute](./compute.md): Select a compute platform that meets your needs. Plan for customer isolation, scalability, and resiliency.  |\n|[Networking](./networking.md): Plan your network deployment, including topology and defenses. Isolate resources between customers and meet their connectivity needs, including integrating with their networks and deploying resources into their environments. |\n|[Data](./data.md): Choose a suitable data store and plan for isolating customer data while maintaining operational efficiency. Consider capacity planning based on your scale and growth, and ensure your data meets customer resiliency requirements. |\n|[DevOps practices](./devops.md): Deploy infrastructure and applications for each customer according to your tenancy model. Use a structured approach for changes, including progressive rollouts. |\n|[Incident management](./incident-management.md) : Establish responsibilities of operating SaaS and the necessary cultural elements within your organization. Prepare for incidents by investing in tools and processes for investigation, remediation, and communication.|\n\n**&#10004;** Use the [**Assessment Review Tool**](./assessment.md) to evaluate the readiness of your optimized SaaS workload in production.\n\n> [!TIP]\n> Every architectural decision involves a range of considerations and a set of acknowledged compromises that balance different aspects of the framework. These tradeoffs are indicated by this icon. :::image type=\"icon\" source=\"../_images/trade-off.svg\":::.\n\n## What resources are available?\n\nMultitenancy is a core business methodology for designing SaaS workloads. Read these additional resources to learn more.\n\n- [SaaS and multitenant solution architecture](/azure/architecture/guide/saas-multitenant-solution-architecture/): Provides extensive and detailed guidance on how to design SaaS, including information on how specific Azure services can be used to support SaaS design goals.\n\n## Next steps\n\nUnderstand the methodology to follow when designing a SaaS workload on Azure.\n\n> [!div class=\"nextstepaction\"]\n> [Design methodology](design-methodology.md)",
+  "headings": [
+    {
+      "level": 1,
+      "text": "Azure Well-Architected SaaS workloads",
+      "line": 1,
+      "path": [
+        "Azure Well-Architected SaaS workloads"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "What is a SaaS workload?",
+      "line": 9,
+      "path": [
+        "Azure Well-Architected SaaS workloads",
+        "What is a SaaS workload?"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "What are the common challenges?",
+      "line": 15,
+      "path": [
+        "Azure Well-Architected SaaS workloads",
+        "What are the common challenges?"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "What's the maturity model for building SaaS?",
+      "line": 27,
+      "path": [
+        "Azure Well-Architected SaaS workloads",
+        "What's the maturity model for building SaaS?"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "How to use this guidance?",
+      "line": 37,
+      "path": [
+        "Azure Well-Architected SaaS workloads",
+        "How to use this guidance?"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "What resources are available?",
+      "line": 62,
+      "path": [
+        "Azure Well-Architected SaaS workloads",
+        "What resources are available?"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Next steps",
+      "line": 68,
+      "path": [
+        "Azure Well-Architected SaaS workloads",
+        "Next steps"
+      ]
+    }
+  ],
+  "sections": [
+    {
+      "sectionOrder": 1,
+      "headingLevel": 1,
+      "headingText": "Azure Well-Architected SaaS workloads",
+      "headingPath": [
+        "Azure Well-Architected SaaS workloads"
+      ],
+      "markdown": "Building and operating software as a service (SaaS) on Microsoft Azure requires a different approach compared to other types of software. Independent software vendors (ISVs) have a unique position in the cloud ecosystem because their SaaS solutions drive their business. They sell their products to businesses, also known as *business-to-business (B2B)*, or to consumers, also known as *business-to-consumer (B2C)*. ISVs typically host and maintain the SaaS solution that they build. Their customers configure the product and manage the data.\n\nA solution built using the Well-Architected Framework ensures that the workload can operate at scale. This series of articles provide key insights for creating scalable, performant, reliable, and secure SaaS solutions on Azure. If you're not already familiar with the Well-Architected Framework, we suggest taking some time to learn its principles.\n\n> Refer to [**Microsoft Azure Well-Architected Framework pillars**](../pillars.md).",
+      "lineStart": 2,
+      "lineEnd": 8
+    },
+    {
+      "sectionOrder": 2,
+      "headingLevel": 2,
+      "headingText": "What is a SaaS workload?",
+      "headingPath": [
+        "Azure Well-Architected SaaS workloads",
+        "What is a SaaS workload?"
+      ],
+      "markdown": "The term *workload* refers to a collection of application resources that support a common business goal or the execution of a common business process, with multiple services, such as APIs and data stores, working together to deliver specific end-to-end functionality.\n\nThe term *SaaS* refers to the business model of delivering software as a service. As a vendor, you are responsible for delivering and operating the entire solution. You must carefully manage customer environments at scale while meeting requirements for customer isolation, security, and compliance. SaaS solutions often rely on a multitenant architecture, where resources are shared among multiple customers. This approach influences the design and deployment of resources, as well as the pricing model offered to customers.",
+      "lineStart": 10,
+      "lineEnd": 14
+    },
+    {
+      "sectionOrder": 3,
+      "headingLevel": 2,
+      "headingText": "What are the common challenges?",
+      "headingPath": [
+        "Azure Well-Architected SaaS workloads",
+        "What are the common challenges?"
+      ],
+      "markdown": "Microsoft Azure is an excellent platform for delivering SaaS, offering the necessary elasticity and scalability. It also provides features to automate various aspects of SaaS delivery. However, delivering SaaS on Azure comes with its own set of challenges:\n\n- Customer expectations are high, demanding quality, security, and resiliency. For B2B solutions, you essentially become an extension of your customers' IT departments, taking responsibility for keeping your solution operational and healthy. This requires a shift from merely developing software to operating it at scale.\n\n- Delivering SaaS means balancing your own business needs with those of your customers, which can sometimes conflict. You'll face pressure to reduce your cost of goods sold (COGS) and increase efficiency, while customers demand more from your solution.\n\n- SaaS often operates at high scale or with aggressive growth targets. As you scale, maintaining performance and reliability while reducing operational complexity is crucial. Manual operations are impractical, so automation and structured processes are necessary, requiring a degree of operational maturity.\n\n- Isolation is a critical requirement when you share infrastructure among your customers. Customers expect their data to be secure and to experience consistent performance and reliability, regardless of other customers' activities. As a vendor, you bear significant responsibility for protecting your customers' data and workloads, including from other customers.",
+      "lineStart": 16,
+      "lineEnd": 26
+    },
+    {
+      "sectionOrder": 4,
+      "headingLevel": 2,
+      "headingText": "What's the maturity model for building SaaS?",
+      "headingPath": [
+        "Azure Well-Architected SaaS workloads",
+        "What's the maturity model for building SaaS?"
+      ],
+      "markdown": "Organizations building SaaS products are typically:\n\n- **Startups or other small organizations.** Typically, there are fewer people, and fewer resources. No matter the size of the organization, SaaS requires some level of maturity to meet high customer expectations. Customers trust the organization to protect their data and other assets. They might also rely on the solution for important parts of their operations. Therefore, Operational Excellence and Reliability become key aspects of the solution.\n\n  Initially, startups should prioritize the most impactful elements for their customers. In parallel, they should plan for future architectural enhancements such as automation, tenant management, cost reduction, and improved security and reliability. Even though this may not seem practical at first, this strategic planning serves as a blueprint for gradual implementation and continuous improvement. As the startup grows, it should adapt and refine its processes, adopt new technologies, and meet evolving compliance standards to scale effectively and maintain customer trust.\n\n- **Established organizations.** Established organizations looking to modernize their existing solutions often migrate to a SaaS model. Even though the organization might have more resources, the challenges become complex. They must support existing customers while developing the new SaaS solution, which can create operational overhead. This transition requires changes in technical architecture, skill sets, and overall business operations. The focus should be on minimizing the impact on current customers and make sure they receive similar or improved reliability, security, and performance. Once the legacy solutions are less burdensome, the organization can prioritize new features and improvements.",
+      "lineStart": 28,
+      "lineEnd": 36
+    },
+    {
+      "sectionOrder": 5,
+      "headingLevel": 2,
+      "headingText": "How to use this guidance?",
+      "headingPath": [
+        "Azure Well-Architected SaaS workloads",
+        "How to use this guidance?"
+      ],
+      "markdown": "**&#10004;** Start with [**Design Methodology**](./design-methodology.md), which outlines the rationale and recurring themes across technical and operational areas. This systematic approach helps define requirements and design strategies. Revisit this methodology when facing uncertain choices to stay aligned with the workload's overall goals. It also provides a framework for collaborating with marketing and sales teams to validate technical decisions and incorporate customer feedback for continuous improvement.\n\n**&#10004;** Proceed to [**Design Principles**](./design-methodology.md) to see how the SaaS design methodology aligns with the core Well-Architected Framework pillars, considering growth evolution. Evaluate the underlying principles for all pillars collectively, including the tradeoffs.\n\n**&#10004;** Focus on the **design areas** that have the biggest impact on your solution. Each area includes considerations and recommendations to guide you through the design decisions.\n\n|Design areas|\n|---|\n|[Billing and cost management](./billing-cost-management.md): Evaluate your billing strategy and its effect on your cost of goods sold (COGS). Model and anticipate cost changes as your SaaS business scales. Look for ways to optimize cloud resource expenses.|\n|[Governance](./governance.md): Manage and regulate your cloud service usage to establish a secure Azure environment.|\n|[Resource organization](./resource-organization.md): Plan how you'll deploy your resources to support your scale and cost requirements. |\n|[Identity and access management](./identity-access.md): Understand the challenges of managing identity in a multitenant SaaS environment. Choose an appropriate identity provider and consider the need for federation with your customers' identity systems.|\n|[Compute](./compute.md): Select a compute platform that meets your needs. Plan for customer isolation, scalability, and resiliency.  |\n|[Networking](./networking.md): Plan your network deployment, including topology and defenses. Isolate resources between customers and meet their connectivity needs, including integrating with their networks and deploying resources into their environments. |\n|[Data](./data.md): Choose a suitable data store and plan for isolating customer data while maintaining operational efficiency. Consider capacity planning based on your scale and growth, and ensure your data meets customer resiliency requirements. |\n|[DevOps practices](./devops.md): Deploy infrastructure and applications for each customer according to your tenancy model. Use a structured approach for changes, including progressive rollouts. |\n|[Incident management](./incident-management.md) : Establish responsibilities of operating SaaS and the necessary cultural elements within your organization. Prepare for incidents by investing in tools and processes for investigation, remediation, and communication.|\n\n**&#10004;** Use the [**Assessment Review Tool**](./assessment.md) to evaluate the readiness of your optimized SaaS workload in production.\n\n> [!TIP]\n> Every architectural decision involves a range of considerations and a set of acknowledged compromises that balance different aspects of the framework. These tradeoffs are indicated by this icon. :::image type=\"icon\" source=\"../_images/trade-off.svg\":::.",
+      "lineStart": 38,
+      "lineEnd": 61
+    },
+    {
+      "sectionOrder": 6,
+      "headingLevel": 2,
+      "headingText": "What resources are available?",
+      "headingPath": [
+        "Azure Well-Architected SaaS workloads",
+        "What resources are available?"
+      ],
+      "markdown": "Multitenancy is a core business methodology for designing SaaS workloads. Read these additional resources to learn more.\n\n- [SaaS and multitenant solution architecture](/azure/architecture/guide/saas-multitenant-solution-architecture/): Provides extensive and detailed guidance on how to design SaaS, including information on how specific Azure services can be used to support SaaS design goals.",
+      "lineStart": 63,
+      "lineEnd": 67
+    },
+    {
+      "sectionOrder": 7,
+      "headingLevel": 2,
+      "headingText": "Next steps",
+      "headingPath": [
+        "Azure Well-Architected SaaS workloads",
+        "Next steps"
+      ],
+      "markdown": "Understand the methodology to follow when designing a SaaS workload on Azure.\n\n> [!div class=\"nextstepaction\"]\n> [Design methodology](design-methodology.md)",
+      "lineStart": 69,
+      "lineEnd": 73
+    }
+  ],
+  "localLinks": [
+    "../pillars.md",
+    "./assessment.md",
+    "./billing-cost-management.md",
+    "./compute.md",
+    "./data.md",
+    "./design-methodology.md",
+    "./devops.md",
+    "./governance.md",
+    "./identity-access.md",
+    "./incident-management.md",
+    "./networking.md",
+    "./resource-organization.md",
+    "design-methodology.md"
+  ],
+  "lastModified": "2026-03-17T16:22:13.719Z"
+}

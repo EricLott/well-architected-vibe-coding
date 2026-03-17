@@ -1,0 +1,353 @@
+{
+  "source": {
+    "absolutePath": "C:\\Users\\EricL\\source\\repos\\Well-Architected-Vibe-Coding\\well-architected-vibe-coding\\well-architected\\azure-vmware\\networking.md",
+    "repoRelativePath": "well-architected/azure-vmware/networking.md",
+    "docsRelativePath": "azure-vmware/networking.md"
+  },
+  "frontMatter": {
+    "title": "Networking considerations for Azure VMware Solution workloads",
+    "description": "Understand Azure VMware Solution networking concepts. See techniques for improving the security, operations, and scalability of networks.",
+    "author": "PageWriter-MSFT",
+    "ms.author": "prwilk",
+    "ms.date": "08/10/2023",
+    "ms.topic": "concept-article",
+    "ms.service": "azure-waf",
+    "ms.subservice": "waf-workload-azure-vmware"
+  },
+  "title": "Networking considerations for Azure VMware Solution workloads",
+  "rawBody": "# Networking considerations for Azure VMware Solution workloads\n\nThis article discusses the networking design area of an Azure VMware Solution workload. Well-architected networks are critical for enabling connectivity, optimizing response times, distributing traffic, and helping to ensure continuous availability of workloads in Azure VMware Solution.\n\n## Distribute load for high availability\n\n*Impact: Reliability, Performance efficiency*\n\nTo achieve scalability and optimize performance, you should distribute traffic across destinations within your Azure VMware Solution infrastructure. When you load balance Azure VMware Solution traffic, you can distribute it through various algorithms, such as algorithms that consider performance and weight. Distributing incoming traffic improves the scale and reliability of your workload applications. If your application spans multiple software-defined datacenters (SDDCs), an Azure load balancer can distribute traffic across all your environments.\n\n### Recommendations\n\n- Use a load balancer such as VMware NSX Advanced Load Balancer for even distribution of traffic. Support internal-facing and external-facing application gateways. Use the load balancer for routing, application delivery, and TLS termination.\n- For workloads that extend into Azure, use Azure Application Gateway. This load balancer distributes traffic to enhance application performance. Application Gateway also offers intrusion detection and prevention system (IDPS) and Azure Web Application Firewall capabilities. Azure Load Balancer can distribute traffic across zones to provide high availability and fault tolerance for workloads that span multiple Azure availability zones.\n\n## Minimize distance in global distribution\n\n*Impact: Reliability, Performance efficiency, Cost optimization*\n\nFor applications with a global presence, it's important to minimize the distance between instances and users. You can achieve this objective by routing traffic to the nearest Azure VMware Solution SDDC. If you use a traffic manager, you can also potentially lower outbound data transfer costs. Specifically, you can send users to the nearest Azure VMware Solution deployment or edge location. Reducing the distance that data travels helps you avoid long data transfers.\n\n### Recommendations\n\n- For applications that span multiple regions, consider deploying a Domain Name System–based global traffic load balancing solution such as Azure Traffic Manager.\n- Create traffic-routing profiles. Configure various routing methods such as priority-based routing, weighted round-robin, performance-based routing, or geographic-based routing.\n\n## Deliver content\n\n*Impact: Performance, Cost optimization*\n\nHigh-traffic applications require optimal retrieval of content. Optimization techniques such as compression and HTTP accelerators can improve the retrieval performance of assets within your Azure VMware Solution environment. You can use compression techniques on files before you transmit them. This practice can reduce costs by reducing the amount of data that you transmit. A content delivery network caches frequently accessed content. As a result, using a content delivery network with Azure VMware Solution can help you optimize retrieval and distribution. Content delivery networks can also help you save on costs in other ways. Because these networks cache data at edge locations that are close to users, they reduce the distance that data travels.\n\n### Recommendations\n\n- Use Azure Content Delivery Network to improve responsiveness and reduce latency for users who access your applications and websites.\n- Use compression to minimize the payload of static assets.\n- Use caching solutions like Redis or Azure Managed Redis to cache frequently accessed data.\n\n## Use a firewall for internet-facing workloads\n\n*Impact: Security*\n\nFront-facing workloads in Azure VMware Solution are mapped to a public IP address. As a result, they can be exposed to the internet, and they accept incoming connections from external sources. This association with your virtual machine (VM) or load balancer poses risks to your workloads.\n\n### Recommendations\n\n- For internet-facing applications, use a firewall such as Azure Firewall or a certified third-party NVA to inspect Azure VMware Solution traffic to the internet and Azure.\n- Make sure that your firewall has rules and access control lists to restrict and filter inbound traffic.\n\n## Secure traffic between internal workloads\n\n*Impact: Security*\n\nThe network is a critical perimeter in the Azure VMware Solution environment. Networks help control access, protect data, and mitigate threats. Robust network security measures help ensure the availability and resiliency of Azure VMware Solution workloads. For example, implementing network isolation through segmentation and the use of virtual LANs can help prevent unauthorized access between the components of your Azure VMware Solution environment. You can use network security groups to isolate and protect traffic within your workload virtual networks.\n\n### Recommendations\n\n- Create network segments for your Azure VMware Solution workloads.\n- Create firewall rules within VMware NSX-T Data Center.\n- Enable HCX Extension with High Availability. By default, HCX Network Extension Appliances are deployed as single instances. A failure of an instance running either at source or destination will make the whole stretched VLAN un-operational. By using [HCX Network Extension HA](/azure/azure-vmware/configure-hcx-network-extension-high-availability) will ensure that HCX operations such as vMotion can tolerate a single instance failure.\n\n## Design IP addressing schemes for growth\n\n*Impact: Security, Operational excellence*\n\nYou can use an intentional subnet security strategy to design Azure VMware Solution and cloud virtual networks for growth. This design involves strategically organizing IP address allocation. You also need to use an IP addressing tool and enforce allocation.\n\nBesides a /22 RFC-1918 address range, workload segments have separate, nonconflicting classless inter-domain routing (CIDR) ranges. Plan to have enough IP addresses for VMs, public IP addresses, and load balancers.\n\n### Recommendations\n\n- Ensure your IP address range is large enough to accommodate all current and future Azure VMware Solution workloads.\n- Use a spreadsheet or IP address management (IPAM) tool to efficiently organize available IP addresses, track IP address usage, and help avoid IP address conflicts.\n- Plan for potential increases in devices, segments, or subnets. Use an IP addressing scheme that can handle demand increases.\n- Identify duplicate routes in NSX-T Data Center T0 routers. Duplicate routes are a possible indication of asymmetric routes. Connection with on-premises environments might stop working if asymmetry isn't detected.\n- Use multiple DNS servers per private FQDN zone. Azure VMware Solution SDDC can [support up to three DNS servers](/azure/azure-vmware/configure-dns-azure-vmware-solution#configure-dns-forwarder) for a single FQDN. Using a single DNS server for DNS resolution becomes single point of failure. Ensure that multiple DNS servers are used for any on-premises FQDN resolution from Azure VMware Solution SDDC.\n- Use Dynamic Host Configuration Protocol (DHCP) for dynamic IP address assignment.\n\n## Additional resources\n\n- Crossing config limits can leave Azure VMware Solution SDDC in an unsupported state and impact its availability for any support/upgrade operations. Use multiple NSX segments to help ensure that you don't exceed the [VMware config limits](https://configmax.vmware.com/).\n\n## Next steps\n\nNow that you've examined networking in Azure VMware Solution, investigate best practices for monitoring your infrastructure and application.\n\n> [!div class=\"nextstepaction\"]\n> [Monitoring](./monitoring.md)\n\nUse the assessment tool to evaluate your design choices.\n\n> [!div class=\"nextstepaction\"]\n> [Assessment](./assessment.md)",
+  "headings": [
+    {
+      "level": 1,
+      "text": "Networking considerations for Azure VMware Solution workloads",
+      "line": 1,
+      "path": [
+        "Networking considerations for Azure VMware Solution workloads"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Distribute load for high availability",
+      "line": 5,
+      "path": [
+        "Networking considerations for Azure VMware Solution workloads",
+        "Distribute load for high availability"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Recommendations",
+      "line": 11,
+      "path": [
+        "Networking considerations for Azure VMware Solution workloads",
+        "Distribute load for high availability",
+        "Recommendations"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Minimize distance in global distribution",
+      "line": 16,
+      "path": [
+        "Networking considerations for Azure VMware Solution workloads",
+        "Minimize distance in global distribution"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Recommendations",
+      "line": 22,
+      "path": [
+        "Networking considerations for Azure VMware Solution workloads",
+        "Minimize distance in global distribution",
+        "Recommendations"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Deliver content",
+      "line": 27,
+      "path": [
+        "Networking considerations for Azure VMware Solution workloads",
+        "Deliver content"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Recommendations",
+      "line": 33,
+      "path": [
+        "Networking considerations for Azure VMware Solution workloads",
+        "Deliver content",
+        "Recommendations"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Use a firewall for internet-facing workloads",
+      "line": 39,
+      "path": [
+        "Networking considerations for Azure VMware Solution workloads",
+        "Use a firewall for internet-facing workloads"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Recommendations",
+      "line": 45,
+      "path": [
+        "Networking considerations for Azure VMware Solution workloads",
+        "Use a firewall for internet-facing workloads",
+        "Recommendations"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Secure traffic between internal workloads",
+      "line": 50,
+      "path": [
+        "Networking considerations for Azure VMware Solution workloads",
+        "Secure traffic between internal workloads"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Recommendations",
+      "line": 56,
+      "path": [
+        "Networking considerations for Azure VMware Solution workloads",
+        "Secure traffic between internal workloads",
+        "Recommendations"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Design IP addressing schemes for growth",
+      "line": 62,
+      "path": [
+        "Networking considerations for Azure VMware Solution workloads",
+        "Design IP addressing schemes for growth"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Recommendations",
+      "line": 70,
+      "path": [
+        "Networking considerations for Azure VMware Solution workloads",
+        "Design IP addressing schemes for growth",
+        "Recommendations"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Additional resources",
+      "line": 79,
+      "path": [
+        "Networking considerations for Azure VMware Solution workloads",
+        "Additional resources"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Next steps",
+      "line": 83,
+      "path": [
+        "Networking considerations for Azure VMware Solution workloads",
+        "Next steps"
+      ]
+    }
+  ],
+  "sections": [
+    {
+      "sectionOrder": 1,
+      "headingLevel": 1,
+      "headingText": "Networking considerations for Azure VMware Solution workloads",
+      "headingPath": [
+        "Networking considerations for Azure VMware Solution workloads"
+      ],
+      "markdown": "This article discusses the networking design area of an Azure VMware Solution workload. Well-architected networks are critical for enabling connectivity, optimizing response times, distributing traffic, and helping to ensure continuous availability of workloads in Azure VMware Solution.",
+      "lineStart": 2,
+      "lineEnd": 4
+    },
+    {
+      "sectionOrder": 2,
+      "headingLevel": 2,
+      "headingText": "Distribute load for high availability",
+      "headingPath": [
+        "Networking considerations for Azure VMware Solution workloads",
+        "Distribute load for high availability"
+      ],
+      "markdown": "*Impact: Reliability, Performance efficiency*\n\nTo achieve scalability and optimize performance, you should distribute traffic across destinations within your Azure VMware Solution infrastructure. When you load balance Azure VMware Solution traffic, you can distribute it through various algorithms, such as algorithms that consider performance and weight. Distributing incoming traffic improves the scale and reliability of your workload applications. If your application spans multiple software-defined datacenters (SDDCs), an Azure load balancer can distribute traffic across all your environments.",
+      "lineStart": 6,
+      "lineEnd": 10
+    },
+    {
+      "sectionOrder": 3,
+      "headingLevel": 3,
+      "headingText": "Recommendations",
+      "headingPath": [
+        "Networking considerations for Azure VMware Solution workloads",
+        "Distribute load for high availability",
+        "Recommendations"
+      ],
+      "markdown": "- Use a load balancer such as VMware NSX Advanced Load Balancer for even distribution of traffic. Support internal-facing and external-facing application gateways. Use the load balancer for routing, application delivery, and TLS termination.\n- For workloads that extend into Azure, use Azure Application Gateway. This load balancer distributes traffic to enhance application performance. Application Gateway also offers intrusion detection and prevention system (IDPS) and Azure Web Application Firewall capabilities. Azure Load Balancer can distribute traffic across zones to provide high availability and fault tolerance for workloads that span multiple Azure availability zones.",
+      "lineStart": 12,
+      "lineEnd": 15
+    },
+    {
+      "sectionOrder": 4,
+      "headingLevel": 2,
+      "headingText": "Minimize distance in global distribution",
+      "headingPath": [
+        "Networking considerations for Azure VMware Solution workloads",
+        "Minimize distance in global distribution"
+      ],
+      "markdown": "*Impact: Reliability, Performance efficiency, Cost optimization*\n\nFor applications with a global presence, it's important to minimize the distance between instances and users. You can achieve this objective by routing traffic to the nearest Azure VMware Solution SDDC. If you use a traffic manager, you can also potentially lower outbound data transfer costs. Specifically, you can send users to the nearest Azure VMware Solution deployment or edge location. Reducing the distance that data travels helps you avoid long data transfers.",
+      "lineStart": 17,
+      "lineEnd": 21
+    },
+    {
+      "sectionOrder": 5,
+      "headingLevel": 3,
+      "headingText": "Recommendations",
+      "headingPath": [
+        "Networking considerations for Azure VMware Solution workloads",
+        "Minimize distance in global distribution",
+        "Recommendations"
+      ],
+      "markdown": "- For applications that span multiple regions, consider deploying a Domain Name System–based global traffic load balancing solution such as Azure Traffic Manager.\n- Create traffic-routing profiles. Configure various routing methods such as priority-based routing, weighted round-robin, performance-based routing, or geographic-based routing.",
+      "lineStart": 23,
+      "lineEnd": 26
+    },
+    {
+      "sectionOrder": 6,
+      "headingLevel": 2,
+      "headingText": "Deliver content",
+      "headingPath": [
+        "Networking considerations for Azure VMware Solution workloads",
+        "Deliver content"
+      ],
+      "markdown": "*Impact: Performance, Cost optimization*\n\nHigh-traffic applications require optimal retrieval of content. Optimization techniques such as compression and HTTP accelerators can improve the retrieval performance of assets within your Azure VMware Solution environment. You can use compression techniques on files before you transmit them. This practice can reduce costs by reducing the amount of data that you transmit. A content delivery network caches frequently accessed content. As a result, using a content delivery network with Azure VMware Solution can help you optimize retrieval and distribution. Content delivery networks can also help you save on costs in other ways. Because these networks cache data at edge locations that are close to users, they reduce the distance that data travels.",
+      "lineStart": 28,
+      "lineEnd": 32
+    },
+    {
+      "sectionOrder": 7,
+      "headingLevel": 3,
+      "headingText": "Recommendations",
+      "headingPath": [
+        "Networking considerations for Azure VMware Solution workloads",
+        "Deliver content",
+        "Recommendations"
+      ],
+      "markdown": "- Use Azure Content Delivery Network to improve responsiveness and reduce latency for users who access your applications and websites.\n- Use compression to minimize the payload of static assets.\n- Use caching solutions like Redis or Azure Managed Redis to cache frequently accessed data.",
+      "lineStart": 34,
+      "lineEnd": 38
+    },
+    {
+      "sectionOrder": 8,
+      "headingLevel": 2,
+      "headingText": "Use a firewall for internet-facing workloads",
+      "headingPath": [
+        "Networking considerations for Azure VMware Solution workloads",
+        "Use a firewall for internet-facing workloads"
+      ],
+      "markdown": "*Impact: Security*\n\nFront-facing workloads in Azure VMware Solution are mapped to a public IP address. As a result, they can be exposed to the internet, and they accept incoming connections from external sources. This association with your virtual machine (VM) or load balancer poses risks to your workloads.",
+      "lineStart": 40,
+      "lineEnd": 44
+    },
+    {
+      "sectionOrder": 9,
+      "headingLevel": 3,
+      "headingText": "Recommendations",
+      "headingPath": [
+        "Networking considerations for Azure VMware Solution workloads",
+        "Use a firewall for internet-facing workloads",
+        "Recommendations"
+      ],
+      "markdown": "- For internet-facing applications, use a firewall such as Azure Firewall or a certified third-party NVA to inspect Azure VMware Solution traffic to the internet and Azure.\n- Make sure that your firewall has rules and access control lists to restrict and filter inbound traffic.",
+      "lineStart": 46,
+      "lineEnd": 49
+    },
+    {
+      "sectionOrder": 10,
+      "headingLevel": 2,
+      "headingText": "Secure traffic between internal workloads",
+      "headingPath": [
+        "Networking considerations for Azure VMware Solution workloads",
+        "Secure traffic between internal workloads"
+      ],
+      "markdown": "*Impact: Security*\n\nThe network is a critical perimeter in the Azure VMware Solution environment. Networks help control access, protect data, and mitigate threats. Robust network security measures help ensure the availability and resiliency of Azure VMware Solution workloads. For example, implementing network isolation through segmentation and the use of virtual LANs can help prevent unauthorized access between the components of your Azure VMware Solution environment. You can use network security groups to isolate and protect traffic within your workload virtual networks.",
+      "lineStart": 51,
+      "lineEnd": 55
+    },
+    {
+      "sectionOrder": 11,
+      "headingLevel": 3,
+      "headingText": "Recommendations",
+      "headingPath": [
+        "Networking considerations for Azure VMware Solution workloads",
+        "Secure traffic between internal workloads",
+        "Recommendations"
+      ],
+      "markdown": "- Create network segments for your Azure VMware Solution workloads.\n- Create firewall rules within VMware NSX-T Data Center.\n- Enable HCX Extension with High Availability. By default, HCX Network Extension Appliances are deployed as single instances. A failure of an instance running either at source or destination will make the whole stretched VLAN un-operational. By using [HCX Network Extension HA](/azure/azure-vmware/configure-hcx-network-extension-high-availability) will ensure that HCX operations such as vMotion can tolerate a single instance failure.",
+      "lineStart": 57,
+      "lineEnd": 61
+    },
+    {
+      "sectionOrder": 12,
+      "headingLevel": 2,
+      "headingText": "Design IP addressing schemes for growth",
+      "headingPath": [
+        "Networking considerations for Azure VMware Solution workloads",
+        "Design IP addressing schemes for growth"
+      ],
+      "markdown": "*Impact: Security, Operational excellence*\n\nYou can use an intentional subnet security strategy to design Azure VMware Solution and cloud virtual networks for growth. This design involves strategically organizing IP address allocation. You also need to use an IP addressing tool and enforce allocation.\n\nBesides a /22 RFC-1918 address range, workload segments have separate, nonconflicting classless inter-domain routing (CIDR) ranges. Plan to have enough IP addresses for VMs, public IP addresses, and load balancers.",
+      "lineStart": 63,
+      "lineEnd": 69
+    },
+    {
+      "sectionOrder": 13,
+      "headingLevel": 3,
+      "headingText": "Recommendations",
+      "headingPath": [
+        "Networking considerations for Azure VMware Solution workloads",
+        "Design IP addressing schemes for growth",
+        "Recommendations"
+      ],
+      "markdown": "- Ensure your IP address range is large enough to accommodate all current and future Azure VMware Solution workloads.\n- Use a spreadsheet or IP address management (IPAM) tool to efficiently organize available IP addresses, track IP address usage, and help avoid IP address conflicts.\n- Plan for potential increases in devices, segments, or subnets. Use an IP addressing scheme that can handle demand increases.\n- Identify duplicate routes in NSX-T Data Center T0 routers. Duplicate routes are a possible indication of asymmetric routes. Connection with on-premises environments might stop working if asymmetry isn't detected.\n- Use multiple DNS servers per private FQDN zone. Azure VMware Solution SDDC can [support up to three DNS servers](/azure/azure-vmware/configure-dns-azure-vmware-solution#configure-dns-forwarder) for a single FQDN. Using a single DNS server for DNS resolution becomes single point of failure. Ensure that multiple DNS servers are used for any on-premises FQDN resolution from Azure VMware Solution SDDC.\n- Use Dynamic Host Configuration Protocol (DHCP) for dynamic IP address assignment.",
+      "lineStart": 71,
+      "lineEnd": 78
+    },
+    {
+      "sectionOrder": 14,
+      "headingLevel": 2,
+      "headingText": "Additional resources",
+      "headingPath": [
+        "Networking considerations for Azure VMware Solution workloads",
+        "Additional resources"
+      ],
+      "markdown": "- Crossing config limits can leave Azure VMware Solution SDDC in an unsupported state and impact its availability for any support/upgrade operations. Use multiple NSX segments to help ensure that you don't exceed the [VMware config limits](https://configmax.vmware.com/).",
+      "lineStart": 80,
+      "lineEnd": 82
+    },
+    {
+      "sectionOrder": 15,
+      "headingLevel": 2,
+      "headingText": "Next steps",
+      "headingPath": [
+        "Networking considerations for Azure VMware Solution workloads",
+        "Next steps"
+      ],
+      "markdown": "Now that you've examined networking in Azure VMware Solution, investigate best practices for monitoring your infrastructure and application.\n\n> [!div class=\"nextstepaction\"]\n> [Monitoring](./monitoring.md)\n\nUse the assessment tool to evaluate your design choices.\n\n> [!div class=\"nextstepaction\"]\n> [Assessment](./assessment.md)",
+      "lineStart": 84,
+      "lineEnd": 93
+    }
+  ],
+  "localLinks": [
+    "./assessment.md",
+    "./monitoring.md"
+  ],
+  "lastModified": "2026-03-17T16:22:13.450Z"
+}

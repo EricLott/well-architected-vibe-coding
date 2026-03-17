@@ -1,0 +1,382 @@
+{
+  "source": {
+    "absolutePath": "C:\\Users\\EricL\\source\\repos\\Well-Architected-Vibe-Coding\\well-architected-vibe-coding\\well-architected\\azure-virtual-desktop\\business-continuity.md",
+    "repoRelativePath": "well-architected/azure-virtual-desktop/business-continuity.md",
+    "docsRelativePath": "azure-virtual-desktop/business-continuity.md"
+  },
+  "frontMatter": {
+    "title": "Business continuity considerations for Azure Virtual Desktop workloads",
+    "description": "Understand Azure Virtual Desktop business continuity concepts. See how to design host pools, virtual networks, and other components for reliability.",
+    "author": "moisesjgomez",
+    "ms.author": "mgomezcortez",
+    "ms.date": "09/15/2023",
+    "ms.topic": "concept-article",
+    "ms.service": "azure-waf",
+    "ms.subservice": "waf-workload-azure-virtual-desktop"
+  },
+  "title": "Business continuity considerations for Azure Virtual Desktop workloads",
+  "rawBody": "# Business continuity considerations for Azure Virtual Desktop workloads\n\nThis article discusses the business continuity design area of an Azure Virtual Desktop workload. To strengthen your organization's Azure Virtual Desktop deployment and to help keep data safe, you should implement a business continuity and disaster recovery strategy. A good strategy helps keep your apps and workloads up and running during planned and unplanned service or Azure outages.\n\nTo help make sure that your users can connect during an Azure region outage, you might need to replicate personal virtual machines (VMs) to a different Azure region—your secondary location. During outages, the primary region fails over to the replicated VMs in the secondary location. Users can continue to access apps from the secondary location without interruption. Besides replicating VMs, you also need to ensure that user identities are accessible at the secondary location. You can use profile containers to make identities accessible. As an alternative to VM replication, you can use multiple pooled host pools with automated provisioning across regions.\n\n> [!IMPORTANT]\n> This article is part of the [Azure Well-Architected Framework Azure Virtual Desktop workload](./index.yml) series. If you aren't familiar with this series, we recommend that you start with [What is an Azure Virtual Desktop workload?](./overview.md#what-is-an-azure-virtual-desktop-workload).\n\n## Azure Virtual Desktop service\n\n*Impact: Reliability*\n\nIn the Azure Virtual Desktop service, Microsoft manages some areas of responsibility, and the customer manages others.\n\n- Microsoft controls metadata like the host pools, application groups, and workspaces. The metadata is always available. There's no need for the customer to do extra setup to replicate host pool data or configurations. The gateway infrastructure that connects people to their session hosts is designed to be a global, highly resilient service that Microsoft manages.\n- Customer-managed areas involve the VMs that Azure Virtual Desktop uses and the settings and configurations that are unique to the customer's deployment.\n\nThe following table provides detailed information about the areas that each party manages:\n\n| Managed by Microsoft | Managed by the customer |\n| --- | --- |\n| Load balancer | Network |\n| Session broker | Session hosts |\n| Gateway | Storage |\n| Diagnostics | User profile data |\n| Cloud identity platform  | Identity |\n\n##### Recommendations\n\n- Be aware of your responsibilities under the shared-responsibility model.\n- Ensure that your organization actively manages areas that fall under the customer's responsibility. Examples include the VMs that Azure Virtual Desktop uses, the user profile data, and settings that are unique to your environment.\n\n## Host pools\n\n*Impact: Reliability, Cost Optimization*\n\nIf distinct sets of users have different business continuity and disaster recovery requirements, we recommend that you use multiple host pools with different configurations. For example, users with a business-critical application might use a fully redundant host pool with geo–disaster recovery capabilities. But development and test users can use a separate host pool with no disaster recovery at all.\n\nFor each Azure Virtual Desktop host pool, you can base your business continuity and disaster recovery strategy on an active-active or active-passive model.\n\n### Active-active scenarios\n\nThe recommended configuration for an active-active scenario uses two host pools, one host pool per region. No administrator intervention is needed for failover. Like during normal operations, the secondary host pool provides users with Azure Virtual Desktop resources. The users must have a good understanding of the capabilities that Azure Virtual Desktop offers and how to use them.\n\nEach host pool has its own storage account for persistent user profiles. If your disaster recovery plans require that profiles persist, you need to use the cloud cache feature of FSLogix to sync profiles across regions. To avoid profile conflicts, don't allow users to access both host pools at the same time.\n\nFor more information, see [Multiregion business continuity and disaster recovery (BCDR) for Azure Virtual Desktop](/azure/architecture/example-scenario/azure-virtual-desktop/azure-virtual-desktop-multi-region-bcdr).\n\n### Active-passive scenarios\n\nIn an active-passive scenario, the host deployment is similar to the setup in an active-active scenario. For each host pool in the primary region, another host pool is deployed in the secondary region. But in an active-passive scenario, fewer compute resources are active in the secondary region than in the primary region. It's possible that no compute resources are active in the secondary region. The number of resources that are active usually depends on your available budget. Be aware that Azure capacity isn't guaranteed during regional outages when inactive resources must be turned on. Capacity is only guaranteed if the VMs are active. Consider using on-demand capacity reservations to reserve Azure capacity for disaster recovery scenarios. For more information, see [On-demand capacity reservation](/azure/virtual-machines/capacity-reservation-overview).\n\nAlso note the following points about active-passive models:\n\n- Each host pool has its own storage accounts for persistent user profiles.\n- If profiles must persist across regions, you can use the cloud cache feature to sync profiles.\n\nIf you plan to use a personal host pool, you can use Azure Site Recovery to replicate session hosts from the primary region to the secondary region. To take this approach, you need to have the proper infrastructure in place.\n\n##### Recommendations\n\n- Use multiple host pools if you have distinct sets of users who have different business continuity disaster recovery requirements.\n- Evaluate the cloud cache feature of FSLogix to sync profiles across regions if profiles must be protected.\n- Educate users about the proper use of resources if you use an active-active configuration.\n- Use Site Recovery to replicate session hosts from the primary region to the secondary region when you use a personal host pool.\n\n## Capacity planning\n\n*Impact: Reliability, Cost Optimization*\n\nAzure Virtual Desktop operates within the constraints of Azure capacity limits.\n\nFor instance, Azure imposes subscription-level limits on the number of VMs that you can deploy in Azure Virtual Desktop. For example, a subscription might have a limit of 25,000 VMs. To help ensure smooth operations, you need to be aware of this limit and plan deployments accordingly. Scaling beyond this limit might require extra subscriptions or alternative strategies, which can have cost implications.\n\nAnother example is session hosts in a host pool. Within Azure Virtual Desktop, each host pool has its own limits on the number of session hosts that can accommodate user sessions. The VM series and the size that you select for the host pool determine the maximum number of session hosts that you can use. To optimize performance and user experience, you need to consider these limits when you design your deployment.\n\nFor more information about platform constraints, see [Azure Virtual Desktop limitations](/azure/architecture/example-scenario/azure-virtual-desktop/azure-virtual-desktop#azure-virtual-desktop-limitations).\n\n##### Recommendations\n\n- Monitor and plan for subscription limits. Closely monitor your Azure Virtual Desktop deployments, and keep track of resource usage within your subscription. By proactively monitoring capacity, you can identify potential challenges early on, and you can take suitable actions to avoid reaching limits.\n- Consider scaling across multiple subscriptions if further scaling is needed, or work with Azure support to adjust limits based on your business requirements.\n- Scale horizontally for high demand. To handle a large number of users, consider scaling horizontally by creating multiple host pools.\n\n## FSLogix profiles and App Attach\n\n*Impact: Reliability, Cost Optimization*\n\nTo minimize the amount of data in user profiles, redirect user data to a storage solution. When you minimize the data in user profiles, you also minimize the protection that you need to provide for the profiles. A no-profile recovery strategy decreases overhead but can affect the user experience in disaster recovery scenarios.\n\nIn some cases, the profile container content needs a separate business continuity and disaster recovery solution, because the profile container requirements differ from the office container requirements. In this situation, you can separate the two and manage each one independently.\n\nFor FSLogix profiles and App Attach, it's best to consider three scenarios:\n\n- The local corruption of data, metadata, or resources. In this case, you can use Azure Backup:\n  - If you use Azure Files storage, you can configure Backup for Azure Files.\n  - If you use Azure NetApp Files for storage, you can configure Backup for Azure NetApp Files snapshots.\n\n  Alternatively, you can use the backup service to protect files and folders on server VMs.\n\n- The failure of a single datacenter of an availability zone within an Azure region. In this scenario, you can use Azure Files with premium zone-redundant storage to take advantage of support for availability zones. FSLogix profiles and App Attach virtual hard disks (VHDs) remain available during datacenter outages.\n\n- An Azure region outage. If you have a multiregion deployment, you can use the FSLogix cloud cache feature to help protect user profiles by replicating across regions.\n\n##### Recommendations\n\n- Consider using a no-profile recovery strategy to minimize the need for protecting profiles.\n- Use Backup to back up FSLogix profiles that you store in Azure Files or Azure NetAppFiles.\n- Use zone-redundant storage to replicate data synchronously across Azure availability zones.\n- Use the FSLogix cloud cache feature to replicate profiles across regions.\n\n## Virtual networks\n\n*Impact: Reliability, Cost Optimization*\n\nVirtual networks are managed services that are unaffected by:\n\n- The local corruption of data, metadata, or resources.\n- The failure of a single datacenter of an availability zone within an Azure region.\n\nAzure Virtual Network provides a private IP address block that you can use to deploy your resources for private connectivity. You can then secure those resources within a boundary. As a result, a virtual network doesn't go down or experience an outage if there's a local failure of resources in a single datacenter.\n\nWhen an entire Azure region experiences an outage, virtual networks are affected. Regional failures also affect the services that are deployed within virtual networks. To help protect your resources, you need to plan for a virtual network in your secondary region to allow for the replication of personal host pool VMs or space for deployment of session hosts. You can also use Site Recovery to set up the virtual network in the failover region and preserve your primary network's settings. In an Azure Virtual Desktop environment that's connected with your on-premises network, you should configure the virtual network in the secondary region with connectivity to the on-premises network.\n\n##### Recommendations\n\n- Set up a virtual network in your secondary region for failover.\n- Use Site Recovery to set up a virtual network in your failover region.\n\n## Golden images\n\n*Impact: Reliability, Cost Optimization*\n\nFor golden images, it's best to consider three scenarios:\n\n- The local corruption of data, metadata, or resources. In this case, you can use Azure Compute Gallery to store and share images that you use in Azure Virtual Desktop. By default, Compute Gallery uses locally redundant storage.\n- The failure of a single datacenter of an availability zone within an Azure region. In this scenario, you can use zone-redundant storage to spread copies of images across availability zones. When zone-redundant storage is available, use it for high availability.\n- An Azure region outage. Compute Gallery is a regional resource. To help protect against regional failures, you need to create a secondary compute gallery within a secondary region. You also need to have multiple replicas of the same image in the primary compute gallery.\n\n##### Recommendations\n\n- Use Compute Gallery to store images.\n- Use zone-redundant storage to spread copies of images across availability zones.\n- Create a secondary compute gallery within a secondary region.\n\n## Next steps\n\nNow that you've examined business continuity considerations, see how to optimize performance and cost considerations when you select storage solutions for your workload.\n\n> [!div class=\"nextstepaction\"]\n> [Storage](./storage.md)\n\nUse the assessment tool to evaluate your design choices.\n\n> [!div class=\"nextstepaction\"]\n> [Assessment](./assessment.md)",
+  "headings": [
+    {
+      "level": 1,
+      "text": "Business continuity considerations for Azure Virtual Desktop workloads",
+      "line": 1,
+      "path": [
+        "Business continuity considerations for Azure Virtual Desktop workloads"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Azure Virtual Desktop service",
+      "line": 10,
+      "path": [
+        "Business continuity considerations for Azure Virtual Desktop workloads",
+        "Azure Virtual Desktop service"
+      ]
+    },
+    {
+      "level": 5,
+      "text": "Recommendations",
+      "line": 29,
+      "path": [
+        "Business continuity considerations for Azure Virtual Desktop workloads",
+        "Azure Virtual Desktop service",
+        "Recommendations"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Host pools",
+      "line": 34,
+      "path": [
+        "Business continuity considerations for Azure Virtual Desktop workloads",
+        "Host pools"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Active-active scenarios",
+      "line": 42,
+      "path": [
+        "Business continuity considerations for Azure Virtual Desktop workloads",
+        "Host pools",
+        "Active-active scenarios"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Active-passive scenarios",
+      "line": 50,
+      "path": [
+        "Business continuity considerations for Azure Virtual Desktop workloads",
+        "Host pools",
+        "Active-passive scenarios"
+      ]
+    },
+    {
+      "level": 5,
+      "text": "Recommendations",
+      "line": 61,
+      "path": [
+        "Business continuity considerations for Azure Virtual Desktop workloads",
+        "Host pools",
+        "Active-passive scenarios",
+        "Recommendations"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Capacity planning",
+      "line": 68,
+      "path": [
+        "Business continuity considerations for Azure Virtual Desktop workloads",
+        "Capacity planning"
+      ]
+    },
+    {
+      "level": 5,
+      "text": "Recommendations",
+      "line": 80,
+      "path": [
+        "Business continuity considerations for Azure Virtual Desktop workloads",
+        "Capacity planning",
+        "Recommendations"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "FSLogix profiles and App Attach",
+      "line": 86,
+      "path": [
+        "Business continuity considerations for Azure Virtual Desktop workloads",
+        "FSLogix profiles and App Attach"
+      ]
+    },
+    {
+      "level": 5,
+      "text": "Recommendations",
+      "line": 106,
+      "path": [
+        "Business continuity considerations for Azure Virtual Desktop workloads",
+        "FSLogix profiles and App Attach",
+        "Recommendations"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Virtual networks",
+      "line": 113,
+      "path": [
+        "Business continuity considerations for Azure Virtual Desktop workloads",
+        "Virtual networks"
+      ]
+    },
+    {
+      "level": 5,
+      "text": "Recommendations",
+      "line": 126,
+      "path": [
+        "Business continuity considerations for Azure Virtual Desktop workloads",
+        "Virtual networks",
+        "Recommendations"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Golden images",
+      "line": 131,
+      "path": [
+        "Business continuity considerations for Azure Virtual Desktop workloads",
+        "Golden images"
+      ]
+    },
+    {
+      "level": 5,
+      "text": "Recommendations",
+      "line": 141,
+      "path": [
+        "Business continuity considerations for Azure Virtual Desktop workloads",
+        "Golden images",
+        "Recommendations"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Next steps",
+      "line": 147,
+      "path": [
+        "Business continuity considerations for Azure Virtual Desktop workloads",
+        "Next steps"
+      ]
+    }
+  ],
+  "sections": [
+    {
+      "sectionOrder": 1,
+      "headingLevel": 1,
+      "headingText": "Business continuity considerations for Azure Virtual Desktop workloads",
+      "headingPath": [
+        "Business continuity considerations for Azure Virtual Desktop workloads"
+      ],
+      "markdown": "This article discusses the business continuity design area of an Azure Virtual Desktop workload. To strengthen your organization's Azure Virtual Desktop deployment and to help keep data safe, you should implement a business continuity and disaster recovery strategy. A good strategy helps keep your apps and workloads up and running during planned and unplanned service or Azure outages.\n\nTo help make sure that your users can connect during an Azure region outage, you might need to replicate personal virtual machines (VMs) to a different Azure region—your secondary location. During outages, the primary region fails over to the replicated VMs in the secondary location. Users can continue to access apps from the secondary location without interruption. Besides replicating VMs, you also need to ensure that user identities are accessible at the secondary location. You can use profile containers to make identities accessible. As an alternative to VM replication, you can use multiple pooled host pools with automated provisioning across regions.\n\n> [!IMPORTANT]\n> This article is part of the [Azure Well-Architected Framework Azure Virtual Desktop workload](./index.yml) series. If you aren't familiar with this series, we recommend that you start with [What is an Azure Virtual Desktop workload?](./overview.md#what-is-an-azure-virtual-desktop-workload).",
+      "lineStart": 2,
+      "lineEnd": 9
+    },
+    {
+      "sectionOrder": 2,
+      "headingLevel": 2,
+      "headingText": "Azure Virtual Desktop service",
+      "headingPath": [
+        "Business continuity considerations for Azure Virtual Desktop workloads",
+        "Azure Virtual Desktop service"
+      ],
+      "markdown": "*Impact: Reliability*\n\nIn the Azure Virtual Desktop service, Microsoft manages some areas of responsibility, and the customer manages others.\n\n- Microsoft controls metadata like the host pools, application groups, and workspaces. The metadata is always available. There's no need for the customer to do extra setup to replicate host pool data or configurations. The gateway infrastructure that connects people to their session hosts is designed to be a global, highly resilient service that Microsoft manages.\n- Customer-managed areas involve the VMs that Azure Virtual Desktop uses and the settings and configurations that are unique to the customer's deployment.\n\nThe following table provides detailed information about the areas that each party manages:\n\n| Managed by Microsoft | Managed by the customer |\n| --- | --- |\n| Load balancer | Network |\n| Session broker | Session hosts |\n| Gateway | Storage |\n| Diagnostics | User profile data |\n| Cloud identity platform  | Identity |",
+      "lineStart": 11,
+      "lineEnd": 28
+    },
+    {
+      "sectionOrder": 3,
+      "headingLevel": 5,
+      "headingText": "Recommendations",
+      "headingPath": [
+        "Business continuity considerations for Azure Virtual Desktop workloads",
+        "Azure Virtual Desktop service",
+        "Recommendations"
+      ],
+      "markdown": "- Be aware of your responsibilities under the shared-responsibility model.\n- Ensure that your organization actively manages areas that fall under the customer's responsibility. Examples include the VMs that Azure Virtual Desktop uses, the user profile data, and settings that are unique to your environment.",
+      "lineStart": 30,
+      "lineEnd": 33
+    },
+    {
+      "sectionOrder": 4,
+      "headingLevel": 2,
+      "headingText": "Host pools",
+      "headingPath": [
+        "Business continuity considerations for Azure Virtual Desktop workloads",
+        "Host pools"
+      ],
+      "markdown": "*Impact: Reliability, Cost Optimization*\n\nIf distinct sets of users have different business continuity and disaster recovery requirements, we recommend that you use multiple host pools with different configurations. For example, users with a business-critical application might use a fully redundant host pool with geo–disaster recovery capabilities. But development and test users can use a separate host pool with no disaster recovery at all.\n\nFor each Azure Virtual Desktop host pool, you can base your business continuity and disaster recovery strategy on an active-active or active-passive model.",
+      "lineStart": 35,
+      "lineEnd": 41
+    },
+    {
+      "sectionOrder": 5,
+      "headingLevel": 3,
+      "headingText": "Active-active scenarios",
+      "headingPath": [
+        "Business continuity considerations for Azure Virtual Desktop workloads",
+        "Host pools",
+        "Active-active scenarios"
+      ],
+      "markdown": "The recommended configuration for an active-active scenario uses two host pools, one host pool per region. No administrator intervention is needed for failover. Like during normal operations, the secondary host pool provides users with Azure Virtual Desktop resources. The users must have a good understanding of the capabilities that Azure Virtual Desktop offers and how to use them.\n\nEach host pool has its own storage account for persistent user profiles. If your disaster recovery plans require that profiles persist, you need to use the cloud cache feature of FSLogix to sync profiles across regions. To avoid profile conflicts, don't allow users to access both host pools at the same time.\n\nFor more information, see [Multiregion business continuity and disaster recovery (BCDR) for Azure Virtual Desktop](/azure/architecture/example-scenario/azure-virtual-desktop/azure-virtual-desktop-multi-region-bcdr).",
+      "lineStart": 43,
+      "lineEnd": 49
+    },
+    {
+      "sectionOrder": 6,
+      "headingLevel": 3,
+      "headingText": "Active-passive scenarios",
+      "headingPath": [
+        "Business continuity considerations for Azure Virtual Desktop workloads",
+        "Host pools",
+        "Active-passive scenarios"
+      ],
+      "markdown": "In an active-passive scenario, the host deployment is similar to the setup in an active-active scenario. For each host pool in the primary region, another host pool is deployed in the secondary region. But in an active-passive scenario, fewer compute resources are active in the secondary region than in the primary region. It's possible that no compute resources are active in the secondary region. The number of resources that are active usually depends on your available budget. Be aware that Azure capacity isn't guaranteed during regional outages when inactive resources must be turned on. Capacity is only guaranteed if the VMs are active. Consider using on-demand capacity reservations to reserve Azure capacity for disaster recovery scenarios. For more information, see [On-demand capacity reservation](/azure/virtual-machines/capacity-reservation-overview).\n\nAlso note the following points about active-passive models:\n\n- Each host pool has its own storage accounts for persistent user profiles.\n- If profiles must persist across regions, you can use the cloud cache feature to sync profiles.\n\nIf you plan to use a personal host pool, you can use Azure Site Recovery to replicate session hosts from the primary region to the secondary region. To take this approach, you need to have the proper infrastructure in place.",
+      "lineStart": 51,
+      "lineEnd": 60
+    },
+    {
+      "sectionOrder": 7,
+      "headingLevel": 5,
+      "headingText": "Recommendations",
+      "headingPath": [
+        "Business continuity considerations for Azure Virtual Desktop workloads",
+        "Host pools",
+        "Active-passive scenarios",
+        "Recommendations"
+      ],
+      "markdown": "- Use multiple host pools if you have distinct sets of users who have different business continuity disaster recovery requirements.\n- Evaluate the cloud cache feature of FSLogix to sync profiles across regions if profiles must be protected.\n- Educate users about the proper use of resources if you use an active-active configuration.\n- Use Site Recovery to replicate session hosts from the primary region to the secondary region when you use a personal host pool.",
+      "lineStart": 62,
+      "lineEnd": 67
+    },
+    {
+      "sectionOrder": 8,
+      "headingLevel": 2,
+      "headingText": "Capacity planning",
+      "headingPath": [
+        "Business continuity considerations for Azure Virtual Desktop workloads",
+        "Capacity planning"
+      ],
+      "markdown": "*Impact: Reliability, Cost Optimization*\n\nAzure Virtual Desktop operates within the constraints of Azure capacity limits.\n\nFor instance, Azure imposes subscription-level limits on the number of VMs that you can deploy in Azure Virtual Desktop. For example, a subscription might have a limit of 25,000 VMs. To help ensure smooth operations, you need to be aware of this limit and plan deployments accordingly. Scaling beyond this limit might require extra subscriptions or alternative strategies, which can have cost implications.\n\nAnother example is session hosts in a host pool. Within Azure Virtual Desktop, each host pool has its own limits on the number of session hosts that can accommodate user sessions. The VM series and the size that you select for the host pool determine the maximum number of session hosts that you can use. To optimize performance and user experience, you need to consider these limits when you design your deployment.\n\nFor more information about platform constraints, see [Azure Virtual Desktop limitations](/azure/architecture/example-scenario/azure-virtual-desktop/azure-virtual-desktop#azure-virtual-desktop-limitations).",
+      "lineStart": 69,
+      "lineEnd": 79
+    },
+    {
+      "sectionOrder": 9,
+      "headingLevel": 5,
+      "headingText": "Recommendations",
+      "headingPath": [
+        "Business continuity considerations for Azure Virtual Desktop workloads",
+        "Capacity planning",
+        "Recommendations"
+      ],
+      "markdown": "- Monitor and plan for subscription limits. Closely monitor your Azure Virtual Desktop deployments, and keep track of resource usage within your subscription. By proactively monitoring capacity, you can identify potential challenges early on, and you can take suitable actions to avoid reaching limits.\n- Consider scaling across multiple subscriptions if further scaling is needed, or work with Azure support to adjust limits based on your business requirements.\n- Scale horizontally for high demand. To handle a large number of users, consider scaling horizontally by creating multiple host pools.",
+      "lineStart": 81,
+      "lineEnd": 85
+    },
+    {
+      "sectionOrder": 10,
+      "headingLevel": 2,
+      "headingText": "FSLogix profiles and App Attach",
+      "headingPath": [
+        "Business continuity considerations for Azure Virtual Desktop workloads",
+        "FSLogix profiles and App Attach"
+      ],
+      "markdown": "*Impact: Reliability, Cost Optimization*\n\nTo minimize the amount of data in user profiles, redirect user data to a storage solution. When you minimize the data in user profiles, you also minimize the protection that you need to provide for the profiles. A no-profile recovery strategy decreases overhead but can affect the user experience in disaster recovery scenarios.\n\nIn some cases, the profile container content needs a separate business continuity and disaster recovery solution, because the profile container requirements differ from the office container requirements. In this situation, you can separate the two and manage each one independently.\n\nFor FSLogix profiles and App Attach, it's best to consider three scenarios:\n\n- The local corruption of data, metadata, or resources. In this case, you can use Azure Backup:\n  - If you use Azure Files storage, you can configure Backup for Azure Files.\n  - If you use Azure NetApp Files for storage, you can configure Backup for Azure NetApp Files snapshots.\n\n  Alternatively, you can use the backup service to protect files and folders on server VMs.\n\n- The failure of a single datacenter of an availability zone within an Azure region. In this scenario, you can use Azure Files with premium zone-redundant storage to take advantage of support for availability zones. FSLogix profiles and App Attach virtual hard disks (VHDs) remain available during datacenter outages.\n\n- An Azure region outage. If you have a multiregion deployment, you can use the FSLogix cloud cache feature to help protect user profiles by replicating across regions.",
+      "lineStart": 87,
+      "lineEnd": 105
+    },
+    {
+      "sectionOrder": 11,
+      "headingLevel": 5,
+      "headingText": "Recommendations",
+      "headingPath": [
+        "Business continuity considerations for Azure Virtual Desktop workloads",
+        "FSLogix profiles and App Attach",
+        "Recommendations"
+      ],
+      "markdown": "- Consider using a no-profile recovery strategy to minimize the need for protecting profiles.\n- Use Backup to back up FSLogix profiles that you store in Azure Files or Azure NetAppFiles.\n- Use zone-redundant storage to replicate data synchronously across Azure availability zones.\n- Use the FSLogix cloud cache feature to replicate profiles across regions.",
+      "lineStart": 107,
+      "lineEnd": 112
+    },
+    {
+      "sectionOrder": 12,
+      "headingLevel": 2,
+      "headingText": "Virtual networks",
+      "headingPath": [
+        "Business continuity considerations for Azure Virtual Desktop workloads",
+        "Virtual networks"
+      ],
+      "markdown": "*Impact: Reliability, Cost Optimization*\n\nVirtual networks are managed services that are unaffected by:\n\n- The local corruption of data, metadata, or resources.\n- The failure of a single datacenter of an availability zone within an Azure region.\n\nAzure Virtual Network provides a private IP address block that you can use to deploy your resources for private connectivity. You can then secure those resources within a boundary. As a result, a virtual network doesn't go down or experience an outage if there's a local failure of resources in a single datacenter.\n\nWhen an entire Azure region experiences an outage, virtual networks are affected. Regional failures also affect the services that are deployed within virtual networks. To help protect your resources, you need to plan for a virtual network in your secondary region to allow for the replication of personal host pool VMs or space for deployment of session hosts. You can also use Site Recovery to set up the virtual network in the failover region and preserve your primary network's settings. In an Azure Virtual Desktop environment that's connected with your on-premises network, you should configure the virtual network in the secondary region with connectivity to the on-premises network.",
+      "lineStart": 114,
+      "lineEnd": 125
+    },
+    {
+      "sectionOrder": 13,
+      "headingLevel": 5,
+      "headingText": "Recommendations",
+      "headingPath": [
+        "Business continuity considerations for Azure Virtual Desktop workloads",
+        "Virtual networks",
+        "Recommendations"
+      ],
+      "markdown": "- Set up a virtual network in your secondary region for failover.\n- Use Site Recovery to set up a virtual network in your failover region.",
+      "lineStart": 127,
+      "lineEnd": 130
+    },
+    {
+      "sectionOrder": 14,
+      "headingLevel": 2,
+      "headingText": "Golden images",
+      "headingPath": [
+        "Business continuity considerations for Azure Virtual Desktop workloads",
+        "Golden images"
+      ],
+      "markdown": "*Impact: Reliability, Cost Optimization*\n\nFor golden images, it's best to consider three scenarios:\n\n- The local corruption of data, metadata, or resources. In this case, you can use Azure Compute Gallery to store and share images that you use in Azure Virtual Desktop. By default, Compute Gallery uses locally redundant storage.\n- The failure of a single datacenter of an availability zone within an Azure region. In this scenario, you can use zone-redundant storage to spread copies of images across availability zones. When zone-redundant storage is available, use it for high availability.\n- An Azure region outage. Compute Gallery is a regional resource. To help protect against regional failures, you need to create a secondary compute gallery within a secondary region. You also need to have multiple replicas of the same image in the primary compute gallery.",
+      "lineStart": 132,
+      "lineEnd": 140
+    },
+    {
+      "sectionOrder": 15,
+      "headingLevel": 5,
+      "headingText": "Recommendations",
+      "headingPath": [
+        "Business continuity considerations for Azure Virtual Desktop workloads",
+        "Golden images",
+        "Recommendations"
+      ],
+      "markdown": "- Use Compute Gallery to store images.\n- Use zone-redundant storage to spread copies of images across availability zones.\n- Create a secondary compute gallery within a secondary region.",
+      "lineStart": 142,
+      "lineEnd": 146
+    },
+    {
+      "sectionOrder": 16,
+      "headingLevel": 2,
+      "headingText": "Next steps",
+      "headingPath": [
+        "Business continuity considerations for Azure Virtual Desktop workloads",
+        "Next steps"
+      ],
+      "markdown": "Now that you've examined business continuity considerations, see how to optimize performance and cost considerations when you select storage solutions for your workload.\n\n> [!div class=\"nextstepaction\"]\n> [Storage](./storage.md)\n\nUse the assessment tool to evaluate your design choices.\n\n> [!div class=\"nextstepaction\"]\n> [Assessment](./assessment.md)",
+      "lineStart": 148,
+      "lineEnd": 157
+    }
+  ],
+  "localLinks": [
+    "./assessment.md",
+    "./index.yml",
+    "./overview.md",
+    "./storage.md"
+  ],
+  "lastModified": "2026-03-17T16:22:13.418Z"
+}

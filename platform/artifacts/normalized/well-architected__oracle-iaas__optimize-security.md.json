@@ -1,0 +1,264 @@
+{
+  "source": {
+    "absolutePath": "C:\\Users\\EricL\\source\\repos\\Well-Architected-Vibe-Coding\\well-architected-vibe-coding\\well-architected\\oracle-iaas\\optimize-security.md",
+    "repoRelativePath": "well-architected/oracle-iaas/optimize-security.md",
+    "docsRelativePath": "oracle-iaas/optimize-security.md"
+  },
+  "frontMatter": {
+    "title": "Optimize security for your Oracle workload",
+    "description": "Learn how to optimize security for your Oracle workload by using the defense-in-depth approach to employ a combination of various layer security measures and create a robust security posture.",
+    "author": "jessiehaessler",
+    "ms.author": "jhaessler",
+    "ms.date": "04/23/2024",
+    "ms.topic": "concept-article",
+    "ms.service": "azure-waf",
+    "ms.subservice": "waf-workload-oracle"
+  },
+  "title": "Optimize security for your Oracle workload",
+  "rawBody": "# Optimize security for your Oracle workload\n\nSecurity is crucial for any architecture. Azure offers a comprehensive range of tools to effectively secure your Oracle workload. This article describes security recommendations for the Azure control plane related to Oracle application workloads that are deployed on virtual machines (VMs) on Azure. For more information about security features in Oracle Database, see [Oracle Database security guide](https://docs.oracle.com/en/database/oracle/oracle-database/19/dbseg/introduction-to-oracle-database-security.html#GUID-41040F53-D7A6-48FA-A92A-0C23118BC8A0).\n\nMost databases store sensitive data. Security measures only at the database level aren't enough to secure the entire architecture in which to land these workloads. Defense in depth is a comprehensive approach to security in which you implement several layers of defense mechanisms to protect data. You don't rely on a single security measure at a specific level, such as network security mechanisms. Use the defense-in-depth strategy to employ a combination of various layer security measures to create a robust security posture.\n\nYou can architect a defense-in-depth approach for Oracle workloads by using a strong authentication and authorization framework, hardened network security, and encryption of data at rest and data in transit. You can deploy Oracle workloads as an infrastructure as a service (IaaS) cloud model on Azure. Revisit the [shared responsibility matrix](/azure/security/fundamentals/shared-responsibility) to better understand the specific tasks and responsibilities assigned to the cloud provider and the customer.\n\nYou should periodically assess the services and technologies you employ to ensure that your security measures align with the changing threat landscape.\n\n## Use centralized identity management\n\nIdentity management is a fundamental framework that governs access to important resources. Identity management becomes critical when you work with various personnel, such as temporary interns, part-time employees, or full-time employees. These individuals require different levels of access that you need to monitor, maintain, and promptly revoke as necessary.\n\nYour organization can improve the security of Windows and Linux VMs in Azure by integrating with Microsoft Entra ID, which is a fully managed identity and access management service.\n\n## Deploy workloads on Windows or Linux operating systems\n\nYou can use Microsoft Entra ID with single sign-on (SSO) to access Oracle applications and deploy Oracle databases on [Linux operating systems](/entra/identity/devices/howto-vm-sign-in-azure-ad-linux) and [Windows operating systems](/entra/identity/devices/howto-vm-sign-in-azure-ad-windows). Integrate your operating system with Microsoft Entra ID to enhance its security posture.\n\nImprove the security of your Oracle workloads on Azure IaaS by ensuring that you harden your operating system to eliminate vulnerabilities that attackers might exploit to harm your Oracle database.\n\nFor more information about how to improve Oracle Database security, see [Security guidelines for Oracle workloads on Azure Virtual Machines landing zone accelerator](/azure/cloud-adoption-framework/scenarios/oracle-iaas/oracle-security-guideline-landing-zone).\n\n### Recommendations\n\n- Use Secure Shell (SSH) key pairs for Linux account access instead of passwords.\n\n- Disable password-protected Linux accounts and enable them only on request for a short period.\n\n- Disable sign-in access for privileged Linux accounts, such as root and oracle accounts, which allows sign-in access only to personalized accounts.\n\n- Use the `sudo` command to grant access to privileged Linux accounts, such as root and oracle accounts, from personalized accounts instead of a direct sign in.\n\n- Ensure that you capture Linux audit trail logs and `sudo` access logs into Azure Monitor Logs by using the Linux syslog utility.\n\n- Apply security patches and operating system patches and updates regularly from trusted sources only.\n\n- Implement restrictions to limit access to the operating system.\n\n- Restrict unauthorized access to servers.\n\n- Control server access at the network level to enhance overall security.\n\n- Consider using the Linux firewall daemon as an extra layer of protection in addition to Azure network security groups (NSGs).\n\n- Ensure that you configure the Linux firewall daemon to automatically run at startup.\n\n- Scan network listening ports to determine potential access points. Use the Linux `netstat –l` command to list those ports. Make sure either Azure NSGs or the Linux firewall daemon controls access to those ports.\n\n- Set up aliases for potentially destructive Linux commands, such as `rm` and `mv`, to force them to run in interactive mode so that you're prompted at least once before an irreversible command is run. Advanced users know how to remove the aliases if needed.\n\n- Configure the Oracle database unified system logs to use the Linux syslog utility to send copies of the Oracle audit logs to Azure Monitor Logs.\n\n## Design your network topology\n\nNetwork topology is the fundamental component of a layered security approach for Oracle workloads on Azure.\n\nPlace all cloud services in a single virtual network, and use Azure NSGs to monitor and filter the traffic. Add a firewall to secure the incoming traffic. Ensure that you dedicate and securely separate the subnet where you deploy the database from the internet and the on-premises network. Assess users who internally and externally access the database to help ensure that your network topology is robust and secure.\n\nFor more information about network topology, see [Network topology and connectivity for Oracle on Azure Virtual Machines landing zone accelerator](/azure/cloud-adoption-framework/scenarios/oracle-iaas/oracle-network-topology).\n\n### Recommendations\n\n- Use [Azure NSGs](/azure/virtual-network/network-security-groups-overview) to filter network traffic between Azure resources in an Azure virtual network and to filter traffic between on-premises networks and Azure.\n\n- Use Azure Firewall or a network virtual appliance (NVA) to secure your environment.\n\n- Secure the VM on which the Oracle Database workload resides against unauthorized access by using Azure-provided features such as [Microsoft Defender for Cloud just-in-time (JIT) access](/azure/defender-for-cloud/just-in-time-access-overview) and [Azure Bastion](/azure/bastion/bastion-overview) features.\n\n- Use SSH port forwarding for X Windows System and Virtual Network Computing (VNC) utilities to tunnel connections through SSH. For more information, see [an example that opens a VNC client and tests a deployment](https://docs.oracle.com/en/learn/ol-install-vnc/#open-a-vnc-client-and-test-your-deployment).\n\n- Direct all traffic through a hub virtual network by placing VMs in a dedicated subnet that's isolated from the internet and the on-premises network.\n\n## Use encryption to secure data\n\nEncrypt data at rest when it's written to storage to protect the data. When you encrypt data, unauthorized users can't expose or alter it. Only authorized and authenticated users can view or modify the data. Microsoft Azure offers various data storage solutions, including file, disk, and blob storage, to meet different needs. These storage solutions have encryption features to secure data at rest.\n\nEncrypt data in transit to protect data that moves from one location to another, usually across a network connection. You can use various methods to encrypt data in transit depending on the nature of the connection. Azure offers many mechanisms for keeping data in transit private as it moves from one location to another.\n\n### Recommendations\n\n- Understand how Microsoft [encrypts data at rest](/azure/security/fundamentals/encryption-overview#encryption-of-data-at-rest).\n\n- Consider the features of [Oracle Advanced Security](https://docs.oracle.com/en/database/oracle/oracle-database/19/asoag/introduction-to-oracle-advanced-security.html#GUID-5D7343A0-4934-444F-97A1-5F189385A5DE), which include transparent data encryption (TDE) and data redaction.\n\n- Manage keys with Oracle Key Vault. If you implement Oracle TDE as an extra encryption layer, note that Oracle doesn't support Azure key management solutions, such as Azure Key Vault, or other cloud providers' key management solutions. The default Oracle Wallet location is in the file system of the Oracle database VM. However, you can use Oracle Key Vault as a key management solution on Azure. For more information, see [Provisioning Oracle Key Vault in Azure](https://docs.oracle.com/en/database/oracle/key-vault/21.6/okvag/using_okv_as_oci_vm_compute_instance.html#GUID-E8154AEB-2964-4698-AE6E-64A108C06D11).\n\n- Understand how Microsoft [encrypts data in transit](/azure//security/fundamentals/encryption-overview#encryption-of-data-in-transit).\n\n- Consider using the Oracle Native Network Encryption and Data Integrity feature. For more information, see [Configuring Oracle Database Native Network Encryption and Data Integrity](https://docs.oracle.com/en/database/oracle/oracle-database/19/dbseg/configuring-network-data-encryption-and-integrity.html#GUID-7F12066A-2BA1-476C-809B-BB95A3F727CF).\n\n## Integrate Oracle Database audit trails\n\nApplication log monitoring is essential for detecting security threats at the application level. Azure Sentinel is a cloud-native security information and event management (SIEM) solution that can be used to monitor the security events of your Oracle workload.\n\nFor more information, see [Oracle Database audit connector for Microsoft Sentinel](/azure/sentinel/data-connectors/oracle-database-audit).\n\n### Recommendations\n\n- Use the Microsoft Sentinel solution for Oracle Database workloads. The Oracle Database audit connector uses an industry-standard syslog interface to retrieve Oracle Database audit records and ingest them into Azure Monitor Logs.\n\n- Use Azure Sentinel to review audit records of applications, the Azure infrastructure, and guest operating systems.\n\n## Next step\n\n> [!div class=\"nextstepaction\"]\n> [Monitor workloads](monitor-workloads.md)",
+  "headings": [
+    {
+      "level": 1,
+      "text": "Optimize security for your Oracle workload",
+      "line": 1,
+      "path": [
+        "Optimize security for your Oracle workload"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Use centralized identity management",
+      "line": 11,
+      "path": [
+        "Optimize security for your Oracle workload",
+        "Use centralized identity management"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Deploy workloads on Windows or Linux operating systems",
+      "line": 17,
+      "path": [
+        "Optimize security for your Oracle workload",
+        "Deploy workloads on Windows or Linux operating systems"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Recommendations",
+      "line": 25,
+      "path": [
+        "Optimize security for your Oracle workload",
+        "Deploy workloads on Windows or Linux operating systems",
+        "Recommendations"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Design your network topology",
+      "line": 55,
+      "path": [
+        "Optimize security for your Oracle workload",
+        "Design your network topology"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Recommendations",
+      "line": 63,
+      "path": [
+        "Optimize security for your Oracle workload",
+        "Design your network topology",
+        "Recommendations"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Use encryption to secure data",
+      "line": 75,
+      "path": [
+        "Optimize security for your Oracle workload",
+        "Use encryption to secure data"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Recommendations",
+      "line": 81,
+      "path": [
+        "Optimize security for your Oracle workload",
+        "Use encryption to secure data",
+        "Recommendations"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Integrate Oracle Database audit trails",
+      "line": 93,
+      "path": [
+        "Optimize security for your Oracle workload",
+        "Integrate Oracle Database audit trails"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Recommendations",
+      "line": 99,
+      "path": [
+        "Optimize security for your Oracle workload",
+        "Integrate Oracle Database audit trails",
+        "Recommendations"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Next step",
+      "line": 105,
+      "path": [
+        "Optimize security for your Oracle workload",
+        "Next step"
+      ]
+    }
+  ],
+  "sections": [
+    {
+      "sectionOrder": 1,
+      "headingLevel": 1,
+      "headingText": "Optimize security for your Oracle workload",
+      "headingPath": [
+        "Optimize security for your Oracle workload"
+      ],
+      "markdown": "Security is crucial for any architecture. Azure offers a comprehensive range of tools to effectively secure your Oracle workload. This article describes security recommendations for the Azure control plane related to Oracle application workloads that are deployed on virtual machines (VMs) on Azure. For more information about security features in Oracle Database, see [Oracle Database security guide](https://docs.oracle.com/en/database/oracle/oracle-database/19/dbseg/introduction-to-oracle-database-security.html#GUID-41040F53-D7A6-48FA-A92A-0C23118BC8A0).\n\nMost databases store sensitive data. Security measures only at the database level aren't enough to secure the entire architecture in which to land these workloads. Defense in depth is a comprehensive approach to security in which you implement several layers of defense mechanisms to protect data. You don't rely on a single security measure at a specific level, such as network security mechanisms. Use the defense-in-depth strategy to employ a combination of various layer security measures to create a robust security posture.\n\nYou can architect a defense-in-depth approach for Oracle workloads by using a strong authentication and authorization framework, hardened network security, and encryption of data at rest and data in transit. You can deploy Oracle workloads as an infrastructure as a service (IaaS) cloud model on Azure. Revisit the [shared responsibility matrix](/azure/security/fundamentals/shared-responsibility) to better understand the specific tasks and responsibilities assigned to the cloud provider and the customer.\n\nYou should periodically assess the services and technologies you employ to ensure that your security measures align with the changing threat landscape.",
+      "lineStart": 2,
+      "lineEnd": 10
+    },
+    {
+      "sectionOrder": 2,
+      "headingLevel": 2,
+      "headingText": "Use centralized identity management",
+      "headingPath": [
+        "Optimize security for your Oracle workload",
+        "Use centralized identity management"
+      ],
+      "markdown": "Identity management is a fundamental framework that governs access to important resources. Identity management becomes critical when you work with various personnel, such as temporary interns, part-time employees, or full-time employees. These individuals require different levels of access that you need to monitor, maintain, and promptly revoke as necessary.\n\nYour organization can improve the security of Windows and Linux VMs in Azure by integrating with Microsoft Entra ID, which is a fully managed identity and access management service.",
+      "lineStart": 12,
+      "lineEnd": 16
+    },
+    {
+      "sectionOrder": 3,
+      "headingLevel": 2,
+      "headingText": "Deploy workloads on Windows or Linux operating systems",
+      "headingPath": [
+        "Optimize security for your Oracle workload",
+        "Deploy workloads on Windows or Linux operating systems"
+      ],
+      "markdown": "You can use Microsoft Entra ID with single sign-on (SSO) to access Oracle applications and deploy Oracle databases on [Linux operating systems](/entra/identity/devices/howto-vm-sign-in-azure-ad-linux) and [Windows operating systems](/entra/identity/devices/howto-vm-sign-in-azure-ad-windows). Integrate your operating system with Microsoft Entra ID to enhance its security posture.\n\nImprove the security of your Oracle workloads on Azure IaaS by ensuring that you harden your operating system to eliminate vulnerabilities that attackers might exploit to harm your Oracle database.\n\nFor more information about how to improve Oracle Database security, see [Security guidelines for Oracle workloads on Azure Virtual Machines landing zone accelerator](/azure/cloud-adoption-framework/scenarios/oracle-iaas/oracle-security-guideline-landing-zone).",
+      "lineStart": 18,
+      "lineEnd": 24
+    },
+    {
+      "sectionOrder": 4,
+      "headingLevel": 3,
+      "headingText": "Recommendations",
+      "headingPath": [
+        "Optimize security for your Oracle workload",
+        "Deploy workloads on Windows or Linux operating systems",
+        "Recommendations"
+      ],
+      "markdown": "- Use Secure Shell (SSH) key pairs for Linux account access instead of passwords.\n\n- Disable password-protected Linux accounts and enable them only on request for a short period.\n\n- Disable sign-in access for privileged Linux accounts, such as root and oracle accounts, which allows sign-in access only to personalized accounts.\n\n- Use the `sudo` command to grant access to privileged Linux accounts, such as root and oracle accounts, from personalized accounts instead of a direct sign in.\n\n- Ensure that you capture Linux audit trail logs and `sudo` access logs into Azure Monitor Logs by using the Linux syslog utility.\n\n- Apply security patches and operating system patches and updates regularly from trusted sources only.\n\n- Implement restrictions to limit access to the operating system.\n\n- Restrict unauthorized access to servers.\n\n- Control server access at the network level to enhance overall security.\n\n- Consider using the Linux firewall daemon as an extra layer of protection in addition to Azure network security groups (NSGs).\n\n- Ensure that you configure the Linux firewall daemon to automatically run at startup.\n\n- Scan network listening ports to determine potential access points. Use the Linux `netstat –l` command to list those ports. Make sure either Azure NSGs or the Linux firewall daemon controls access to those ports.\n\n- Set up aliases for potentially destructive Linux commands, such as `rm` and `mv`, to force them to run in interactive mode so that you're prompted at least once before an irreversible command is run. Advanced users know how to remove the aliases if needed.\n\n- Configure the Oracle database unified system logs to use the Linux syslog utility to send copies of the Oracle audit logs to Azure Monitor Logs.",
+      "lineStart": 26,
+      "lineEnd": 54
+    },
+    {
+      "sectionOrder": 5,
+      "headingLevel": 2,
+      "headingText": "Design your network topology",
+      "headingPath": [
+        "Optimize security for your Oracle workload",
+        "Design your network topology"
+      ],
+      "markdown": "Network topology is the fundamental component of a layered security approach for Oracle workloads on Azure.\n\nPlace all cloud services in a single virtual network, and use Azure NSGs to monitor and filter the traffic. Add a firewall to secure the incoming traffic. Ensure that you dedicate and securely separate the subnet where you deploy the database from the internet and the on-premises network. Assess users who internally and externally access the database to help ensure that your network topology is robust and secure.\n\nFor more information about network topology, see [Network topology and connectivity for Oracle on Azure Virtual Machines landing zone accelerator](/azure/cloud-adoption-framework/scenarios/oracle-iaas/oracle-network-topology).",
+      "lineStart": 56,
+      "lineEnd": 62
+    },
+    {
+      "sectionOrder": 6,
+      "headingLevel": 3,
+      "headingText": "Recommendations",
+      "headingPath": [
+        "Optimize security for your Oracle workload",
+        "Design your network topology",
+        "Recommendations"
+      ],
+      "markdown": "- Use [Azure NSGs](/azure/virtual-network/network-security-groups-overview) to filter network traffic between Azure resources in an Azure virtual network and to filter traffic between on-premises networks and Azure.\n\n- Use Azure Firewall or a network virtual appliance (NVA) to secure your environment.\n\n- Secure the VM on which the Oracle Database workload resides against unauthorized access by using Azure-provided features such as [Microsoft Defender for Cloud just-in-time (JIT) access](/azure/defender-for-cloud/just-in-time-access-overview) and [Azure Bastion](/azure/bastion/bastion-overview) features.\n\n- Use SSH port forwarding for X Windows System and Virtual Network Computing (VNC) utilities to tunnel connections through SSH. For more information, see [an example that opens a VNC client and tests a deployment](https://docs.oracle.com/en/learn/ol-install-vnc/#open-a-vnc-client-and-test-your-deployment).\n\n- Direct all traffic through a hub virtual network by placing VMs in a dedicated subnet that's isolated from the internet and the on-premises network.",
+      "lineStart": 64,
+      "lineEnd": 74
+    },
+    {
+      "sectionOrder": 7,
+      "headingLevel": 2,
+      "headingText": "Use encryption to secure data",
+      "headingPath": [
+        "Optimize security for your Oracle workload",
+        "Use encryption to secure data"
+      ],
+      "markdown": "Encrypt data at rest when it's written to storage to protect the data. When you encrypt data, unauthorized users can't expose or alter it. Only authorized and authenticated users can view or modify the data. Microsoft Azure offers various data storage solutions, including file, disk, and blob storage, to meet different needs. These storage solutions have encryption features to secure data at rest.\n\nEncrypt data in transit to protect data that moves from one location to another, usually across a network connection. You can use various methods to encrypt data in transit depending on the nature of the connection. Azure offers many mechanisms for keeping data in transit private as it moves from one location to another.",
+      "lineStart": 76,
+      "lineEnd": 80
+    },
+    {
+      "sectionOrder": 8,
+      "headingLevel": 3,
+      "headingText": "Recommendations",
+      "headingPath": [
+        "Optimize security for your Oracle workload",
+        "Use encryption to secure data",
+        "Recommendations"
+      ],
+      "markdown": "- Understand how Microsoft [encrypts data at rest](/azure/security/fundamentals/encryption-overview#encryption-of-data-at-rest).\n\n- Consider the features of [Oracle Advanced Security](https://docs.oracle.com/en/database/oracle/oracle-database/19/asoag/introduction-to-oracle-advanced-security.html#GUID-5D7343A0-4934-444F-97A1-5F189385A5DE), which include transparent data encryption (TDE) and data redaction.\n\n- Manage keys with Oracle Key Vault. If you implement Oracle TDE as an extra encryption layer, note that Oracle doesn't support Azure key management solutions, such as Azure Key Vault, or other cloud providers' key management solutions. The default Oracle Wallet location is in the file system of the Oracle database VM. However, you can use Oracle Key Vault as a key management solution on Azure. For more information, see [Provisioning Oracle Key Vault in Azure](https://docs.oracle.com/en/database/oracle/key-vault/21.6/okvag/using_okv_as_oci_vm_compute_instance.html#GUID-E8154AEB-2964-4698-AE6E-64A108C06D11).\n\n- Understand how Microsoft [encrypts data in transit](/azure//security/fundamentals/encryption-overview#encryption-of-data-in-transit).\n\n- Consider using the Oracle Native Network Encryption and Data Integrity feature. For more information, see [Configuring Oracle Database Native Network Encryption and Data Integrity](https://docs.oracle.com/en/database/oracle/oracle-database/19/dbseg/configuring-network-data-encryption-and-integrity.html#GUID-7F12066A-2BA1-476C-809B-BB95A3F727CF).",
+      "lineStart": 82,
+      "lineEnd": 92
+    },
+    {
+      "sectionOrder": 9,
+      "headingLevel": 2,
+      "headingText": "Integrate Oracle Database audit trails",
+      "headingPath": [
+        "Optimize security for your Oracle workload",
+        "Integrate Oracle Database audit trails"
+      ],
+      "markdown": "Application log monitoring is essential for detecting security threats at the application level. Azure Sentinel is a cloud-native security information and event management (SIEM) solution that can be used to monitor the security events of your Oracle workload.\n\nFor more information, see [Oracle Database audit connector for Microsoft Sentinel](/azure/sentinel/data-connectors/oracle-database-audit).",
+      "lineStart": 94,
+      "lineEnd": 98
+    },
+    {
+      "sectionOrder": 10,
+      "headingLevel": 3,
+      "headingText": "Recommendations",
+      "headingPath": [
+        "Optimize security for your Oracle workload",
+        "Integrate Oracle Database audit trails",
+        "Recommendations"
+      ],
+      "markdown": "- Use the Microsoft Sentinel solution for Oracle Database workloads. The Oracle Database audit connector uses an industry-standard syslog interface to retrieve Oracle Database audit records and ingest them into Azure Monitor Logs.\n\n- Use Azure Sentinel to review audit records of applications, the Azure infrastructure, and guest operating systems.",
+      "lineStart": 100,
+      "lineEnd": 104
+    },
+    {
+      "sectionOrder": 11,
+      "headingLevel": 2,
+      "headingText": "Next step",
+      "headingPath": [
+        "Optimize security for your Oracle workload",
+        "Next step"
+      ],
+      "markdown": "> [!div class=\"nextstepaction\"]\n> [Monitor workloads](monitor-workloads.md)",
+      "lineStart": 106,
+      "lineEnd": 108
+    }
+  ],
+  "localLinks": [
+    "monitor-workloads.md"
+  ],
+  "lastModified": "2026-03-17T16:22:13.691Z"
+}

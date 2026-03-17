@@ -1,0 +1,449 @@
+{
+  "source": {
+    "absolutePath": "C:\\Users\\EricL\\source\\repos\\Well-Architected-Vibe-Coding\\well-architected-vibe-coding\\well-architected\\design-guides\\optimize-workload-using-flows.md",
+    "repoRelativePath": "well-architected/design-guides/optimize-workload-using-flows.md",
+    "docsRelativePath": "design-guides/optimize-workload-using-flows.md"
+  },
+  "frontMatter": {
+    "title": "Optimize workload design using flows",
+    "description": "Explore a detailed guide about optimizing workloads through structured flow design. This article provides an in-depth look at a three-step process for workload optimization, including defining flow structures, setting technical requirements, and designing flows to meet these specifications. It emphasizes the significance of aligning flows with business processes and use cases, and offers practical examples and best practices.",
+    "author": "stephen-sumner",
+    "ms.author": "ssumner",
+    "ms.date": "1/31/2024",
+    "ms.topic": "concept-article",
+    "ms.update-cycle": "1095-days"
+  },
+  "title": "Optimize workload design using flows",
+  "rawBody": "# Optimize workload design using flows\n\nThis article covers the targeted optimization of workloads using flows. Different components of a workload have varying requirements and levels of importance. By segmenting a workload into flows, you can prioritize different parts of a workload and better align workload investments with the importance of each flow.\n\nThis workload optimization process is iterative and involves three key steps: (1) define the flow structure within your workload, (2) define technical requirements, and (3) design the flow to meet the requirements (*see figure 1*).\n\n:::image type=\"content\" source=\"./_images/flow-design-process.svg\" alt-text=\"Diagram that shows a three-step process with five actions. The first step is to define the flow. To define the flow, you need to understand prerequisites and document the flow. The second step is to define the flow requirements. To define flow requirements, you need to establish technical targets. The third step is to design the flow. To design the flow, you need to follow flow design best practices and develop and test the flow. There's an arrow from the build and test action back to the first action (understand prerequisites) that indicates iterations of this process.\" lightbox=\"./_images/flow-design-process.svg\" border=\"false\"::: *Figure 1: The process to optimize workloads using flows.*\n\n## Terminology\n\nBefore you start optimizing your workload using flows, familiarize yourself with these key terms.\n\n| Term | Definition |\n|------|------------|\n| **Business impact** | The effect that a flow's availability or unavailability has on revenue, reputation, operations, or compliance. Informs criticality ratings and technical targets. |\n| **Business process** | A series of sequential actions or stages that fulfill a business requirement, such as to sell products online or to process customer support requests. |\n| **Criticality** | A qualitative label that indicates the relative importance of a flow to business operations. Teams typically rate flows as low, medium, or high according to business impact. |\n| **Escalation path** | A defined sequence of individuals or teams to contact to resolve flow problems. Each level has broader scope and authority. |\n| **Process owner** | The individual responsible for the business process that a flow supports, with authority over business requirements and priorities. |\n| **Service-level agreement (SLA)** | A formal commitment that specifies expected service availability and performance levels, often as a percentage of uptime. |\n| **Service-level objective (SLO)** | An internal target for service performance and reliability that helps teams meet or exceed SLA commitments. |\n| **System flow** | A flow that determines communication and data exchange between workload components. It operates independently of direct user interaction. |\n| **Technical targets** | Measurable goals for a flow that align with the five Well-Architected Framework pillars: Reliability, Security, Cost, Operational Excellence, And Performance Efficiency. |\n| **User flow** | A flow that determines how users interact with the workload. It defines the sequence of actions that users take to accomplish specific tasks. |\n\n## Define the flow\n\nBefore you can define flow requirements, you need to understand the business drivers for the flow. The prerequisites to defining a flow are identifying the business process and use case its supports. When you understand the prerequisites, you can start documenting the flow.\n\n### Understand the prerequisites\n\nFlows are sequences of actions that support workload functionality. There are two primary types of flows: user flows and system flows. User flows determine user interactions. System flows determine communication between workload components. Flows support business processes and use cases. A workload consists of multiple use cases. You need to identify the business process and use case the flow supports before documenting a flow (*see figure 2*).\n\n:::image type=\"content\" source=\"./_images/business-workload-process.svg\" alt-text=\"Diagram that shows two boxes, stacked on top of each other. The top box represents a business process with segments marked Stage 1, Stage 2, and Stage n, indicating a sequence of stages in the business process. From each stage, three vertical arrows point downward to a row of three squares representing different use cases. Each square is labeled with Use case, Use case 2, and Use case n respectively. Each square contains a unique flowchart with labeled flows Flow 1, Flow 2, and Flow n. The use cases are all part of a single workload. Each stage of the business process is linked to a specific workload use case and each use case has its own flow.\" lightbox=\"./_images/business-workload-process.svg\" border=\"false\"::: *Figure 2: The relationship between business processes, use cases, flows, and workload.*\n\n#### Identify the business process\n\nA business process is a series of actions (stages) that fulfill a business requirement. Flows determine the sequence a user or data takes to accomplish each stage of a business process. For example, selling products online is a business process. The stages in this business process might be listing the product online, receiving orders, and delivering the product.\n\n#### Identify the use case\n\nA use case defines the functional requirements of a flow. You need to identify and understand the use case a flow supports before establishing the technical requirements of a flow. Each use case should support one stage in a business process (*see figure 2*). A use case should define the following attributes:\n\n- *Purpose*: Clearly articulate the tasks or objectives, like enabling online purchases. This clarity guides the functional design and sets clear goals for flow design.\n\n- *Criticality*: Assess the importance of the use case, ranging from routine to critical. The value assigned to a use case informs the prioritization and design of the flow. High-value use cases might require enhanced error handling, performance tuning, or user experience considerations.\n\n- *Consumers*: Identify whether users (customers, staff) or system components are the primary consumers. This categorization determines whether it's a user flow or system flow and influences the design.\n\n- *Events*: Define triggers or conditions that initiate and conclude the use case. These events define the flow's boundaries.\n\n- *Execution*: Understand the operational frequency and variability of the use case to anticipate system load. You must design a flow to handle different execution scenarios.\n\n- *Dependencies*: Identify interdependencies with other use cases for risk management. Recognizing a use case's dependencies aids in designing flows that integrate smoothly with other system parts. You need to ensure the availability of necessary inputs and compatibility of outputs with subsequent processes.\n\n### Document the flow\n\nUse the use case to document the flow. You should outline or map each action you need in a flow. Capture decision criteria and pathways. Identify interactions with other use cases. This outline serves as a blueprint for flow design and management. You also need to capture business information about the flow. Make sure to include the following details in the flow documentation:\n\n- *Flow description*: A high-level description of the flow.\n\n- *Business process*: The business process the flow supports.\n\n- *Process owner*: The individual that owns the business process.\n\n- *Stakeholders*: The individuals that you should inform or consult on flow status or changes.\n\n- *Escalation paths*: The individuals or groups you should contact to resolve issues. It's a sequence of people. The scope of individual responsibility grows with each person on the path.\n\n- *Business impact*: The importance of this flow to the business.\n\n- *Criticality rating*: A qualitative label that indicates the relative importance of the flow.\n\nFor more information, see [Flow examples](#flow-examples).\n\n## Define flow requirements\n\nUtilize the use case to establish the technical targets of the flow. Define measurable targets for the flow that align to the five pillars of the Well-Architected Framework (WAF). These pillars provide a framework for setting technical targets:\n\n- *Reliability targets*: Assess each flow's importance and set reliability targets accordingly. Determine performance thresholds and establish clear service-level agreements (SLAs) and service-level objectives (SLOs). Higher criticality flows require more stringent reliability targets.\n\n- *Security targets*: Analyze the security needs of each flow based on data sensitivity and user activities. Implement and continuously update security measures to meet these needs while ensuring compliance with regulatory standards.\n\n- *Cost targets*: Understand the demands of each flow for effective resource allocation. Set targets to balance cost with performance. Ensure resource usage aligns with business priorities.\n\n- *Operational targets*: Define metrics for effective monitoring and troubleshooting. Targets should ensure efficient resource use and alignment with organizational goals.\n\n- *Performance targets*: Base performance targets on the initial requirements of each flow. Ensure that essential flows receive adequate resources and continuously adjust targets to meet evolving demands and enhance user experiences.\n\n## Design the flow\n\nDesign the flow to meet the technical targets. You should familiarize yourself with flow design best practices so that you achieve the right result. Build and test the flow. Iterate on the design until it meets the technical targets you established.\n\n### Follow flow design best practices\n\nAs you design a flow, follow flow design best practices. A well-designed flow has the following attributes:\n\n- *Scoped*: Identify distinct starting and ending points for each flow. Clear boundaries help optimize user or system interactions.\n\n- *Logical:* Design your flows with a logical order of steps. Optimize for the most efficient path and reduce unnecessary steps.\n\n- *Maintainable*: Design flows that are easy to update and maintain. Use modular components that you can modify without affecting the entire workload.\n\n- *Defined*: Incorporate specific conditions that trigger or guide each step in a flow. This precision ensures that the flow responds accurately to user inputs, data changes, or system states.\n\n- *Reliable*: Build error handling and exception paths into your flows. Effective error management prevents disruption and maintains flow integrity under unexpected circumstances.\n\n- *Scalable*: Ensure it can handle varying loads and adapt to growing or shrinking user bases or data volumes.\n\n- *Secure*: Embed security measures within the flow. Protect data and user interactions against unauthorized access and threats.\n\n- *Efficient*: Plan for efficient use of resources without over-provisioning. Keep cost optimization in mind.\n\n- *User-centric*: For user flows, align the flow design with user expectations and behaviors. Make it intuitive and reduce the learning curve for new users.\n\n### Develop and test the flow\n\nDevelop the flow to meet technical targets and test it to ensure it meets its requirements. This process validates that the flow operates as intended, efficiently handles its tasks, and meets the technical targets. Here's guidance to build and test a flow:\n\n- *Select technologies*: Choose technologies that align with the set targets in terms of reliability, security, and performance.\n\n- *Develop flow*: Build the flow according to the design, keeping the set targets in mind.\n\n- *Test flow*: Conduct testing to ensure the flow meets targets. Iterate as needed to meet targets.\n\n- *Monitor*: Implement monitoring tools to track resource usage and costs.\n\nPeriodically review the flow against set targets and industry standards. Use feedback from monitoring and audits to improve the flow. Adjust targets and processes as necessary to align with changing business needs or technological advancements.\n\n## Optimize flows\n\nRepeat the process defined in this article throughout the lifecycle of the flow. As you iterate on the flow design, use the Well-Architected Framework to optimize flows from the perspective of each pillar:\n\n- [Flow reliability](/azure/well-architected/reliability/identify-flows)\n- [Flow security](/azure/well-architected/security/secure-development-lifecycle#requirements-phase)\n- [Flow cost optimization](/azure/well-architected/cost-optimization/optimize-flow-costs)\n- [Flow operational excellence](/azure/well-architected/operational-excellence/observability#key-design-strategies)\n- [Flow performance efficiency](/azure/well-architected/performance-efficiency/prioritize-critical-flows)\n\n## Flow examples\n\nHere are a few flow examples to help you design your flows. The examples use the [reliable web app pattern reference architecture](/azure/architecture/web-apps/guides/reliable-web-app/dotnet/plan-implementation) as the basis and shows the documentation you should have on each flow.\n\n:::image type=\"content\" source=\"./_images/relecloud-flow.png\" alt-text=\"Diagram that shows an example flow based on Relecloud.\" border=\"false\" lightbox=\"./_images/relecloud-flow.png\":::\n\n### User flow 1: Create upcoming concerts\n\n*Flow description*: Call-center employees use the application to create an upcoming concert.\n\n- *Business processes*: This flow supports the *purchasing ticket* process, but it's asynchronous, lowering its criticality.\n\n- *Process owner*: Director of Sales.\n\n- *Stakeholders*: Sales department, concert planning and operations, platform team, and application team.\n\n- *Escalation paths*: Application team, platform team, then sales department.\n\n- *Business impact*: This flow is important for making new concerts available on sales platforms, directly influencing the main revenue stream of the business. When call-center employees are unable to create concerts due to the unavailability of this flow, it negatively impacts both revenue and the company's reputation. However, high availability isn't essential for this process since concerts are typically scheduled in advance on a weekly basis. The sales department specified a requirement of 95% availability for this process and is agreeable to downtime outside of business hours for maintenance purposes.\n\n- *Criticality rating*: Low.\n\n### User flow 2: Search concerts\n\n*Flow description*: Call-center employees use the application to search for upcoming concerts.\n\n- *Business processes*: This flow supports the *purchasing ticket* process, but call-center employees can opt to list all concerts if the search function isn't available.\n\n- *Process owner*: The user experience (UX) department.\n\n- *Stakeholders*: Sales department, platform team, and application team.\n\n- *Escalation path*: Application team, platform team, sales department manager on-call.\n\n- *Business impact*: This flow allows call-center employees to quickly find concerts and is part of the normal sales process. High availability of this flow isn't critical since employees have the capability to list concerts even in its absence. It does degrade the call-center employee's experience might degrade and affect productivity. Customers could experience frustration due to increased wait times or delays. The sales department requested a 99% availability of this flow during regular business hours.\n\n- *Criticality rating*: Medium.\n\n### User flow 3: Get a list of the concerts\n\n*Flow description*: Call-center employees use the application to get a list of concerts.\n\n- *Business processes*: This flow directly supports the *purchasing ticket* process.\n\n- *Process owner*: Director of Platform.\n\n- *Stakeholders*: Sales department, platform team, data team.\n\n- *Escalation path*: Data team, data team on-call engineer, platform team on-call engineer.\n\n- *Business impact*: This flow is integral to the critical path of revenue-generating transactions for the business. High availability is essential, as call-center employees rely on this flow to process ticket purchases. In recognition of its importance, the business mandates a 99.9% uptime for this flow, which includes extended business hours.\n\n- *Criticality rating*: High.\n\n### User flow 4: Purchase ticket\n\n*Flow description*: Call-center employees use the application (the *authentication and authorization* process) to buy tickets for an upcoming concert (the *list upcoming concerts* process) on behalf of Relecloud customers.\n\n- *Business processes*: This flow is the core feature and flow of the application.\n\n- *Process owner*: Director of Sales.\n\n- *Stakeholders*: Sales department and all technical teams.\n\n- *Escalation path*: Application team on-call engineer, platform team on-call engineer, data team on-call engineer, Chief Operating Officer.\n\n- *Business impact*: High availability of this flow is crucial, as it directly enables customer ticket purchases. Any malfunction or unavailability of this flow can significantly impact both revenue and the company's reputation. The business set a stringent requirement for this vital process, expecting 99.9% uptime, even during extended business hours.\n\n- *Criticality rating*: High.\n\n### User flow 5: Authentication and authorization\n\n*Flow description*: Call-center employees securely sign in to the application. Administrators provide them with the proper roles to purchase tickets on behalf of Relecloud customers.\n\n- *Business processes*: This flow directly supports the *purchasing ticket* process. Without this functionality, call-center employees can't sign into the application to buy tickets.\n\n- *Process owner*: Platform team.\n\n- *Stakeholders*: Platform team, operations team, and sales department.\n\n- *Escalation path*: Platform team on-call engineer, Chief Operating Officer.\n\n- *Business impact*: This flow requires high availability because call-center employees can't purchase tickets if this flow isn't working properly. If this flow isn't available, it directly affects revenue and reputation. It's a key process that the business expects 99.9% uptime for, including during extended business hours.\n\n- *Criticality rating*: High.\n\n### System flow: Collect telemetry\n\n*Flow description*: To understand state changes in the production system, web application and API instances collect and send information, errors, and warnings. This data helps the operations team perform anomaly detection, troubleshooting, and profiling.\n\n- *Business processes*: This flow doesn't support any business processes, but it provides important data for the operations team.\n\n- *Process owner*: Director of Operations.\n\n- *Stakeholders*: Operations team, platform team, and data team.\n\n- *Escalation path*: Operations team (24/7), data team on-call engineer.\n\n- *Business impact*: This flow is essential for the business's monitoring and continuous improvement efforts. It needs to be as redundant and resilient as possible. The operations team is responsible for quickly restoring this flow after any failure to avoid missing critical information and warnings. If the flow fails to achieve the expected availability, there's a risk of overlooking production issues, potentially leading to severe consequences. To mitigate this risk, the operations department aims for 99% uptime, 24/7. They must schedule maintenance-related downtime at least 48 hours in advance.\n\n- *Criticality rating*: Medium.",
+  "headings": [
+    {
+      "level": 1,
+      "text": "Optimize workload design using flows",
+      "line": 1,
+      "path": [
+        "Optimize workload design using flows"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Terminology",
+      "line": 9,
+      "path": [
+        "Optimize workload design using flows",
+        "Terminology"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Define the flow",
+      "line": 26,
+      "path": [
+        "Optimize workload design using flows",
+        "Define the flow"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Understand the prerequisites",
+      "line": 30,
+      "path": [
+        "Optimize workload design using flows",
+        "Define the flow",
+        "Understand the prerequisites"
+      ]
+    },
+    {
+      "level": 4,
+      "text": "Identify the business process",
+      "line": 36,
+      "path": [
+        "Optimize workload design using flows",
+        "Define the flow",
+        "Understand the prerequisites",
+        "Identify the business process"
+      ]
+    },
+    {
+      "level": 4,
+      "text": "Identify the use case",
+      "line": 40,
+      "path": [
+        "Optimize workload design using flows",
+        "Define the flow",
+        "Understand the prerequisites",
+        "Identify the use case"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Document the flow",
+      "line": 56,
+      "path": [
+        "Optimize workload design using flows",
+        "Define the flow",
+        "Document the flow"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Define flow requirements",
+      "line": 76,
+      "path": [
+        "Optimize workload design using flows",
+        "Define flow requirements"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Design the flow",
+      "line": 90,
+      "path": [
+        "Optimize workload design using flows",
+        "Design the flow"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Follow flow design best practices",
+      "line": 94,
+      "path": [
+        "Optimize workload design using flows",
+        "Design the flow",
+        "Follow flow design best practices"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Develop and test the flow",
+      "line": 116,
+      "path": [
+        "Optimize workload design using flows",
+        "Design the flow",
+        "Develop and test the flow"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Optimize flows",
+      "line": 130,
+      "path": [
+        "Optimize workload design using flows",
+        "Optimize flows"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Flow examples",
+      "line": 140,
+      "path": [
+        "Optimize workload design using flows",
+        "Flow examples"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "User flow 1: Create upcoming concerts",
+      "line": 146,
+      "path": [
+        "Optimize workload design using flows",
+        "Flow examples",
+        "User flow 1: Create upcoming concerts"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "User flow 2: Search concerts",
+      "line": 162,
+      "path": [
+        "Optimize workload design using flows",
+        "Flow examples",
+        "User flow 2: Search concerts"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "User flow 3: Get a list of the concerts",
+      "line": 178,
+      "path": [
+        "Optimize workload design using flows",
+        "Flow examples",
+        "User flow 3: Get a list of the concerts"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "User flow 4: Purchase ticket",
+      "line": 194,
+      "path": [
+        "Optimize workload design using flows",
+        "Flow examples",
+        "User flow 4: Purchase ticket"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "User flow 5: Authentication and authorization",
+      "line": 210,
+      "path": [
+        "Optimize workload design using flows",
+        "Flow examples",
+        "User flow 5: Authentication and authorization"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "System flow: Collect telemetry",
+      "line": 226,
+      "path": [
+        "Optimize workload design using flows",
+        "Flow examples",
+        "System flow: Collect telemetry"
+      ]
+    }
+  ],
+  "sections": [
+    {
+      "sectionOrder": 1,
+      "headingLevel": 1,
+      "headingText": "Optimize workload design using flows",
+      "headingPath": [
+        "Optimize workload design using flows"
+      ],
+      "markdown": "This article covers the targeted optimization of workloads using flows. Different components of a workload have varying requirements and levels of importance. By segmenting a workload into flows, you can prioritize different parts of a workload and better align workload investments with the importance of each flow.\n\nThis workload optimization process is iterative and involves three key steps: (1) define the flow structure within your workload, (2) define technical requirements, and (3) design the flow to meet the requirements (*see figure 1*).\n\n:::image type=\"content\" source=\"./_images/flow-design-process.svg\" alt-text=\"Diagram that shows a three-step process with five actions. The first step is to define the flow. To define the flow, you need to understand prerequisites and document the flow. The second step is to define the flow requirements. To define flow requirements, you need to establish technical targets. The third step is to design the flow. To design the flow, you need to follow flow design best practices and develop and test the flow. There's an arrow from the build and test action back to the first action (understand prerequisites) that indicates iterations of this process.\" lightbox=\"./_images/flow-design-process.svg\" border=\"false\"::: *Figure 1: The process to optimize workloads using flows.*",
+      "lineStart": 2,
+      "lineEnd": 8
+    },
+    {
+      "sectionOrder": 2,
+      "headingLevel": 2,
+      "headingText": "Terminology",
+      "headingPath": [
+        "Optimize workload design using flows",
+        "Terminology"
+      ],
+      "markdown": "Before you start optimizing your workload using flows, familiarize yourself with these key terms.\n\n| Term | Definition |\n|------|------------|\n| **Business impact** | The effect that a flow's availability or unavailability has on revenue, reputation, operations, or compliance. Informs criticality ratings and technical targets. |\n| **Business process** | A series of sequential actions or stages that fulfill a business requirement, such as to sell products online or to process customer support requests. |\n| **Criticality** | A qualitative label that indicates the relative importance of a flow to business operations. Teams typically rate flows as low, medium, or high according to business impact. |\n| **Escalation path** | A defined sequence of individuals or teams to contact to resolve flow problems. Each level has broader scope and authority. |\n| **Process owner** | The individual responsible for the business process that a flow supports, with authority over business requirements and priorities. |\n| **Service-level agreement (SLA)** | A formal commitment that specifies expected service availability and performance levels, often as a percentage of uptime. |\n| **Service-level objective (SLO)** | An internal target for service performance and reliability that helps teams meet or exceed SLA commitments. |\n| **System flow** | A flow that determines communication and data exchange between workload components. It operates independently of direct user interaction. |\n| **Technical targets** | Measurable goals for a flow that align with the five Well-Architected Framework pillars: Reliability, Security, Cost, Operational Excellence, And Performance Efficiency. |\n| **User flow** | A flow that determines how users interact with the workload. It defines the sequence of actions that users take to accomplish specific tasks. |",
+      "lineStart": 10,
+      "lineEnd": 25
+    },
+    {
+      "sectionOrder": 3,
+      "headingLevel": 2,
+      "headingText": "Define the flow",
+      "headingPath": [
+        "Optimize workload design using flows",
+        "Define the flow"
+      ],
+      "markdown": "Before you can define flow requirements, you need to understand the business drivers for the flow. The prerequisites to defining a flow are identifying the business process and use case its supports. When you understand the prerequisites, you can start documenting the flow.",
+      "lineStart": 27,
+      "lineEnd": 29
+    },
+    {
+      "sectionOrder": 4,
+      "headingLevel": 3,
+      "headingText": "Understand the prerequisites",
+      "headingPath": [
+        "Optimize workload design using flows",
+        "Define the flow",
+        "Understand the prerequisites"
+      ],
+      "markdown": "Flows are sequences of actions that support workload functionality. There are two primary types of flows: user flows and system flows. User flows determine user interactions. System flows determine communication between workload components. Flows support business processes and use cases. A workload consists of multiple use cases. You need to identify the business process and use case the flow supports before documenting a flow (*see figure 2*).\n\n:::image type=\"content\" source=\"./_images/business-workload-process.svg\" alt-text=\"Diagram that shows two boxes, stacked on top of each other. The top box represents a business process with segments marked Stage 1, Stage 2, and Stage n, indicating a sequence of stages in the business process. From each stage, three vertical arrows point downward to a row of three squares representing different use cases. Each square is labeled with Use case, Use case 2, and Use case n respectively. Each square contains a unique flowchart with labeled flows Flow 1, Flow 2, and Flow n. The use cases are all part of a single workload. Each stage of the business process is linked to a specific workload use case and each use case has its own flow.\" lightbox=\"./_images/business-workload-process.svg\" border=\"false\"::: *Figure 2: The relationship between business processes, use cases, flows, and workload.*",
+      "lineStart": 31,
+      "lineEnd": 35
+    },
+    {
+      "sectionOrder": 5,
+      "headingLevel": 4,
+      "headingText": "Identify the business process",
+      "headingPath": [
+        "Optimize workload design using flows",
+        "Define the flow",
+        "Understand the prerequisites",
+        "Identify the business process"
+      ],
+      "markdown": "A business process is a series of actions (stages) that fulfill a business requirement. Flows determine the sequence a user or data takes to accomplish each stage of a business process. For example, selling products online is a business process. The stages in this business process might be listing the product online, receiving orders, and delivering the product.",
+      "lineStart": 37,
+      "lineEnd": 39
+    },
+    {
+      "sectionOrder": 6,
+      "headingLevel": 4,
+      "headingText": "Identify the use case",
+      "headingPath": [
+        "Optimize workload design using flows",
+        "Define the flow",
+        "Understand the prerequisites",
+        "Identify the use case"
+      ],
+      "markdown": "A use case defines the functional requirements of a flow. You need to identify and understand the use case a flow supports before establishing the technical requirements of a flow. Each use case should support one stage in a business process (*see figure 2*). A use case should define the following attributes:\n\n- *Purpose*: Clearly articulate the tasks or objectives, like enabling online purchases. This clarity guides the functional design and sets clear goals for flow design.\n\n- *Criticality*: Assess the importance of the use case, ranging from routine to critical. The value assigned to a use case informs the prioritization and design of the flow. High-value use cases might require enhanced error handling, performance tuning, or user experience considerations.\n\n- *Consumers*: Identify whether users (customers, staff) or system components are the primary consumers. This categorization determines whether it's a user flow or system flow and influences the design.\n\n- *Events*: Define triggers or conditions that initiate and conclude the use case. These events define the flow's boundaries.\n\n- *Execution*: Understand the operational frequency and variability of the use case to anticipate system load. You must design a flow to handle different execution scenarios.\n\n- *Dependencies*: Identify interdependencies with other use cases for risk management. Recognizing a use case's dependencies aids in designing flows that integrate smoothly with other system parts. You need to ensure the availability of necessary inputs and compatibility of outputs with subsequent processes.",
+      "lineStart": 41,
+      "lineEnd": 55
+    },
+    {
+      "sectionOrder": 7,
+      "headingLevel": 3,
+      "headingText": "Document the flow",
+      "headingPath": [
+        "Optimize workload design using flows",
+        "Define the flow",
+        "Document the flow"
+      ],
+      "markdown": "Use the use case to document the flow. You should outline or map each action you need in a flow. Capture decision criteria and pathways. Identify interactions with other use cases. This outline serves as a blueprint for flow design and management. You also need to capture business information about the flow. Make sure to include the following details in the flow documentation:\n\n- *Flow description*: A high-level description of the flow.\n\n- *Business process*: The business process the flow supports.\n\n- *Process owner*: The individual that owns the business process.\n\n- *Stakeholders*: The individuals that you should inform or consult on flow status or changes.\n\n- *Escalation paths*: The individuals or groups you should contact to resolve issues. It's a sequence of people. The scope of individual responsibility grows with each person on the path.\n\n- *Business impact*: The importance of this flow to the business.\n\n- *Criticality rating*: A qualitative label that indicates the relative importance of the flow.\n\nFor more information, see [Flow examples](#flow-examples).",
+      "lineStart": 57,
+      "lineEnd": 75
+    },
+    {
+      "sectionOrder": 8,
+      "headingLevel": 2,
+      "headingText": "Define flow requirements",
+      "headingPath": [
+        "Optimize workload design using flows",
+        "Define flow requirements"
+      ],
+      "markdown": "Utilize the use case to establish the technical targets of the flow. Define measurable targets for the flow that align to the five pillars of the Well-Architected Framework (WAF). These pillars provide a framework for setting technical targets:\n\n- *Reliability targets*: Assess each flow's importance and set reliability targets accordingly. Determine performance thresholds and establish clear service-level agreements (SLAs) and service-level objectives (SLOs). Higher criticality flows require more stringent reliability targets.\n\n- *Security targets*: Analyze the security needs of each flow based on data sensitivity and user activities. Implement and continuously update security measures to meet these needs while ensuring compliance with regulatory standards.\n\n- *Cost targets*: Understand the demands of each flow for effective resource allocation. Set targets to balance cost with performance. Ensure resource usage aligns with business priorities.\n\n- *Operational targets*: Define metrics for effective monitoring and troubleshooting. Targets should ensure efficient resource use and alignment with organizational goals.\n\n- *Performance targets*: Base performance targets on the initial requirements of each flow. Ensure that essential flows receive adequate resources and continuously adjust targets to meet evolving demands and enhance user experiences.",
+      "lineStart": 77,
+      "lineEnd": 89
+    },
+    {
+      "sectionOrder": 9,
+      "headingLevel": 2,
+      "headingText": "Design the flow",
+      "headingPath": [
+        "Optimize workload design using flows",
+        "Design the flow"
+      ],
+      "markdown": "Design the flow to meet the technical targets. You should familiarize yourself with flow design best practices so that you achieve the right result. Build and test the flow. Iterate on the design until it meets the technical targets you established.",
+      "lineStart": 91,
+      "lineEnd": 93
+    },
+    {
+      "sectionOrder": 10,
+      "headingLevel": 3,
+      "headingText": "Follow flow design best practices",
+      "headingPath": [
+        "Optimize workload design using flows",
+        "Design the flow",
+        "Follow flow design best practices"
+      ],
+      "markdown": "As you design a flow, follow flow design best practices. A well-designed flow has the following attributes:\n\n- *Scoped*: Identify distinct starting and ending points for each flow. Clear boundaries help optimize user or system interactions.\n\n- *Logical:* Design your flows with a logical order of steps. Optimize for the most efficient path and reduce unnecessary steps.\n\n- *Maintainable*: Design flows that are easy to update and maintain. Use modular components that you can modify without affecting the entire workload.\n\n- *Defined*: Incorporate specific conditions that trigger or guide each step in a flow. This precision ensures that the flow responds accurately to user inputs, data changes, or system states.\n\n- *Reliable*: Build error handling and exception paths into your flows. Effective error management prevents disruption and maintains flow integrity under unexpected circumstances.\n\n- *Scalable*: Ensure it can handle varying loads and adapt to growing or shrinking user bases or data volumes.\n\n- *Secure*: Embed security measures within the flow. Protect data and user interactions against unauthorized access and threats.\n\n- *Efficient*: Plan for efficient use of resources without over-provisioning. Keep cost optimization in mind.\n\n- *User-centric*: For user flows, align the flow design with user expectations and behaviors. Make it intuitive and reduce the learning curve for new users.",
+      "lineStart": 95,
+      "lineEnd": 115
+    },
+    {
+      "sectionOrder": 11,
+      "headingLevel": 3,
+      "headingText": "Develop and test the flow",
+      "headingPath": [
+        "Optimize workload design using flows",
+        "Design the flow",
+        "Develop and test the flow"
+      ],
+      "markdown": "Develop the flow to meet technical targets and test it to ensure it meets its requirements. This process validates that the flow operates as intended, efficiently handles its tasks, and meets the technical targets. Here's guidance to build and test a flow:\n\n- *Select technologies*: Choose technologies that align with the set targets in terms of reliability, security, and performance.\n\n- *Develop flow*: Build the flow according to the design, keeping the set targets in mind.\n\n- *Test flow*: Conduct testing to ensure the flow meets targets. Iterate as needed to meet targets.\n\n- *Monitor*: Implement monitoring tools to track resource usage and costs.\n\nPeriodically review the flow against set targets and industry standards. Use feedback from monitoring and audits to improve the flow. Adjust targets and processes as necessary to align with changing business needs or technological advancements.",
+      "lineStart": 117,
+      "lineEnd": 129
+    },
+    {
+      "sectionOrder": 12,
+      "headingLevel": 2,
+      "headingText": "Optimize flows",
+      "headingPath": [
+        "Optimize workload design using flows",
+        "Optimize flows"
+      ],
+      "markdown": "Repeat the process defined in this article throughout the lifecycle of the flow. As you iterate on the flow design, use the Well-Architected Framework to optimize flows from the perspective of each pillar:\n\n- [Flow reliability](/azure/well-architected/reliability/identify-flows)\n- [Flow security](/azure/well-architected/security/secure-development-lifecycle#requirements-phase)\n- [Flow cost optimization](/azure/well-architected/cost-optimization/optimize-flow-costs)\n- [Flow operational excellence](/azure/well-architected/operational-excellence/observability#key-design-strategies)\n- [Flow performance efficiency](/azure/well-architected/performance-efficiency/prioritize-critical-flows)",
+      "lineStart": 131,
+      "lineEnd": 139
+    },
+    {
+      "sectionOrder": 13,
+      "headingLevel": 2,
+      "headingText": "Flow examples",
+      "headingPath": [
+        "Optimize workload design using flows",
+        "Flow examples"
+      ],
+      "markdown": "Here are a few flow examples to help you design your flows. The examples use the [reliable web app pattern reference architecture](/azure/architecture/web-apps/guides/reliable-web-app/dotnet/plan-implementation) as the basis and shows the documentation you should have on each flow.\n\n:::image type=\"content\" source=\"./_images/relecloud-flow.png\" alt-text=\"Diagram that shows an example flow based on Relecloud.\" border=\"false\" lightbox=\"./_images/relecloud-flow.png\":::",
+      "lineStart": 141,
+      "lineEnd": 145
+    },
+    {
+      "sectionOrder": 14,
+      "headingLevel": 3,
+      "headingText": "User flow 1: Create upcoming concerts",
+      "headingPath": [
+        "Optimize workload design using flows",
+        "Flow examples",
+        "User flow 1: Create upcoming concerts"
+      ],
+      "markdown": "*Flow description*: Call-center employees use the application to create an upcoming concert.\n\n- *Business processes*: This flow supports the *purchasing ticket* process, but it's asynchronous, lowering its criticality.\n\n- *Process owner*: Director of Sales.\n\n- *Stakeholders*: Sales department, concert planning and operations, platform team, and application team.\n\n- *Escalation paths*: Application team, platform team, then sales department.\n\n- *Business impact*: This flow is important for making new concerts available on sales platforms, directly influencing the main revenue stream of the business. When call-center employees are unable to create concerts due to the unavailability of this flow, it negatively impacts both revenue and the company's reputation. However, high availability isn't essential for this process since concerts are typically scheduled in advance on a weekly basis. The sales department specified a requirement of 95% availability for this process and is agreeable to downtime outside of business hours for maintenance purposes.\n\n- *Criticality rating*: Low.",
+      "lineStart": 147,
+      "lineEnd": 161
+    },
+    {
+      "sectionOrder": 15,
+      "headingLevel": 3,
+      "headingText": "User flow 2: Search concerts",
+      "headingPath": [
+        "Optimize workload design using flows",
+        "Flow examples",
+        "User flow 2: Search concerts"
+      ],
+      "markdown": "*Flow description*: Call-center employees use the application to search for upcoming concerts.\n\n- *Business processes*: This flow supports the *purchasing ticket* process, but call-center employees can opt to list all concerts if the search function isn't available.\n\n- *Process owner*: The user experience (UX) department.\n\n- *Stakeholders*: Sales department, platform team, and application team.\n\n- *Escalation path*: Application team, platform team, sales department manager on-call.\n\n- *Business impact*: This flow allows call-center employees to quickly find concerts and is part of the normal sales process. High availability of this flow isn't critical since employees have the capability to list concerts even in its absence. It does degrade the call-center employee's experience might degrade and affect productivity. Customers could experience frustration due to increased wait times or delays. The sales department requested a 99% availability of this flow during regular business hours.\n\n- *Criticality rating*: Medium.",
+      "lineStart": 163,
+      "lineEnd": 177
+    },
+    {
+      "sectionOrder": 16,
+      "headingLevel": 3,
+      "headingText": "User flow 3: Get a list of the concerts",
+      "headingPath": [
+        "Optimize workload design using flows",
+        "Flow examples",
+        "User flow 3: Get a list of the concerts"
+      ],
+      "markdown": "*Flow description*: Call-center employees use the application to get a list of concerts.\n\n- *Business processes*: This flow directly supports the *purchasing ticket* process.\n\n- *Process owner*: Director of Platform.\n\n- *Stakeholders*: Sales department, platform team, data team.\n\n- *Escalation path*: Data team, data team on-call engineer, platform team on-call engineer.\n\n- *Business impact*: This flow is integral to the critical path of revenue-generating transactions for the business. High availability is essential, as call-center employees rely on this flow to process ticket purchases. In recognition of its importance, the business mandates a 99.9% uptime for this flow, which includes extended business hours.\n\n- *Criticality rating*: High.",
+      "lineStart": 179,
+      "lineEnd": 193
+    },
+    {
+      "sectionOrder": 17,
+      "headingLevel": 3,
+      "headingText": "User flow 4: Purchase ticket",
+      "headingPath": [
+        "Optimize workload design using flows",
+        "Flow examples",
+        "User flow 4: Purchase ticket"
+      ],
+      "markdown": "*Flow description*: Call-center employees use the application (the *authentication and authorization* process) to buy tickets for an upcoming concert (the *list upcoming concerts* process) on behalf of Relecloud customers.\n\n- *Business processes*: This flow is the core feature and flow of the application.\n\n- *Process owner*: Director of Sales.\n\n- *Stakeholders*: Sales department and all technical teams.\n\n- *Escalation path*: Application team on-call engineer, platform team on-call engineer, data team on-call engineer, Chief Operating Officer.\n\n- *Business impact*: High availability of this flow is crucial, as it directly enables customer ticket purchases. Any malfunction or unavailability of this flow can significantly impact both revenue and the company's reputation. The business set a stringent requirement for this vital process, expecting 99.9% uptime, even during extended business hours.\n\n- *Criticality rating*: High.",
+      "lineStart": 195,
+      "lineEnd": 209
+    },
+    {
+      "sectionOrder": 18,
+      "headingLevel": 3,
+      "headingText": "User flow 5: Authentication and authorization",
+      "headingPath": [
+        "Optimize workload design using flows",
+        "Flow examples",
+        "User flow 5: Authentication and authorization"
+      ],
+      "markdown": "*Flow description*: Call-center employees securely sign in to the application. Administrators provide them with the proper roles to purchase tickets on behalf of Relecloud customers.\n\n- *Business processes*: This flow directly supports the *purchasing ticket* process. Without this functionality, call-center employees can't sign into the application to buy tickets.\n\n- *Process owner*: Platform team.\n\n- *Stakeholders*: Platform team, operations team, and sales department.\n\n- *Escalation path*: Platform team on-call engineer, Chief Operating Officer.\n\n- *Business impact*: This flow requires high availability because call-center employees can't purchase tickets if this flow isn't working properly. If this flow isn't available, it directly affects revenue and reputation. It's a key process that the business expects 99.9% uptime for, including during extended business hours.\n\n- *Criticality rating*: High.",
+      "lineStart": 211,
+      "lineEnd": 225
+    },
+    {
+      "sectionOrder": 19,
+      "headingLevel": 3,
+      "headingText": "System flow: Collect telemetry",
+      "headingPath": [
+        "Optimize workload design using flows",
+        "Flow examples",
+        "System flow: Collect telemetry"
+      ],
+      "markdown": "*Flow description*: To understand state changes in the production system, web application and API instances collect and send information, errors, and warnings. This data helps the operations team perform anomaly detection, troubleshooting, and profiling.\n\n- *Business processes*: This flow doesn't support any business processes, but it provides important data for the operations team.\n\n- *Process owner*: Director of Operations.\n\n- *Stakeholders*: Operations team, platform team, and data team.\n\n- *Escalation path*: Operations team (24/7), data team on-call engineer.\n\n- *Business impact*: This flow is essential for the business's monitoring and continuous improvement efforts. It needs to be as redundant and resilient as possible. The operations team is responsible for quickly restoring this flow after any failure to avoid missing critical information and warnings. If the flow fails to achieve the expected availability, there's a risk of overlooking production issues, potentially leading to severe consequences. To mitigate this risk, the operations department aims for 99% uptime, 24/7. They must schedule maintenance-related downtime at least 48 hours in advance.\n\n- *Criticality rating*: Medium.",
+      "lineStart": 227,
+      "lineEnd": 240
+    }
+  ],
+  "localLinks": [],
+  "lastModified": "2026-03-17T16:22:13.488Z"
+}

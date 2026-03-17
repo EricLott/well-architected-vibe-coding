@@ -1,0 +1,301 @@
+{
+  "source": {
+    "absolutePath": "C:\\Users\\EricL\\source\\repos\\Well-Architected-Vibe-Coding\\well-architected-vibe-coding\\well-architected\\hpc\\hpc-architecture-pattern.md",
+    "repoRelativePath": "well-architected/hpc/hpc-architecture-pattern.md",
+    "docsRelativePath": "hpc/hpc-architecture-pattern.md"
+  },
+  "frontMatter": {
+    "title": "Architecture pattern for HPC workloads on Azure",
+    "description": "Design areas address the critical decisions that determine whether your HPC workload can run jobs efficiently, handle large-scale parallel processing, and meet performance targets",
+    "author": "padmalathas",
+    "ms.author": "padmalathas",
+    "ms.date": "03/10/2026",
+    "ms.topic": "concept-article"
+  },
+  "title": "Architecture pattern for HPC workloads on Azure",
+  "rawBody": "# Architecture Pattern for HPC Workloads on Azure\n\nThis article presents a foundational pattern for high-performance computing (HPC) architectures on Azure. Use this pattern as a starting point for your design process, then select components that align with your specific business and technical requirements.\n\n## Design Considerations\n\nBefore selecting Azure services, familiarize yourself with the following characteristics to better inform your architectural decisions. Use the following questions to characterize your HPC workload. \n\nBased on these characteristics, classify and identify critical HPC resources. This exercise helps you track resource utilization and associated costs while focusing optimization efforts where they have the greatest impact. Organize resources into logical groups based on their function and lifetime.\n\n| Characteristic | Key Questions | Design Implications |\n| -------------- | ------------- | ------------------- |\n| **Workload type** | Is the workload tightly coupled (requiring low-latency communication), loosely coupled (independent tasks with no inter-node communication), GPU-accelerated, memory-intensive, or data-intensive? | Determines whether to use MPI-based clusters, high-throughput schedulers, GPU-enabled VMs, or data-centric architectures, and identifies the target operating system (such as Linux or Windows Server) based on application compatibility. |\n| **Scale requirements** | What is the expected throughput for compute, storage, and network? How many concurrent jobs need to run? What is the peak demand? | Influences cluster size, autoscaling strategy, and quota planning. |\n| **Performance needs** | What are the latency requirements for inter-node communication? What storage throughput is required? What is the acceptable job completion time? | Drives network selection (for example, InfiniBand), storage choice, and VM family. |\n| **Data lifecycle** | How much data is generated per job? How long must results be retained? What are the access patterns for input and output data? | Affects storage tiering, durability, and cost optimization. |\n| **Cost constraints** | What is the budget for compute resources? Can spot instances or preemptible capacity be used? What are the tradeoffs between performance and cost? | Guides use of spot instances, scheduling policies, and job retry strategies. |\n| **Compliance requirements** | Are there data residency or sovereignty requirements? What audit and logging capabilities are needed? What security controls must be enforced? | Determines region selection, encryption, logging, and access controls. |\n\n\n## Basic Architecture\n\nThe following diagram illustrates a typical pattern for HPC workloads on Azure. The architecture encompasses user access and job submission, orchestration and scheduling, compute clusters, high-performance interconnects, storage systems, and management infrastructure.\n\n:::image type=\"content\" source=\"./media/hpc-architecture.png\" alt-text=\"Screenshot of typical architecture of an HPC workload.\" lightbox=\"./media/hpc-architecture.png\":::\n\n### Architecture Flow\n\n1. **Users submit jobs** through web portals, command-line interfaces, or APIs\n1. **Authentication systems** verify identities and authorize access to resources\n1. **Job schedulers** receive requests and determine optimal placement based on resource availability and policies\n1. **Compute nodes** execute the workload, communicating through high-performance interconnects\n1. **Storage systems** provide data to running jobs and persist results\n1. **Monitoring infrastructure** tracks performance, cost, and system health throughout execution\n\n----\n\n### Architecture Components\n\nThe architecture consists of six primary layers:\n\n#### User Access and Job Submission\n\n| Component | Description |\n|-----------|-------------|\n| Web Portal | Browser-based interface for job submission, monitoring, and file management. |\n| Command Line | Direct terminal access for scripting and automation through SSH or local shells. |\n| API | Programmatic access via REST or GraphQL for integration with external systems and workflows. |\n\n#### Orchestration and Scheduling\n\n| Component | Description |\n|-----------|-------------|\n| Job Scheduler | Receives work requests and determines when and where each job should run. |\n| Resource Manager | Tracks available compute capacity and allocates resources to jobs. |\n| Queue Control | Organizes pending jobs based on priority, fairness policies, and resource requirements. |\n| Workflow Engine | Coordinates multi-step pipelines and manages dependencies between jobs. |\n| Capacity Planning | Forecasts resource demand and informs scaling decisions. |\n\n#### High-Performance Interconnect\n\n| Component | Description |\n|-----------|-------------|\n| Low-Latency Network | High-speed fabric connecting compute nodes with minimal communication delay. |\n| High-Bandwidth Links | Network infrastructure supporting large data transfers between nodes. |\n| Topology-Optimized Network | Network design that minimizes hops and latency for node-to-node communication. |\n\n#### Storage Architecture\n\n| Component | Description |\n|-----------|-------------|\n| Parallel File System | High-throughput shared storage optimized for concurrent access by many nodes. |\n| Object Storage | Scalable storage for large datasets, intermediate results, and working data. |\n| Cold Tier | Low-cost archival storage for long-term retention and compliance requirements. |\n\n#### Management and Monitoring\n\n| Component | Description |\n|-----------|-------------|\n| Provisioning | Automated deployment and configuration of compute nodes and infrastructure. |\n| Telemetry | Collection of performance data, logs, and system metrics across the environment. |\n| Monitoring | Real-time tracking of resource utilization, job status, and system health. |\n| Alerting | Automated notifications for faults, threshold breaches, and operational issues. |\n| Fault Detection | Identification of node failures, job errors, and infrastructure problems. |\n\n#### Key Architectural Patterns\n\n| Pattern | Description |\n|---------|-------------|\n| Batch Processing | Execution of large volumes of jobs with results delivered upon completion. |\n| Interactive Visualization | Real-time rendering and analysis of simulation outputs and datasets. |\n| Temporary Nodes | On-demand compute resources provisioned for peak workloads and released when idle. |\n| Data Sharding | Distribution of large datasets across multiple storage nodes for parallel access. |\n\n---\n\n## Reference Architectures and Landing Zones\n\nThis baseline pattern provides a conceptual foundation. For detailed implementation guidance, reference architectures, and production-ready designs, explore the HPC resources in the Azure Architecture Center:\n\n- **[HPC landing zone accelerator](/azure/cloud-adoption-framework/scenarios/azure-hpc/azure-hpc-landing-zone-accelerator)** — A deployment-ready architecture that implements Azure landing zone design principles for HPC workloads, including network topology, identity management, and governance controls.\n\n- **[HPC cluster deployed in the cloud](/azure/architecture/solution-ideas/articles/hpc-cluster)** — Reference architecture for deploying HPC clusters using Azure CycleCloud with autoscaling compute nodes.\n\n- **[Run reservoir simulation software on Azure](/azure/architecture/example-scenario/infrastructure/reservoir-simulation)** — Industry-specific example demonstrating HPC patterns for oil and gas workloads.\n\n- **[Digital image-based modeling on Azure](/azure/architecture/example-scenario/infrastructure/image-modeling)** — Reference implementation for compute-intensive image processing workloads.\n\n- **[HPC system and big-compute solutions](/azure/architecture/solution-ideas/articles/big-compute-with-azure-batch)** — Guidance for large-scale batch processing using Azure Batch.\n\nThese reference architectures provide Bicep templates, ARM templates, and detailed implementation steps that you can adapt for your specific requirements.",
+  "headings": [
+    {
+      "level": 1,
+      "text": "Architecture Pattern for HPC Workloads on Azure",
+      "line": 1,
+      "path": [
+        "Architecture Pattern for HPC Workloads on Azure"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Design Considerations",
+      "line": 5,
+      "path": [
+        "Architecture Pattern for HPC Workloads on Azure",
+        "Design Considerations"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Basic Architecture",
+      "line": 21,
+      "path": [
+        "Architecture Pattern for HPC Workloads on Azure",
+        "Basic Architecture"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Architecture Flow",
+      "line": 27,
+      "path": [
+        "Architecture Pattern for HPC Workloads on Azure",
+        "Basic Architecture",
+        "Architecture Flow"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Architecture Components",
+      "line": 38,
+      "path": [
+        "Architecture Pattern for HPC Workloads on Azure",
+        "Basic Architecture",
+        "Architecture Components"
+      ]
+    },
+    {
+      "level": 4,
+      "text": "User Access and Job Submission",
+      "line": 42,
+      "path": [
+        "Architecture Pattern for HPC Workloads on Azure",
+        "Basic Architecture",
+        "Architecture Components",
+        "User Access and Job Submission"
+      ]
+    },
+    {
+      "level": 4,
+      "text": "Orchestration and Scheduling",
+      "line": 50,
+      "path": [
+        "Architecture Pattern for HPC Workloads on Azure",
+        "Basic Architecture",
+        "Architecture Components",
+        "Orchestration and Scheduling"
+      ]
+    },
+    {
+      "level": 4,
+      "text": "High-Performance Interconnect",
+      "line": 60,
+      "path": [
+        "Architecture Pattern for HPC Workloads on Azure",
+        "Basic Architecture",
+        "Architecture Components",
+        "High-Performance Interconnect"
+      ]
+    },
+    {
+      "level": 4,
+      "text": "Storage Architecture",
+      "line": 68,
+      "path": [
+        "Architecture Pattern for HPC Workloads on Azure",
+        "Basic Architecture",
+        "Architecture Components",
+        "Storage Architecture"
+      ]
+    },
+    {
+      "level": 4,
+      "text": "Management and Monitoring",
+      "line": 76,
+      "path": [
+        "Architecture Pattern for HPC Workloads on Azure",
+        "Basic Architecture",
+        "Architecture Components",
+        "Management and Monitoring"
+      ]
+    },
+    {
+      "level": 4,
+      "text": "Key Architectural Patterns",
+      "line": 86,
+      "path": [
+        "Architecture Pattern for HPC Workloads on Azure",
+        "Basic Architecture",
+        "Architecture Components",
+        "Key Architectural Patterns"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Reference Architectures and Landing Zones",
+      "line": 97,
+      "path": [
+        "Architecture Pattern for HPC Workloads on Azure",
+        "Reference Architectures and Landing Zones"
+      ]
+    }
+  ],
+  "sections": [
+    {
+      "sectionOrder": 1,
+      "headingLevel": 1,
+      "headingText": "Architecture Pattern for HPC Workloads on Azure",
+      "headingPath": [
+        "Architecture Pattern for HPC Workloads on Azure"
+      ],
+      "markdown": "This article presents a foundational pattern for high-performance computing (HPC) architectures on Azure. Use this pattern as a starting point for your design process, then select components that align with your specific business and technical requirements.",
+      "lineStart": 2,
+      "lineEnd": 4
+    },
+    {
+      "sectionOrder": 2,
+      "headingLevel": 2,
+      "headingText": "Design Considerations",
+      "headingPath": [
+        "Architecture Pattern for HPC Workloads on Azure",
+        "Design Considerations"
+      ],
+      "markdown": "Before selecting Azure services, familiarize yourself with the following characteristics to better inform your architectural decisions. Use the following questions to characterize your HPC workload. \n\nBased on these characteristics, classify and identify critical HPC resources. This exercise helps you track resource utilization and associated costs while focusing optimization efforts where they have the greatest impact. Organize resources into logical groups based on their function and lifetime.\n\n| Characteristic | Key Questions | Design Implications |\n| -------------- | ------------- | ------------------- |\n| **Workload type** | Is the workload tightly coupled (requiring low-latency communication), loosely coupled (independent tasks with no inter-node communication), GPU-accelerated, memory-intensive, or data-intensive? | Determines whether to use MPI-based clusters, high-throughput schedulers, GPU-enabled VMs, or data-centric architectures, and identifies the target operating system (such as Linux or Windows Server) based on application compatibility. |\n| **Scale requirements** | What is the expected throughput for compute, storage, and network? How many concurrent jobs need to run? What is the peak demand? | Influences cluster size, autoscaling strategy, and quota planning. |\n| **Performance needs** | What are the latency requirements for inter-node communication? What storage throughput is required? What is the acceptable job completion time? | Drives network selection (for example, InfiniBand), storage choice, and VM family. |\n| **Data lifecycle** | How much data is generated per job? How long must results be retained? What are the access patterns for input and output data? | Affects storage tiering, durability, and cost optimization. |\n| **Cost constraints** | What is the budget for compute resources? Can spot instances or preemptible capacity be used? What are the tradeoffs between performance and cost? | Guides use of spot instances, scheduling policies, and job retry strategies. |\n| **Compliance requirements** | Are there data residency or sovereignty requirements? What audit and logging capabilities are needed? What security controls must be enforced? | Determines region selection, encryption, logging, and access controls. |",
+      "lineStart": 6,
+      "lineEnd": 20
+    },
+    {
+      "sectionOrder": 3,
+      "headingLevel": 2,
+      "headingText": "Basic Architecture",
+      "headingPath": [
+        "Architecture Pattern for HPC Workloads on Azure",
+        "Basic Architecture"
+      ],
+      "markdown": "The following diagram illustrates a typical pattern for HPC workloads on Azure. The architecture encompasses user access and job submission, orchestration and scheduling, compute clusters, high-performance interconnects, storage systems, and management infrastructure.\n\n:::image type=\"content\" source=\"./media/hpc-architecture.png\" alt-text=\"Screenshot of typical architecture of an HPC workload.\" lightbox=\"./media/hpc-architecture.png\":::",
+      "lineStart": 22,
+      "lineEnd": 26
+    },
+    {
+      "sectionOrder": 4,
+      "headingLevel": 3,
+      "headingText": "Architecture Flow",
+      "headingPath": [
+        "Architecture Pattern for HPC Workloads on Azure",
+        "Basic Architecture",
+        "Architecture Flow"
+      ],
+      "markdown": "1. **Users submit jobs** through web portals, command-line interfaces, or APIs\n1. **Authentication systems** verify identities and authorize access to resources\n1. **Job schedulers** receive requests and determine optimal placement based on resource availability and policies\n1. **Compute nodes** execute the workload, communicating through high-performance interconnects\n1. **Storage systems** provide data to running jobs and persist results\n1. **Monitoring infrastructure** tracks performance, cost, and system health throughout execution\n\n----",
+      "lineStart": 28,
+      "lineEnd": 37
+    },
+    {
+      "sectionOrder": 5,
+      "headingLevel": 3,
+      "headingText": "Architecture Components",
+      "headingPath": [
+        "Architecture Pattern for HPC Workloads on Azure",
+        "Basic Architecture",
+        "Architecture Components"
+      ],
+      "markdown": "The architecture consists of six primary layers:",
+      "lineStart": 39,
+      "lineEnd": 41
+    },
+    {
+      "sectionOrder": 6,
+      "headingLevel": 4,
+      "headingText": "User Access and Job Submission",
+      "headingPath": [
+        "Architecture Pattern for HPC Workloads on Azure",
+        "Basic Architecture",
+        "Architecture Components",
+        "User Access and Job Submission"
+      ],
+      "markdown": "| Component | Description |\n|-----------|-------------|\n| Web Portal | Browser-based interface for job submission, monitoring, and file management. |\n| Command Line | Direct terminal access for scripting and automation through SSH or local shells. |\n| API | Programmatic access via REST or GraphQL for integration with external systems and workflows. |",
+      "lineStart": 43,
+      "lineEnd": 49
+    },
+    {
+      "sectionOrder": 7,
+      "headingLevel": 4,
+      "headingText": "Orchestration and Scheduling",
+      "headingPath": [
+        "Architecture Pattern for HPC Workloads on Azure",
+        "Basic Architecture",
+        "Architecture Components",
+        "Orchestration and Scheduling"
+      ],
+      "markdown": "| Component | Description |\n|-----------|-------------|\n| Job Scheduler | Receives work requests and determines when and where each job should run. |\n| Resource Manager | Tracks available compute capacity and allocates resources to jobs. |\n| Queue Control | Organizes pending jobs based on priority, fairness policies, and resource requirements. |\n| Workflow Engine | Coordinates multi-step pipelines and manages dependencies between jobs. |\n| Capacity Planning | Forecasts resource demand and informs scaling decisions. |",
+      "lineStart": 51,
+      "lineEnd": 59
+    },
+    {
+      "sectionOrder": 8,
+      "headingLevel": 4,
+      "headingText": "High-Performance Interconnect",
+      "headingPath": [
+        "Architecture Pattern for HPC Workloads on Azure",
+        "Basic Architecture",
+        "Architecture Components",
+        "High-Performance Interconnect"
+      ],
+      "markdown": "| Component | Description |\n|-----------|-------------|\n| Low-Latency Network | High-speed fabric connecting compute nodes with minimal communication delay. |\n| High-Bandwidth Links | Network infrastructure supporting large data transfers between nodes. |\n| Topology-Optimized Network | Network design that minimizes hops and latency for node-to-node communication. |",
+      "lineStart": 61,
+      "lineEnd": 67
+    },
+    {
+      "sectionOrder": 9,
+      "headingLevel": 4,
+      "headingText": "Storage Architecture",
+      "headingPath": [
+        "Architecture Pattern for HPC Workloads on Azure",
+        "Basic Architecture",
+        "Architecture Components",
+        "Storage Architecture"
+      ],
+      "markdown": "| Component | Description |\n|-----------|-------------|\n| Parallel File System | High-throughput shared storage optimized for concurrent access by many nodes. |\n| Object Storage | Scalable storage for large datasets, intermediate results, and working data. |\n| Cold Tier | Low-cost archival storage for long-term retention and compliance requirements. |",
+      "lineStart": 69,
+      "lineEnd": 75
+    },
+    {
+      "sectionOrder": 10,
+      "headingLevel": 4,
+      "headingText": "Management and Monitoring",
+      "headingPath": [
+        "Architecture Pattern for HPC Workloads on Azure",
+        "Basic Architecture",
+        "Architecture Components",
+        "Management and Monitoring"
+      ],
+      "markdown": "| Component | Description |\n|-----------|-------------|\n| Provisioning | Automated deployment and configuration of compute nodes and infrastructure. |\n| Telemetry | Collection of performance data, logs, and system metrics across the environment. |\n| Monitoring | Real-time tracking of resource utilization, job status, and system health. |\n| Alerting | Automated notifications for faults, threshold breaches, and operational issues. |\n| Fault Detection | Identification of node failures, job errors, and infrastructure problems. |",
+      "lineStart": 77,
+      "lineEnd": 85
+    },
+    {
+      "sectionOrder": 11,
+      "headingLevel": 4,
+      "headingText": "Key Architectural Patterns",
+      "headingPath": [
+        "Architecture Pattern for HPC Workloads on Azure",
+        "Basic Architecture",
+        "Architecture Components",
+        "Key Architectural Patterns"
+      ],
+      "markdown": "| Pattern | Description |\n|---------|-------------|\n| Batch Processing | Execution of large volumes of jobs with results delivered upon completion. |\n| Interactive Visualization | Real-time rendering and analysis of simulation outputs and datasets. |\n| Temporary Nodes | On-demand compute resources provisioned for peak workloads and released when idle. |\n| Data Sharding | Distribution of large datasets across multiple storage nodes for parallel access. |\n\n---",
+      "lineStart": 87,
+      "lineEnd": 96
+    },
+    {
+      "sectionOrder": 12,
+      "headingLevel": 2,
+      "headingText": "Reference Architectures and Landing Zones",
+      "headingPath": [
+        "Architecture Pattern for HPC Workloads on Azure",
+        "Reference Architectures and Landing Zones"
+      ],
+      "markdown": "This baseline pattern provides a conceptual foundation. For detailed implementation guidance, reference architectures, and production-ready designs, explore the HPC resources in the Azure Architecture Center:\n\n- **[HPC landing zone accelerator](/azure/cloud-adoption-framework/scenarios/azure-hpc/azure-hpc-landing-zone-accelerator)** — A deployment-ready architecture that implements Azure landing zone design principles for HPC workloads, including network topology, identity management, and governance controls.\n\n- **[HPC cluster deployed in the cloud](/azure/architecture/solution-ideas/articles/hpc-cluster)** — Reference architecture for deploying HPC clusters using Azure CycleCloud with autoscaling compute nodes.\n\n- **[Run reservoir simulation software on Azure](/azure/architecture/example-scenario/infrastructure/reservoir-simulation)** — Industry-specific example demonstrating HPC patterns for oil and gas workloads.\n\n- **[Digital image-based modeling on Azure](/azure/architecture/example-scenario/infrastructure/image-modeling)** — Reference implementation for compute-intensive image processing workloads.\n\n- **[HPC system and big-compute solutions](/azure/architecture/solution-ideas/articles/big-compute-with-azure-batch)** — Guidance for large-scale batch processing using Azure Batch.\n\nThese reference architectures provide Bicep templates, ARM templates, and detailed implementation steps that you can adapt for your specific requirements.",
+      "lineStart": 98,
+      "lineEnd": 111
+    }
+  ],
+  "localLinks": [],
+  "lastModified": "2026-03-17T16:22:13.492Z"
+}

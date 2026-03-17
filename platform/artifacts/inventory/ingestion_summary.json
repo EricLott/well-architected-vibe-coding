@@ -1,0 +1,10 @@
+{
+  "repositoryName": "well-architected-vibe-coding",
+  "commitHash": "b5659091b9c66fd64b3e160398819c91e9ff62e6",
+  "ingestionTimestamp": "2026-03-17T17:05:47.649Z",
+  "includedFileCount": 233,
+  "excludedFileCount": 0,
+  "parsedDocumentCount": 233,
+  "chunkCount": 3423,
+  "artifactsRoot": "platform/artifacts"
+}

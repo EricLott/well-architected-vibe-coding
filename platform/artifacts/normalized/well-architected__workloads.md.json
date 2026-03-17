@@ -1,0 +1,359 @@
+{
+  "source": {
+    "absolutePath": "C:\\Users\\EricL\\source\\repos\\Well-Architected-Vibe-Coding\\well-architected-vibe-coding\\well-architected\\workloads.md",
+    "repoRelativePath": "well-architected/workloads.md",
+    "docsRelativePath": "workloads.md"
+  },
+  "frontMatter": {
+    "title": "Azure Well-Architected Framework workloads",
+    "description": "Learn about the Well-Architected Framework workloads, which are application resources, data, and infrastructure that achieve business outcomes.",
+    "author": "ckittel",
+    "ms.author": "chkittel",
+    "ms.date": "08/12/2025",
+    "ms.topic": "concept-article",
+    "ms.update-cycle": "1095-days"
+  },
+  "title": "Azure Well-Architected Framework workloads",
+  "rawBody": "# Azure Well-Architected Framework workloads\n\nIn the context of the Azure Well-Architected Framework, the term *workload* refers to a collection of application resources, custom code, AI models, data, and supporting infrastructure that function together to achieve defined business outcomes. Architects design workloads to achieve functional and nonfunctional business requirements, and a workload team implements them. \n\nIt's common practice for an architect to decompose workloads into logical components, viewed through both technical and business lenses, and identify optimization opportunities. That's done by analyzing user interactions, data flows, and operational processes related to those components. The insights frequently lead to the introduction of new features or the deprecation of legacy ones, helping the system to evolve with the cloud ecosystem while systematically addressing technical debt.\n\nWorkloads can be classified into many types. Typical criteria for workload classification include:\n\n- Utility, characteristics, and usage patterns of a workload, such as web applications, batch processing, and real-time analytics.\n\n- Key influential drivers, such as technology platforms or alignment with an industry.\n\n- Intended target audience. Examples of solutions with various audiences are internal line-of-business applications within enterprises, a purchased independent software vendor (ISV) solution, or a multitenant software as a service (SaaS) solution for public use.\n\nWorkloads that are in the same class can share similarities, including their target audience, compliance requirements, and technology stacks. The five pillars of the Well-Architected Framework, their principles, checklists, and tradeoffs are relevant for all workload classes.\n\nThe workload guidance of the Well-Architected Framework describes common priorities and tradeoffs as they pertain to specific workload classes. In the workload guidance, the pillar guidance applies to technical design principles and design areas that represent the priorities of a workload. Follow the recommendations to help set up a successful workload and to align it with the Well-Architected Framework.\n\n## What is a Well-Architected Framework workload?\n\nThe design and operations of any workload have to contend with the five architectural pillars: Reliability, Security, Cost Optimization, Operational Excellence, and Performance Efficiency.\n\n|:::image type=\"icon\" source=\"./_images/goal.svg\"::: To create a successful workload, develop it in accordance with the Well-Architected Framework principles, which are based on the following ideals.|\n|---|\n\nA Well-Architected Framework workload:\n\n- Has functional and nonfunctional requirements that are defined and prioritized to achieve a goal.\n- Is designed so you can achieve those requirements by using resources and incorporating design patterns and tradeoffs.\n- Is built and operated to the specifications of a design and purpose.\n- Is measured by how adequately it achieves its purpose.\n- Can adapt as its purpose is refined or changed.\n- Is just as reliable as it needs to be.\n- Is just as secure as it needs to be.\n- Delivers a sufficient return on investment.\n- Is developed and operated responsibly.\n- Accomplishes its purpose within an acceptable time period.\n\nA collaboration between the workload team and central teams of an organization must create a workload with the preceding characteristics. The following sections describe these teams and their functions.\n\n## Workload team\n\nCreate a workload team that has team members with a wide range of technical and business disciplines. The primary focus of all team members should be the success of the workload.\n\n|Examples of workload team members|&nbsp;|\n|---| ---|\n|Application security engineers <br>Business stakeholders<br>Cloud developer or software engineers <br>Cloud solution architects <br>Data scientists or analysts <br>Database administrators <br>|DevOps engineers <br>Infrastructure engineers <br>Product managers or owners <br>Quality assurance (QA) engineers <br>Site reliability engineers (SREs)<br>Support team members <br>|\n\nTo support the full lifecycle of a workload, individuals may be organized into subteams, pods, or other structures. The Well-Architected Framework typically refers to all of these contributors collectively as the _workload team_.\n\n## Centralized teams and stakeholders\n\nCentralized teams often support the workload team. They provide support functions and apply governance for many or all cloud workloads within an organization. Centralized teams focus on organizational success, which is achieved in part by the success of the organization's workloads. They provide services, guidance, and guardrails for workloads.\n\n|Examples of centralized teams and team members|&nbsp;|\n|---| ---|\n|Business intelligence analysts<br>Business stakeholders<br>Cloud center of excellence (CCoE) board<br> Cloud platform team<br> Cybersecurity analysts<br>Database administrators<br>Enterprise architects<br>|Finance analysts<br>Infrastructure engineers<br>Legal and compliance officers<br>Network engineers<br>Procurement specialists<br>Project managers<br>|\n\nA Well-Architected Framework workload team focuses on workload outcomes. They coordinate with and benefit from the specialized support from centralized team members.\n\n## Shared responsibility model\n\nA workload needs to be deployed and used in order to deliver value. As part of the workload team, you have a responsibility to design, implement, and deploy your workload in a way that creates value to your organization.\n\nWorkloads exist within the context of your organization. An organization often has regulated governing and authority roles. Your workload team has the responsibility to design, implement, and deploy a workload within the foundation of your organization.\n\nIn accordance with the Cloud Adoption Framework for Azure, standardize your workload's cloud resources. Rigorously apply standardization to provide a governed platform to help with onboarding workload teams. Apply this governance in accordance with your organization's cloud operating model.\n\nYou can use Azure landing zones to help you perform standardization. Platform landing zones and application landing zones are available in Azure. Deploy your workload in an application landing zone, which is a collection of dedicated subscriptions to match the needs of the workload's resource organization, including all of its preproduction and production environments.\n\nYour organization might have a cloud platform offering that's rigorously formalized and fully aligns with Azure landing zones. Or your organization might have a different adoption strategy or no implementation. If there's no implementation, workload teams are nearly fully autonomous entities.\n\nFor any platform and governance that your organization uses, you must apply the principles of the Well-Architected Framework to your workloads. The Well-Architected Framework often references Azure landing zones, but it isn't dependent on a specific platform implementation. The Well-Architected Framework pillars, principles, checklists, and guides are for all cloud platforms and most workload types.\n\n### Fulfill requirements\n\nThroughout the Well-Architected Framework, such as the core pillars and the workload guidance, recommendations coincide with the obligation of the workload. Recommendations don't usually imply what team member or team facilitates those obligations. You must determine who should perform each action. Perform workload-level mapping to determine your team's roles and responsibilities related to the topology, workload type, and criticality.\n\nThe direct workload team handles most workload requirements. Some requirements are handled as a joint effort with centralized teams. For example, the implementation choices might be based on guardrails that a centralized team sets. Or a centralized team might exclusively handle the implementation choices.\n\nCertain infrastructure components, such as cross-premises connectivity, aren't considered part of an individual workload. Instead, they are treated as _dependencies_ that the workload consumes. These, often, centralized utilities are used only when a functional or nonfunctional requirement justifies the dependency, and when the provided support meets the workload's needs.\n\nYour workload team must build a working relationship with other teams to help codeliver on workload goals. If you outsource components or responsibilities, you must successfully deliver on those obligations.\n\n#### Workloads as dependencies\n\nWithin an organization, your workload can be a dependency for other workloads just like your workload can take dependencies on other workloads. Typically this happens through API layers accessing state stores or invoking processing. Organizations usually have many workloads that work together to achieve broader business goals. All of your organization's workloads are under similar constraints as your own workload.\n\n### Learn the constraints\n\nA centralized team supports diverse workloads based on the team's core capabilities and core infrastructure. To provide this support on an organizational scale, the centralized team might implement uniformity and constraints on the service offered or the infrastructure. As you design your workload, it's critical that you understand those constraints and, where possible, partner with enterprise architects who know those constraints. Learn from prior implementations as much as possible.\n\nEvery platform governance implementation is different, but the following constraints are common for many workloads:\n\n- Allowlists for cloud resources\n- Configuration mandates for cloud resources\n- Regional allowlists for cloud resources and cross-premises connectivity availability\n- Limited or no platform support outside of business hours\n- Patching requirements\n- Specific hub-spoke implementation, which drives Domain Name System (DNS) and private endpoint implementations\n- Supply chain control requirements\n\n### Explicitly communicate requirements\n\nIf your workload requirement is faced with a constraint or a service-level agreement (SLA) that doesn't clearly define a core capability or infrastructure offering, treat that situation as a risk. To address this risk, your workload team must provide clarity to the other teams about how the concern affects the workload. You might have to change the workload requirements, design, or implementation, or change the infrastructure offering.\n\nWhen you understand the platform team's obligations related to organizational directives and your workload team's obligations, you can communicate workload requirements with realistic expectations and recommendations.\n\n#### Communicate common workload requirements\n\nEvery platform partnership is different, but the following areas are common topics in shared responsibility conversations:\n\n- Compliance and legal requirements\n- Networking specifics, such as the need for static ingress or egress IP addresses\n- Observability requirements to provide live site triage that's effective\n- Performance requirements, such as storage and network throughput, availability of cloud resources, or regional availability\n- Expectations for public internet access from an egress and ingress perspective\n- Service-level objectives (SLOs) or SLAs that are offered to the workload's users\n- The availability of technical support\n\n### Understand the budget\n\nYour workload likely has a capital expenditure (CapEx) and operational expenditure (OpEx) budget. Part of the OpEx budget is your cloud resource costs, which might be direct or might be through charge backs from centrally provided services such as security appliances or cross-premises connectivity.\n\n### Look for unified wins\n\nShared responsibility isn't just about tradeoffs, constraints, and compromise. Platform teams often have highly specialized skills and dedicated budgets that can augment beyond what an individual workload team can sustain. Consider the following examples.\n\n**Security specialists.** Your workload might have a secure development lifecycle. As a centralized security team performs secure development tasks at scale across your organization, it might perform routine penetration testing that's above and beyond your efforts. It might also help with planning and performing an incident response strategy.\n\n**Enterprise architecture guidance.** You can save time and effort if you align with an enterprise architecture team's patterns and practices because the team has already streamlined the processes. You can also prevent rework if a solution isn't possible within the partnership without negotiation.\n\n**Big-ticket expenditures.** Platform teams often host components or services that are too expensive or too extensively managed for an individual workload team. Platform teams can afford these components and services because they divide the cost across workloads.\n\n  Often these services or centralized platforms are offered as mere showback, so they help keep the workload cost optimized. And when they're offered as chargeback, they're often cheaper because of economies of scale and centralization.\n\nPlatform teams often provide self-service options to workload teams for various activities. For example:\n\n- Providing a documentation repository for self-guided education\n- Onboarding to cost management via specific resource tagging\n- Offering subscriptions via a formal subscription-vending process\n\nExplore self-service and platform engineering options that might be suitable for your workload.\n\n### Share successes and challenges\n\nShared responsibility with other teams also means sharing successes and challenges of a workload. When your workload meets its obligations and obtains the intended value, share that with your partnering teams. Tell them how they contributed to the workload's success. When your workload isn't meeting its obligations, share what isn't working and collaborate and recalibrate to get back on track.\n\nPlatform teams also have obligations and success criteria. You should expect your partners to tell you whether your workload works well with an offering or if it's at risk of being a noisy neighbor.\n\n### Strive for continuous improvement\n\nA theme across all Well-Architected Framework pillars is continuous improvement. Adopt a progressive mindset. You might deal with new approaches to existing problems, adopt new technology, address new requirements, or operate under new constraints. As your workload improves over time, expect the same mindset from your partnering teams. However, every improvement opportunity also means changes and should be supported by a proper management process.\n\nWorkload teams have an obligation to communicate with platform teams about proposed changes to workload requirements that might have an effect on the platform team's services. Likewise, platform teams have an obligation to include their workload partners in change control processes and clearly communicate the impactful platform changes. Establish a regular communication cadence with partners to learn about and share how a product evolves.\n\n## Achieve a successful outcome\n\nWorkloads have many expectations from users, shareholders, regulatory bodies, employees, the center of excellence, and chief experience officers. Expectations can set the directional compass spinning. The Well-Architected Framework provides clarity related to the design and implementation by offering explicit rationalizations for architectural decisions to achieve a successful outcome. Develop a successful workload, and share in that success with your organization.\n <!-- Updated: August 12, 2025 for a full review -->",
+  "headings": [
+    {
+      "level": 1,
+      "text": "Azure Well-Architected Framework workloads",
+      "line": 1,
+      "path": [
+        "Azure Well-Architected Framework workloads"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "What is a Well-Architected Framework workload?",
+      "line": 19,
+      "path": [
+        "Azure Well-Architected Framework workloads",
+        "What is a Well-Architected Framework workload?"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Workload team",
+      "line": 41,
+      "path": [
+        "Azure Well-Architected Framework workloads",
+        "Workload team"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Centralized teams and stakeholders",
+      "line": 51,
+      "path": [
+        "Azure Well-Architected Framework workloads",
+        "Centralized teams and stakeholders"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Shared responsibility model",
+      "line": 61,
+      "path": [
+        "Azure Well-Architected Framework workloads",
+        "Shared responsibility model"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Fulfill requirements",
+      "line": 75,
+      "path": [
+        "Azure Well-Architected Framework workloads",
+        "Shared responsibility model",
+        "Fulfill requirements"
+      ]
+    },
+    {
+      "level": 4,
+      "text": "Workloads as dependencies",
+      "line": 85,
+      "path": [
+        "Azure Well-Architected Framework workloads",
+        "Shared responsibility model",
+        "Fulfill requirements",
+        "Workloads as dependencies"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Learn the constraints",
+      "line": 89,
+      "path": [
+        "Azure Well-Architected Framework workloads",
+        "Shared responsibility model",
+        "Learn the constraints"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Explicitly communicate requirements",
+      "line": 103,
+      "path": [
+        "Azure Well-Architected Framework workloads",
+        "Shared responsibility model",
+        "Explicitly communicate requirements"
+      ]
+    },
+    {
+      "level": 4,
+      "text": "Communicate common workload requirements",
+      "line": 109,
+      "path": [
+        "Azure Well-Architected Framework workloads",
+        "Shared responsibility model",
+        "Explicitly communicate requirements",
+        "Communicate common workload requirements"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Understand the budget",
+      "line": 121,
+      "path": [
+        "Azure Well-Architected Framework workloads",
+        "Shared responsibility model",
+        "Understand the budget"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Look for unified wins",
+      "line": 125,
+      "path": [
+        "Azure Well-Architected Framework workloads",
+        "Shared responsibility model",
+        "Look for unified wins"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Share successes and challenges",
+      "line": 145,
+      "path": [
+        "Azure Well-Architected Framework workloads",
+        "Shared responsibility model",
+        "Share successes and challenges"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Strive for continuous improvement",
+      "line": 151,
+      "path": [
+        "Azure Well-Architected Framework workloads",
+        "Shared responsibility model",
+        "Strive for continuous improvement"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Achieve a successful outcome",
+      "line": 157,
+      "path": [
+        "Azure Well-Architected Framework workloads",
+        "Achieve a successful outcome"
+      ]
+    }
+  ],
+  "sections": [
+    {
+      "sectionOrder": 1,
+      "headingLevel": 1,
+      "headingText": "Azure Well-Architected Framework workloads",
+      "headingPath": [
+        "Azure Well-Architected Framework workloads"
+      ],
+      "markdown": "In the context of the Azure Well-Architected Framework, the term *workload* refers to a collection of application resources, custom code, AI models, data, and supporting infrastructure that function together to achieve defined business outcomes. Architects design workloads to achieve functional and nonfunctional business requirements, and a workload team implements them. \n\nIt's common practice for an architect to decompose workloads into logical components, viewed through both technical and business lenses, and identify optimization opportunities. That's done by analyzing user interactions, data flows, and operational processes related to those components. The insights frequently lead to the introduction of new features or the deprecation of legacy ones, helping the system to evolve with the cloud ecosystem while systematically addressing technical debt.\n\nWorkloads can be classified into many types. Typical criteria for workload classification include:\n\n- Utility, characteristics, and usage patterns of a workload, such as web applications, batch processing, and real-time analytics.\n\n- Key influential drivers, such as technology platforms or alignment with an industry.\n\n- Intended target audience. Examples of solutions with various audiences are internal line-of-business applications within enterprises, a purchased independent software vendor (ISV) solution, or a multitenant software as a service (SaaS) solution for public use.\n\nWorkloads that are in the same class can share similarities, including their target audience, compliance requirements, and technology stacks. The five pillars of the Well-Architected Framework, their principles, checklists, and tradeoffs are relevant for all workload classes.\n\nThe workload guidance of the Well-Architected Framework describes common priorities and tradeoffs as they pertain to specific workload classes. In the workload guidance, the pillar guidance applies to technical design principles and design areas that represent the priorities of a workload. Follow the recommendations to help set up a successful workload and to align it with the Well-Architected Framework.",
+      "lineStart": 2,
+      "lineEnd": 18
+    },
+    {
+      "sectionOrder": 2,
+      "headingLevel": 2,
+      "headingText": "What is a Well-Architected Framework workload?",
+      "headingPath": [
+        "Azure Well-Architected Framework workloads",
+        "What is a Well-Architected Framework workload?"
+      ],
+      "markdown": "The design and operations of any workload have to contend with the five architectural pillars: Reliability, Security, Cost Optimization, Operational Excellence, and Performance Efficiency.\n\n|:::image type=\"icon\" source=\"./_images/goal.svg\"::: To create a successful workload, develop it in accordance with the Well-Architected Framework principles, which are based on the following ideals.|\n|---|\n\nA Well-Architected Framework workload:\n\n- Has functional and nonfunctional requirements that are defined and prioritized to achieve a goal.\n- Is designed so you can achieve those requirements by using resources and incorporating design patterns and tradeoffs.\n- Is built and operated to the specifications of a design and purpose.\n- Is measured by how adequately it achieves its purpose.\n- Can adapt as its purpose is refined or changed.\n- Is just as reliable as it needs to be.\n- Is just as secure as it needs to be.\n- Delivers a sufficient return on investment.\n- Is developed and operated responsibly.\n- Accomplishes its purpose within an acceptable time period.\n\nA collaboration between the workload team and central teams of an organization must create a workload with the preceding characteristics. The following sections describe these teams and their functions.",
+      "lineStart": 20,
+      "lineEnd": 40
+    },
+    {
+      "sectionOrder": 3,
+      "headingLevel": 2,
+      "headingText": "Workload team",
+      "headingPath": [
+        "Azure Well-Architected Framework workloads",
+        "Workload team"
+      ],
+      "markdown": "Create a workload team that has team members with a wide range of technical and business disciplines. The primary focus of all team members should be the success of the workload.\n\n|Examples of workload team members|&nbsp;|\n|---| ---|\n|Application security engineers <br>Business stakeholders<br>Cloud developer or software engineers <br>Cloud solution architects <br>Data scientists or analysts <br>Database administrators <br>|DevOps engineers <br>Infrastructure engineers <br>Product managers or owners <br>Quality assurance (QA) engineers <br>Site reliability engineers (SREs)<br>Support team members <br>|\n\nTo support the full lifecycle of a workload, individuals may be organized into subteams, pods, or other structures. The Well-Architected Framework typically refers to all of these contributors collectively as the _workload team_.",
+      "lineStart": 42,
+      "lineEnd": 50
+    },
+    {
+      "sectionOrder": 4,
+      "headingLevel": 2,
+      "headingText": "Centralized teams and stakeholders",
+      "headingPath": [
+        "Azure Well-Architected Framework workloads",
+        "Centralized teams and stakeholders"
+      ],
+      "markdown": "Centralized teams often support the workload team. They provide support functions and apply governance for many or all cloud workloads within an organization. Centralized teams focus on organizational success, which is achieved in part by the success of the organization's workloads. They provide services, guidance, and guardrails for workloads.\n\n|Examples of centralized teams and team members|&nbsp;|\n|---| ---|\n|Business intelligence analysts<br>Business stakeholders<br>Cloud center of excellence (CCoE) board<br> Cloud platform team<br> Cybersecurity analysts<br>Database administrators<br>Enterprise architects<br>|Finance analysts<br>Infrastructure engineers<br>Legal and compliance officers<br>Network engineers<br>Procurement specialists<br>Project managers<br>|\n\nA Well-Architected Framework workload team focuses on workload outcomes. They coordinate with and benefit from the specialized support from centralized team members.",
+      "lineStart": 52,
+      "lineEnd": 60
+    },
+    {
+      "sectionOrder": 5,
+      "headingLevel": 2,
+      "headingText": "Shared responsibility model",
+      "headingPath": [
+        "Azure Well-Architected Framework workloads",
+        "Shared responsibility model"
+      ],
+      "markdown": "A workload needs to be deployed and used in order to deliver value. As part of the workload team, you have a responsibility to design, implement, and deploy your workload in a way that creates value to your organization.\n\nWorkloads exist within the context of your organization. An organization often has regulated governing and authority roles. Your workload team has the responsibility to design, implement, and deploy a workload within the foundation of your organization.\n\nIn accordance with the Cloud Adoption Framework for Azure, standardize your workload's cloud resources. Rigorously apply standardization to provide a governed platform to help with onboarding workload teams. Apply this governance in accordance with your organization's cloud operating model.\n\nYou can use Azure landing zones to help you perform standardization. Platform landing zones and application landing zones are available in Azure. Deploy your workload in an application landing zone, which is a collection of dedicated subscriptions to match the needs of the workload's resource organization, including all of its preproduction and production environments.\n\nYour organization might have a cloud platform offering that's rigorously formalized and fully aligns with Azure landing zones. Or your organization might have a different adoption strategy or no implementation. If there's no implementation, workload teams are nearly fully autonomous entities.\n\nFor any platform and governance that your organization uses, you must apply the principles of the Well-Architected Framework to your workloads. The Well-Architected Framework often references Azure landing zones, but it isn't dependent on a specific platform implementation. The Well-Architected Framework pillars, principles, checklists, and guides are for all cloud platforms and most workload types.",
+      "lineStart": 62,
+      "lineEnd": 74
+    },
+    {
+      "sectionOrder": 6,
+      "headingLevel": 3,
+      "headingText": "Fulfill requirements",
+      "headingPath": [
+        "Azure Well-Architected Framework workloads",
+        "Shared responsibility model",
+        "Fulfill requirements"
+      ],
+      "markdown": "Throughout the Well-Architected Framework, such as the core pillars and the workload guidance, recommendations coincide with the obligation of the workload. Recommendations don't usually imply what team member or team facilitates those obligations. You must determine who should perform each action. Perform workload-level mapping to determine your team's roles and responsibilities related to the topology, workload type, and criticality.\n\nThe direct workload team handles most workload requirements. Some requirements are handled as a joint effort with centralized teams. For example, the implementation choices might be based on guardrails that a centralized team sets. Or a centralized team might exclusively handle the implementation choices.\n\nCertain infrastructure components, such as cross-premises connectivity, aren't considered part of an individual workload. Instead, they are treated as _dependencies_ that the workload consumes. These, often, centralized utilities are used only when a functional or nonfunctional requirement justifies the dependency, and when the provided support meets the workload's needs.\n\nYour workload team must build a working relationship with other teams to help codeliver on workload goals. If you outsource components or responsibilities, you must successfully deliver on those obligations.",
+      "lineStart": 76,
+      "lineEnd": 84
+    },
+    {
+      "sectionOrder": 7,
+      "headingLevel": 4,
+      "headingText": "Workloads as dependencies",
+      "headingPath": [
+        "Azure Well-Architected Framework workloads",
+        "Shared responsibility model",
+        "Fulfill requirements",
+        "Workloads as dependencies"
+      ],
+      "markdown": "Within an organization, your workload can be a dependency for other workloads just like your workload can take dependencies on other workloads. Typically this happens through API layers accessing state stores or invoking processing. Organizations usually have many workloads that work together to achieve broader business goals. All of your organization's workloads are under similar constraints as your own workload.",
+      "lineStart": 86,
+      "lineEnd": 88
+    },
+    {
+      "sectionOrder": 8,
+      "headingLevel": 3,
+      "headingText": "Learn the constraints",
+      "headingPath": [
+        "Azure Well-Architected Framework workloads",
+        "Shared responsibility model",
+        "Learn the constraints"
+      ],
+      "markdown": "A centralized team supports diverse workloads based on the team's core capabilities and core infrastructure. To provide this support on an organizational scale, the centralized team might implement uniformity and constraints on the service offered or the infrastructure. As you design your workload, it's critical that you understand those constraints and, where possible, partner with enterprise architects who know those constraints. Learn from prior implementations as much as possible.\n\nEvery platform governance implementation is different, but the following constraints are common for many workloads:\n\n- Allowlists for cloud resources\n- Configuration mandates for cloud resources\n- Regional allowlists for cloud resources and cross-premises connectivity availability\n- Limited or no platform support outside of business hours\n- Patching requirements\n- Specific hub-spoke implementation, which drives Domain Name System (DNS) and private endpoint implementations\n- Supply chain control requirements",
+      "lineStart": 90,
+      "lineEnd": 102
+    },
+    {
+      "sectionOrder": 9,
+      "headingLevel": 3,
+      "headingText": "Explicitly communicate requirements",
+      "headingPath": [
+        "Azure Well-Architected Framework workloads",
+        "Shared responsibility model",
+        "Explicitly communicate requirements"
+      ],
+      "markdown": "If your workload requirement is faced with a constraint or a service-level agreement (SLA) that doesn't clearly define a core capability or infrastructure offering, treat that situation as a risk. To address this risk, your workload team must provide clarity to the other teams about how the concern affects the workload. You might have to change the workload requirements, design, or implementation, or change the infrastructure offering.\n\nWhen you understand the platform team's obligations related to organizational directives and your workload team's obligations, you can communicate workload requirements with realistic expectations and recommendations.",
+      "lineStart": 104,
+      "lineEnd": 108
+    },
+    {
+      "sectionOrder": 10,
+      "headingLevel": 4,
+      "headingText": "Communicate common workload requirements",
+      "headingPath": [
+        "Azure Well-Architected Framework workloads",
+        "Shared responsibility model",
+        "Explicitly communicate requirements",
+        "Communicate common workload requirements"
+      ],
+      "markdown": "Every platform partnership is different, but the following areas are common topics in shared responsibility conversations:\n\n- Compliance and legal requirements\n- Networking specifics, such as the need for static ingress or egress IP addresses\n- Observability requirements to provide live site triage that's effective\n- Performance requirements, such as storage and network throughput, availability of cloud resources, or regional availability\n- Expectations for public internet access from an egress and ingress perspective\n- Service-level objectives (SLOs) or SLAs that are offered to the workload's users\n- The availability of technical support",
+      "lineStart": 110,
+      "lineEnd": 120
+    },
+    {
+      "sectionOrder": 11,
+      "headingLevel": 3,
+      "headingText": "Understand the budget",
+      "headingPath": [
+        "Azure Well-Architected Framework workloads",
+        "Shared responsibility model",
+        "Understand the budget"
+      ],
+      "markdown": "Your workload likely has a capital expenditure (CapEx) and operational expenditure (OpEx) budget. Part of the OpEx budget is your cloud resource costs, which might be direct or might be through charge backs from centrally provided services such as security appliances or cross-premises connectivity.",
+      "lineStart": 122,
+      "lineEnd": 124
+    },
+    {
+      "sectionOrder": 12,
+      "headingLevel": 3,
+      "headingText": "Look for unified wins",
+      "headingPath": [
+        "Azure Well-Architected Framework workloads",
+        "Shared responsibility model",
+        "Look for unified wins"
+      ],
+      "markdown": "Shared responsibility isn't just about tradeoffs, constraints, and compromise. Platform teams often have highly specialized skills and dedicated budgets that can augment beyond what an individual workload team can sustain. Consider the following examples.\n\n**Security specialists.** Your workload might have a secure development lifecycle. As a centralized security team performs secure development tasks at scale across your organization, it might perform routine penetration testing that's above and beyond your efforts. It might also help with planning and performing an incident response strategy.\n\n**Enterprise architecture guidance.** You can save time and effort if you align with an enterprise architecture team's patterns and practices because the team has already streamlined the processes. You can also prevent rework if a solution isn't possible within the partnership without negotiation.\n\n**Big-ticket expenditures.** Platform teams often host components or services that are too expensive or too extensively managed for an individual workload team. Platform teams can afford these components and services because they divide the cost across workloads.\n\n  Often these services or centralized platforms are offered as mere showback, so they help keep the workload cost optimized. And when they're offered as chargeback, they're often cheaper because of economies of scale and centralization.\n\nPlatform teams often provide self-service options to workload teams for various activities. For example:\n\n- Providing a documentation repository for self-guided education\n- Onboarding to cost management via specific resource tagging\n- Offering subscriptions via a formal subscription-vending process\n\nExplore self-service and platform engineering options that might be suitable for your workload.",
+      "lineStart": 126,
+      "lineEnd": 144
+    },
+    {
+      "sectionOrder": 13,
+      "headingLevel": 3,
+      "headingText": "Share successes and challenges",
+      "headingPath": [
+        "Azure Well-Architected Framework workloads",
+        "Shared responsibility model",
+        "Share successes and challenges"
+      ],
+      "markdown": "Shared responsibility with other teams also means sharing successes and challenges of a workload. When your workload meets its obligations and obtains the intended value, share that with your partnering teams. Tell them how they contributed to the workload's success. When your workload isn't meeting its obligations, share what isn't working and collaborate and recalibrate to get back on track.\n\nPlatform teams also have obligations and success criteria. You should expect your partners to tell you whether your workload works well with an offering or if it's at risk of being a noisy neighbor.",
+      "lineStart": 146,
+      "lineEnd": 150
+    },
+    {
+      "sectionOrder": 14,
+      "headingLevel": 3,
+      "headingText": "Strive for continuous improvement",
+      "headingPath": [
+        "Azure Well-Architected Framework workloads",
+        "Shared responsibility model",
+        "Strive for continuous improvement"
+      ],
+      "markdown": "A theme across all Well-Architected Framework pillars is continuous improvement. Adopt a progressive mindset. You might deal with new approaches to existing problems, adopt new technology, address new requirements, or operate under new constraints. As your workload improves over time, expect the same mindset from your partnering teams. However, every improvement opportunity also means changes and should be supported by a proper management process.\n\nWorkload teams have an obligation to communicate with platform teams about proposed changes to workload requirements that might have an effect on the platform team's services. Likewise, platform teams have an obligation to include their workload partners in change control processes and clearly communicate the impactful platform changes. Establish a regular communication cadence with partners to learn about and share how a product evolves.",
+      "lineStart": 152,
+      "lineEnd": 156
+    },
+    {
+      "sectionOrder": 15,
+      "headingLevel": 2,
+      "headingText": "Achieve a successful outcome",
+      "headingPath": [
+        "Azure Well-Architected Framework workloads",
+        "Achieve a successful outcome"
+      ],
+      "markdown": "Workloads have many expectations from users, shareholders, regulatory bodies, employees, the center of excellence, and chief experience officers. Expectations can set the directional compass spinning. The Well-Architected Framework provides clarity related to the design and implementation by offering explicit rationalizations for architectural decisions to achieve a successful outcome. Develop a successful workload, and share in that success with your organization.\n <!-- Updated: August 12, 2025 for a full review -->",
+      "lineStart": 158,
+      "lineEnd": 160
+    }
+  ],
+  "localLinks": [],
+  "lastModified": "2026-03-17T16:22:13.829Z"
+}

@@ -1,0 +1,549 @@
+{
+  "source": {
+    "absolutePath": "C:\\Users\\EricL\\source\\repos\\Well-Architected-Vibe-Coding\\well-architected-vibe-coding\\well-architected\\azure-virtual-desktop\\monitoring.md",
+    "repoRelativePath": "well-architected/azure-virtual-desktop/monitoring.md",
+    "docsRelativePath": "azure-virtual-desktop/monitoring.md"
+  },
+  "frontMatter": {
+    "title": "Monitoring considerations for Azure Virtual Desktop workloads",
+    "description": "See best practices for monitoring the performance and status of your Azure Virtual Desktop workloads.",
+    "author": "peegee1184",
+    "ms.author": "jorodas",
+    "ms.date": "10/12/2023",
+    "ms.topic": "concept-article",
+    "ms.service": "azure-waf",
+    "ms.subservice": "waf-workload-azure-virtual-desktop"
+  },
+  "title": "Monitoring considerations for Azure Virtual Desktop workloads",
+  "rawBody": "# Monitoring considerations for Azure Virtual Desktop workloads\n\nThis article discusses the monitoring design area of an Azure Virtual Desktop workload. Before you start using Azure Monitor for Azure Virtual Desktop, you need to take the following steps:\n\n- Configure at least one Log Analytics workspace. Use a designated Log Analytics workspace for your Azure Virtual Desktop session hosts to help ensure that performance counters and events are collected only from session hosts in your Azure Virtual Desktop deployment.\n- Enable data collection for the following items of your Log Analytics workspace:\n  - Diagnostics from your Azure Virtual Desktop environment\n  - Recommended performance counters from your Azure Virtual Desktop session hosts\n  - Recommended Windows event logs from your Azure Virtual Desktop session hosts\n\nThe following sections provide considerations for monitoring your Azure Virtual Desktop environment and keeping it healthy.\n\n> [!IMPORTANT]\n> This article is part of the [Azure Well-Architected Framework Azure Virtual Desktop workload](./index.yml) series. If you aren't familiar with this series, we recommend that you start with [What is an Azure Virtual Desktop workload?](./overview.md#what-is-an-azure-virtual-desktop-workload).\n\n## Health and availability monitoring  \n\n*Impact: Operational Excellence, Reliability*\n\nAzure offers several services such as Azure Service Health and Azure Resource Health that keep you informed about the health of your cloud resources.\n\n### Service Health\n\nYou should use Service Health to provide a view of the health of the Azure services and regions that you use. Service Health is the best place to look for notifications about events that impact your service, such as outages and planned maintenance activities. Service Health also provides other health advisories about impacts to your Azure Virtual Desktop environment and related subscription. The most proactive approach is to set up Service Health alerts. You can receive these alerts via your preferred communication channels. The alerts notify you when service issues, planned maintenance, or other changes might affect your Azure Virtual Desktop resources. For more information, see [Set up service alerts](/azure/virtual-desktop/set-up-service-alerts).\n\n### Resource Health\n\nResource Health helps you diagnose and get support for service problems that affect your Azure resources. Information about the current and past health of your resources is reported in Resource Health. Be sure to set up proactive alerting to notify you about any undesirable resource health statuses. You can monitor the following resource types for resource health status:\n\n- Azure Storage solutions for Azure Virtual Desktop FSLogix and App Attach\n- Session hosts, or virtual machines (VMs)\n\n##### Recommendations\n\n- Use Service Health to stay informed about the health of the Azure services and regions that you use.\n- Set up Service Health alerts so that you stay aware of service issues, planned maintenance, or other changes that might affect your Azure Virtual Desktop resources.\n- Use Resource Health to monitor your VMs and storage solutions.\n- Set up Resource Health alerts.\n\n## Performance monitoring\n\n*Impact: Performance Efficiency, Operational Excellence*\n\nTo gain visibility and monitor performance, you need to monitor critical components of your Azure Virtual Desktop environment.\n\n### Configuration recommendations\n\nTo help ensure that you retrieve key performance indicators and necessary logs from your Azure Virtual Desktop entities, configure the following diagnostics data to be sent to Log Analytics:\n\n- Azure Virtual Desktop host pool logs\n- Azure Virtual Desktop workspace diagnostics\n- Azure Virtual Desktop application group diagnostics\n- Storage diagnostics\n- Data about session hosts from a Monitor agent or Log Analytics agent\n- Performance and event log data that's collected according to Monitor or Log Analytics agent data collection rules\n- Azure VM insights data\n\n### Configuration options\n\nSeveral options are available for configuring diagnostic settings:\n\n- An Azure Virtual Desktop Insights configuration workbook. Azure Virtual Desktop Insights is a dashboard that's built on Monitor workbooks that helps you understand your Azure Virtual Desktop environment. Azure Virtual Desktop Insights provides a configuration workbook that you can use to:\n  - Configure host pool and workspace diagnostics.\n  - Enable monitoring agents on your session hosts.\n  - Configure recommended performance counters and event logs for monitoring your Azure Virtual Desktop environment.\n\n  You can collect other key performance indicators by configuring the agent settings of your Log Analytics workspace.\n\n- Azure Policy. You can use Azure Policy to help ensure that monitoring agents are installed on your VMs. Azure Policy supports Monitor agents and Microsoft monitoring agents.\n\n- Deployment configuration and templates. You can use the Azure portal or a declarative deployment solution such as Azure Resource Manager templates (ARM templates), BICEP, or Terraform to deploy Azure Virtual Desktop. Ensure that diagnostic settings are deployed as part of your Azure Virtual Desktop deployment configuration. If you deploy Azure Virtual Desktop via the Azure portal, ensure that diagnostic settings are enabled. For the declarative deployment models, ensure that host pools, workspaces, or application groups are deployed with diagnostic settings enabled. Also ensure that VMs are deployed with Microsoft monitoring agent or Monitor agent extensions.\n\n### Session host performance\n\nPerformance counters record how your system resources are used. Performance counter data ingestion depends on your environment size and usage. It's important to understand that each performance counter sends data at a specific frequency. In your Azure Virtual Desktop Insights configuration workbook, you can adjust your per-minute default sample rate. You can also edit this rate in your settings. The multiplying factor that's applied to this rate depends on the counter.\n\nThe following list shows the categories of performance metrics and the performance counters that you can configure in each category:\n\n- Logical disk\n  - `Free Space`\n  - `Avg. Disk Queue Length`\n  - `Avg. Disk sec/Transfer`\n  - `Current Disk Queue Length`\n- Memory\n  - `% Committed Bytes in Use`\n  - `Available Mbytes`\n  - `Page Faults/sec`\n  - `Pages/sec`\n- Physical disk\n  - `Avg. Disk Queue Length`\n  - `Avg. Disk sec/Read`\n  - `Avg. Disk sec/Transfer`\n  - `Avg. Disk sec/Write`\n- Processor information\n  - `% Processor Time`\n  - `RemoteFX network`\n  - `Current TCP RTT`\n  - `Current UDP Bandwidth`\n  - `Terminal Services`\n  - `Active Sessions`\n  - `Inactive Sessions`\n  - `Total Sessions`\n- User input delay per process\n  - `Max Input Delay`\n- User input delay per session\n  - `Max Input Delay`\n\nYou can use diagnostics tables in Log Analytics to query and analyze network information for Azure Virtual Desktop connections. The `WVDConnectionNetworkData` data includes a correlation ID that maps to a specific Azure Virtual Desktop connection. For each session, you can see critical performance data such as the estimated round-trip time in milliseconds and the estimated available bandwidth in KBps.\n\nWindows event logs are data sources that Log Analytics agents collect on Windows VMs. You can collect events from standard logs, such as system and application logs. You can also collect events from custom logs that are created by applications that you need to monitor. By default, logs from the following types of Windows events are collected for Azure Virtual Desktop in Monitor:\n\n- `Application`\n- `Microsoft-Windows-TerminalServices-RemoteConnectionManager/Admin`\n- `Microsoft-Windows-TerminalServices-LocalSessionManager/Operational`\n- `System`\n- `Microsoft-FSLogix-Apps/Operational`\n- `Microsoft-FSLogix-Apps/Admin`\n\nA Windows event is triggered whenever the terms of the event are met in the environment. Machines in healthy states send fewer events than machines in unhealthy states.\n\nIt's important to monitor the event logs for connection problems that can come up with the Azure Virtual Desktop agent. For more information, see [Troubleshoot common Azure Virtual Desktop agent issues](/troubleshoot/azure/virtual-desktop/troubleshoot-agent).\n\n### Storage performance thresholds and monitoring\n\nYou should monitor the Azure storage solution that you use for hosting FSLogix profiles or App Attach shares. It's important to monitor the profile storage locations to help ensure that thresholds aren't exceeded, which might have a negative impact on your user experience. For Storage, you should monitor the file share capacity to help ensure that file share quotas don't reach maximum capacity. You should also monitor the file share transactions to help ensure that transactions are within defined thresholds.\n\n### Service limits\n\nAzure Virtual Desktop has service limits that you should consider during the design phase of your deployment. You need to be aware of these service limits also in production environments, and you should proactively report on these limits. The limits are relatively large. But in larger deployments, where it's easier to reach these limits, it's essential to monitor them. For more information, see [Azure Virtual Desktop limitations](/azure/architecture/example-scenario/azure-virtual-desktop/azure-virtual-desktop#azure-virtual-desktop-limitations).\n\n##### Recommendations\n\n- Configure diagnostics data to be sent to Log Analytics.\n- Select from various options for configuring diagnostics settings, such as an Azure Virtual Desktop Insights configuration workbook, Azure Policy, the Azure portal, or a template.\n- Configure performance counters so that you have a record of how your system resources are used.\n- Use diagnostics tables in Log Analytics to query and analyze network information for Azure Virtual Desktop connections.\n- Monitor event logs for connection problems with the Azure Virtual Desktop agent.\n- Monitor the Azure storage solution that you use for hosting FSLogix profiles or App Attach shares.\n- Monitor service usage to make sure your workload doesn't exceed limits.\n\n## Security monitoring\n\n*Impact: Security*\n\nThe following sections describe several monitoring measures that you can take to improve security in your workload.\n\n### Microsoft Defender for Cloud and Microsoft Sentinel  \n\nEnsure that Microsoft Defender for Cloud enhanced security features are enabled on the subscription and Azure Virtual Desktop session hosts that you deploy. Defender for Cloud provides a cloud workload protection platform and Cloud Security Posture Management. You can use Defender for Cloud to manage vulnerabilities and to assess compliance with common frameworks like Payment Card Industry (PCI) and ISO27001. You can also use Defender for Cloud to strengthen the overall security posture of your environment. Defender for Cloud uses the Microsoft monitoring agent or Monitor agent.\n\n### Microsoft Entra ID authentication and audit logs\n\nMicrosoft Entra ID is the first-line authentication solution for Azure Virtual Desktop no matter which connection method a client uses. As a result, it's important to collect Microsoft Entra ID authentication and audit logs. You can collect these logs in the following ways:\n\n- In your diagnostics settings, configure audit logs and sign-in logs to be sent to Log Analytics, where the data can be queried and alerted on.\n- Use a connector in Microsoft Sentinel to collect data from Microsoft Entra ID and stream it into Microsoft Sentinel.\n\n### Security event logs\n\nYou should collect security event logs from your Azure Virtual Desktop session hosts. It's a good idea to add these logs to a centralized repository for security events that involve your Azure Virtual Desktop hosts. You can use the repository for storing and querying the logs. You can use one of the following options to collect the logs:\n\n- Use a Monitor agent data collection rule for collecting security event logs. This option is recommended.\n- Use a Microsoft monitoring agent to collect the logs for Microsoft Sentinel, or use a legacy agent connector to collect security events.\n- Use a Microsoft monitoring agent to collect security events for Defender for Cloud.\n\n### Maintain compliance\n\nMonthly security updates are critical for the overall health and security of your Azure Virtual Desktop environment. Ensure that you regularly update your Azure Virtual Desktop environment by installing new images or by using an update management tool. It's best to conduct monthly compliance reporting and monitoring of your environment's overall update compliance. This practice helps ensure that your Azure Virtual Desktop administrators and security team stay aware of the overall security compliance status of your environment.\n\n##### Recommendations\n\n- Use Defender for Cloud to manage vulnerabilities and to assess compliance with common frameworks.\n- Use Defender for Cloud to strengthen the overall security posture of your environment.\n- Collect Microsoft Entra ID authentication and audit logs.\n- Store security event logs from your Azure Virtual Desktop session hosts in a repository.\n- Update your Azure Virtual Desktop environment regularly.\n- Conduct monthly compliance reporting.\n\n## Reporting\n\n*Impact: Operational Excellence*\n\nMultiple options are available for Azure Virtual Desktop reporting:\n\n- Azure Virtual Desktop Insights. This dashboard provides many of the required insights and visualizations that you need to understand and monitor your Azure Virtual Desktop environment.\n- Workbooks and external reporting tools. In some scenarios, it's helpful to have a custom workbook and dashboard. You can create your own reports or workbooks by using Log Analytics tables and Azure Resource Graph query results as data sources. Resource Graph is a service that you can use to report on Azure Virtual Desktop objects such as host pools, workspaces, compute components, and storage solutions. Data is only populated in custom solutions if you turn on diagnostics for Azure Virtual Desktop objects and if you use a supported monitoring agent to collect performance and event log data. The following Log Analytics tables are available as data sources:\n  - Azure Virtual Desktop Log Analytics tables\n    - `WVDAgentHealthStatus`\n    - `WVDCheckpoints`\n    - `WVDConnectionGraphicsDataPreview`\n    - `WVDConnectionNetworkData`\n    - `WVDConnections`\n    - `WVDErrors`\n    - `WVDFeeds`\n    - `WVDHostRegistrations`\n    - `WVDManagement`\n  - Performance counters table\n    - `Perf`\n    - `InsightMetrics` (only if the VM insights feature is enabled)\n  - Events tables\n    - `Event`\n\n##### Recommendations\n\n- Consider using Azure Virtual Desktop Insights for reporting.\n- Use Log Analytics tables and Resource Graph query results as data sources when you make custom dashboards.\n\n## Alerting\n\n*Impact: Performance Efficiency, Operational Excellence*\n\nUse the Monitor alerts framework or an equivalent monitoring solution to stay informed about Azure Virtual Desktop performance and security. You can configure custom alerts for the following types of Azure Virtual Desktop events, diagnostics, and resources:\n\n- VM performance\n- Critical events, such as application events with IDs 3702 or 3703 for unavailable-state problems on session hosts\n- Service Health\n- Resource Health\n- Azure Virtual Desktop diagnostic data\n- Profile and App Attach packages\n- Defender for Cloud\n\n##### Recommendations\n\n- Use alerts to stay informed about Azure Virtual Desktop performance and security.\n- Configure alerts for various Azure Virtual Desktop events, diagnostics, and resources.\n\n## Next steps\n\nNow that you've looked at observability best practices in Azure Virtual Desktop, explore mechanisms, tools, and perimeters that you can use to further secure your Azure Virtual Desktop workloads.\n\n> [!div class=\"nextstepaction\"]\n> [Security and identity and access management (IAM)](./security.md)\n\nUse the assessment tool to evaluate your design choices.\n\n> [!div class=\"nextstepaction\"]\n> [Assessment](./assessment.md)",
+  "headings": [
+    {
+      "level": 1,
+      "text": "Monitoring considerations for Azure Virtual Desktop workloads",
+      "line": 1,
+      "path": [
+        "Monitoring considerations for Azure Virtual Desktop workloads"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Health and availability monitoring",
+      "line": 16,
+      "path": [
+        "Monitoring considerations for Azure Virtual Desktop workloads",
+        "Health and availability monitoring"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Service Health",
+      "line": 22,
+      "path": [
+        "Monitoring considerations for Azure Virtual Desktop workloads",
+        "Health and availability monitoring",
+        "Service Health"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Resource Health",
+      "line": 26,
+      "path": [
+        "Monitoring considerations for Azure Virtual Desktop workloads",
+        "Health and availability monitoring",
+        "Resource Health"
+      ]
+    },
+    {
+      "level": 5,
+      "text": "Recommendations",
+      "line": 33,
+      "path": [
+        "Monitoring considerations for Azure Virtual Desktop workloads",
+        "Health and availability monitoring",
+        "Resource Health",
+        "Recommendations"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Performance monitoring",
+      "line": 40,
+      "path": [
+        "Monitoring considerations for Azure Virtual Desktop workloads",
+        "Performance monitoring"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Configuration recommendations",
+      "line": 46,
+      "path": [
+        "Monitoring considerations for Azure Virtual Desktop workloads",
+        "Performance monitoring",
+        "Configuration recommendations"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Configuration options",
+      "line": 58,
+      "path": [
+        "Monitoring considerations for Azure Virtual Desktop workloads",
+        "Performance monitoring",
+        "Configuration options"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Session host performance",
+      "line": 73,
+      "path": [
+        "Monitoring considerations for Azure Virtual Desktop workloads",
+        "Performance monitoring",
+        "Session host performance"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Storage performance thresholds and monitoring",
+      "line": 123,
+      "path": [
+        "Monitoring considerations for Azure Virtual Desktop workloads",
+        "Performance monitoring",
+        "Storage performance thresholds and monitoring"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Service limits",
+      "line": 127,
+      "path": [
+        "Monitoring considerations for Azure Virtual Desktop workloads",
+        "Performance monitoring",
+        "Service limits"
+      ]
+    },
+    {
+      "level": 5,
+      "text": "Recommendations",
+      "line": 131,
+      "path": [
+        "Monitoring considerations for Azure Virtual Desktop workloads",
+        "Performance monitoring",
+        "Service limits",
+        "Recommendations"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Security monitoring",
+      "line": 141,
+      "path": [
+        "Monitoring considerations for Azure Virtual Desktop workloads",
+        "Security monitoring"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Microsoft Defender for Cloud and Microsoft Sentinel",
+      "line": 147,
+      "path": [
+        "Monitoring considerations for Azure Virtual Desktop workloads",
+        "Security monitoring",
+        "Microsoft Defender for Cloud and Microsoft Sentinel"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Microsoft Entra ID authentication and audit logs",
+      "line": 151,
+      "path": [
+        "Monitoring considerations for Azure Virtual Desktop workloads",
+        "Security monitoring",
+        "Microsoft Entra ID authentication and audit logs"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Security event logs",
+      "line": 158,
+      "path": [
+        "Monitoring considerations for Azure Virtual Desktop workloads",
+        "Security monitoring",
+        "Security event logs"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Maintain compliance",
+      "line": 166,
+      "path": [
+        "Monitoring considerations for Azure Virtual Desktop workloads",
+        "Security monitoring",
+        "Maintain compliance"
+      ]
+    },
+    {
+      "level": 5,
+      "text": "Recommendations",
+      "line": 170,
+      "path": [
+        "Monitoring considerations for Azure Virtual Desktop workloads",
+        "Security monitoring",
+        "Maintain compliance",
+        "Recommendations"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Reporting",
+      "line": 179,
+      "path": [
+        "Monitoring considerations for Azure Virtual Desktop workloads",
+        "Reporting"
+      ]
+    },
+    {
+      "level": 5,
+      "text": "Recommendations",
+      "line": 203,
+      "path": [
+        "Monitoring considerations for Azure Virtual Desktop workloads",
+        "Reporting",
+        "Recommendations"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Alerting",
+      "line": 208,
+      "path": [
+        "Monitoring considerations for Azure Virtual Desktop workloads",
+        "Alerting"
+      ]
+    },
+    {
+      "level": 5,
+      "text": "Recommendations",
+      "line": 222,
+      "path": [
+        "Monitoring considerations for Azure Virtual Desktop workloads",
+        "Alerting",
+        "Recommendations"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Next steps",
+      "line": 227,
+      "path": [
+        "Monitoring considerations for Azure Virtual Desktop workloads",
+        "Next steps"
+      ]
+    }
+  ],
+  "sections": [
+    {
+      "sectionOrder": 1,
+      "headingLevel": 1,
+      "headingText": "Monitoring considerations for Azure Virtual Desktop workloads",
+      "headingPath": [
+        "Monitoring considerations for Azure Virtual Desktop workloads"
+      ],
+      "markdown": "This article discusses the monitoring design area of an Azure Virtual Desktop workload. Before you start using Azure Monitor for Azure Virtual Desktop, you need to take the following steps:\n\n- Configure at least one Log Analytics workspace. Use a designated Log Analytics workspace for your Azure Virtual Desktop session hosts to help ensure that performance counters and events are collected only from session hosts in your Azure Virtual Desktop deployment.\n- Enable data collection for the following items of your Log Analytics workspace:\n  - Diagnostics from your Azure Virtual Desktop environment\n  - Recommended performance counters from your Azure Virtual Desktop session hosts\n  - Recommended Windows event logs from your Azure Virtual Desktop session hosts\n\nThe following sections provide considerations for monitoring your Azure Virtual Desktop environment and keeping it healthy.\n\n> [!IMPORTANT]\n> This article is part of the [Azure Well-Architected Framework Azure Virtual Desktop workload](./index.yml) series. If you aren't familiar with this series, we recommend that you start with [What is an Azure Virtual Desktop workload?](./overview.md#what-is-an-azure-virtual-desktop-workload).",
+      "lineStart": 2,
+      "lineEnd": 15
+    },
+    {
+      "sectionOrder": 2,
+      "headingLevel": 2,
+      "headingText": "Health and availability monitoring",
+      "headingPath": [
+        "Monitoring considerations for Azure Virtual Desktop workloads",
+        "Health and availability monitoring"
+      ],
+      "markdown": "*Impact: Operational Excellence, Reliability*\n\nAzure offers several services such as Azure Service Health and Azure Resource Health that keep you informed about the health of your cloud resources.",
+      "lineStart": 17,
+      "lineEnd": 21
+    },
+    {
+      "sectionOrder": 3,
+      "headingLevel": 3,
+      "headingText": "Service Health",
+      "headingPath": [
+        "Monitoring considerations for Azure Virtual Desktop workloads",
+        "Health and availability monitoring",
+        "Service Health"
+      ],
+      "markdown": "You should use Service Health to provide a view of the health of the Azure services and regions that you use. Service Health is the best place to look for notifications about events that impact your service, such as outages and planned maintenance activities. Service Health also provides other health advisories about impacts to your Azure Virtual Desktop environment and related subscription. The most proactive approach is to set up Service Health alerts. You can receive these alerts via your preferred communication channels. The alerts notify you when service issues, planned maintenance, or other changes might affect your Azure Virtual Desktop resources. For more information, see [Set up service alerts](/azure/virtual-desktop/set-up-service-alerts).",
+      "lineStart": 23,
+      "lineEnd": 25
+    },
+    {
+      "sectionOrder": 4,
+      "headingLevel": 3,
+      "headingText": "Resource Health",
+      "headingPath": [
+        "Monitoring considerations for Azure Virtual Desktop workloads",
+        "Health and availability monitoring",
+        "Resource Health"
+      ],
+      "markdown": "Resource Health helps you diagnose and get support for service problems that affect your Azure resources. Information about the current and past health of your resources is reported in Resource Health. Be sure to set up proactive alerting to notify you about any undesirable resource health statuses. You can monitor the following resource types for resource health status:\n\n- Azure Storage solutions for Azure Virtual Desktop FSLogix and App Attach\n- Session hosts, or virtual machines (VMs)",
+      "lineStart": 27,
+      "lineEnd": 32
+    },
+    {
+      "sectionOrder": 5,
+      "headingLevel": 5,
+      "headingText": "Recommendations",
+      "headingPath": [
+        "Monitoring considerations for Azure Virtual Desktop workloads",
+        "Health and availability monitoring",
+        "Resource Health",
+        "Recommendations"
+      ],
+      "markdown": "- Use Service Health to stay informed about the health of the Azure services and regions that you use.\n- Set up Service Health alerts so that you stay aware of service issues, planned maintenance, or other changes that might affect your Azure Virtual Desktop resources.\n- Use Resource Health to monitor your VMs and storage solutions.\n- Set up Resource Health alerts.",
+      "lineStart": 34,
+      "lineEnd": 39
+    },
+    {
+      "sectionOrder": 6,
+      "headingLevel": 2,
+      "headingText": "Performance monitoring",
+      "headingPath": [
+        "Monitoring considerations for Azure Virtual Desktop workloads",
+        "Performance monitoring"
+      ],
+      "markdown": "*Impact: Performance Efficiency, Operational Excellence*\n\nTo gain visibility and monitor performance, you need to monitor critical components of your Azure Virtual Desktop environment.",
+      "lineStart": 41,
+      "lineEnd": 45
+    },
+    {
+      "sectionOrder": 7,
+      "headingLevel": 3,
+      "headingText": "Configuration recommendations",
+      "headingPath": [
+        "Monitoring considerations for Azure Virtual Desktop workloads",
+        "Performance monitoring",
+        "Configuration recommendations"
+      ],
+      "markdown": "To help ensure that you retrieve key performance indicators and necessary logs from your Azure Virtual Desktop entities, configure the following diagnostics data to be sent to Log Analytics:\n\n- Azure Virtual Desktop host pool logs\n- Azure Virtual Desktop workspace diagnostics\n- Azure Virtual Desktop application group diagnostics\n- Storage diagnostics\n- Data about session hosts from a Monitor agent or Log Analytics agent\n- Performance and event log data that's collected according to Monitor or Log Analytics agent data collection rules\n- Azure VM insights data",
+      "lineStart": 47,
+      "lineEnd": 57
+    },
+    {
+      "sectionOrder": 8,
+      "headingLevel": 3,
+      "headingText": "Configuration options",
+      "headingPath": [
+        "Monitoring considerations for Azure Virtual Desktop workloads",
+        "Performance monitoring",
+        "Configuration options"
+      ],
+      "markdown": "Several options are available for configuring diagnostic settings:\n\n- An Azure Virtual Desktop Insights configuration workbook. Azure Virtual Desktop Insights is a dashboard that's built on Monitor workbooks that helps you understand your Azure Virtual Desktop environment. Azure Virtual Desktop Insights provides a configuration workbook that you can use to:\n  - Configure host pool and workspace diagnostics.\n  - Enable monitoring agents on your session hosts.\n  - Configure recommended performance counters and event logs for monitoring your Azure Virtual Desktop environment.\n\n  You can collect other key performance indicators by configuring the agent settings of your Log Analytics workspace.\n\n- Azure Policy. You can use Azure Policy to help ensure that monitoring agents are installed on your VMs. Azure Policy supports Monitor agents and Microsoft monitoring agents.\n\n- Deployment configuration and templates. You can use the Azure portal or a declarative deployment solution such as Azure Resource Manager templates (ARM templates), BICEP, or Terraform to deploy Azure Virtual Desktop. Ensure that diagnostic settings are deployed as part of your Azure Virtual Desktop deployment configuration. If you deploy Azure Virtual Desktop via the Azure portal, ensure that diagnostic settings are enabled. For the declarative deployment models, ensure that host pools, workspaces, or application groups are deployed with diagnostic settings enabled. Also ensure that VMs are deployed with Microsoft monitoring agent or Monitor agent extensions.",
+      "lineStart": 59,
+      "lineEnd": 72
+    },
+    {
+      "sectionOrder": 9,
+      "headingLevel": 3,
+      "headingText": "Session host performance",
+      "headingPath": [
+        "Monitoring considerations for Azure Virtual Desktop workloads",
+        "Performance monitoring",
+        "Session host performance"
+      ],
+      "markdown": "Performance counters record how your system resources are used. Performance counter data ingestion depends on your environment size and usage. It's important to understand that each performance counter sends data at a specific frequency. In your Azure Virtual Desktop Insights configuration workbook, you can adjust your per-minute default sample rate. You can also edit this rate in your settings. The multiplying factor that's applied to this rate depends on the counter.\n\nThe following list shows the categories of performance metrics and the performance counters that you can configure in each category:\n\n- Logical disk\n  - `Free Space`\n  - `Avg. Disk Queue Length`\n  - `Avg. Disk sec/Transfer`\n  - `Current Disk Queue Length`\n- Memory\n  - `% Committed Bytes in Use`\n  - `Available Mbytes`\n  - `Page Faults/sec`\n  - `Pages/sec`\n- Physical disk\n  - `Avg. Disk Queue Length`\n  - `Avg. Disk sec/Read`\n  - `Avg. Disk sec/Transfer`\n  - `Avg. Disk sec/Write`\n- Processor information\n  - `% Processor Time`\n  - `RemoteFX network`\n  - `Current TCP RTT`\n  - `Current UDP Bandwidth`\n  - `Terminal Services`\n  - `Active Sessions`\n  - `Inactive Sessions`\n  - `Total Sessions`\n- User input delay per process\n  - `Max Input Delay`\n- User input delay per session\n  - `Max Input Delay`\n\nYou can use diagnostics tables in Log Analytics to query and analyze network information for Azure Virtual Desktop connections. The `WVDConnectionNetworkData` data includes a correlation ID that maps to a specific Azure Virtual Desktop connection. For each session, you can see critical performance data such as the estimated round-trip time in milliseconds and the estimated available bandwidth in KBps.\n\nWindows event logs are data sources that Log Analytics agents collect on Windows VMs. You can collect events from standard logs, such as system and application logs. You can also collect events from custom logs that are created by applications that you need to monitor. By default, logs from the following types of Windows events are collected for Azure Virtual Desktop in Monitor:\n\n- `Application`\n- `Microsoft-Windows-TerminalServices-RemoteConnectionManager/Admin`\n- `Microsoft-Windows-TerminalServices-LocalSessionManager/Operational`\n- `System`\n- `Microsoft-FSLogix-Apps/Operational`\n- `Microsoft-FSLogix-Apps/Admin`\n\nA Windows event is triggered whenever the terms of the event are met in the environment. Machines in healthy states send fewer events than machines in unhealthy states.\n\nIt's important to monitor the event logs for connection problems that can come up with the Azure Virtual Desktop agent. For more information, see [Troubleshoot common Azure Virtual Desktop agent issues](/troubleshoot/azure/virtual-desktop/troubleshoot-agent).",
+      "lineStart": 74,
+      "lineEnd": 122
+    },
+    {
+      "sectionOrder": 10,
+      "headingLevel": 3,
+      "headingText": "Storage performance thresholds and monitoring",
+      "headingPath": [
+        "Monitoring considerations for Azure Virtual Desktop workloads",
+        "Performance monitoring",
+        "Storage performance thresholds and monitoring"
+      ],
+      "markdown": "You should monitor the Azure storage solution that you use for hosting FSLogix profiles or App Attach shares. It's important to monitor the profile storage locations to help ensure that thresholds aren't exceeded, which might have a negative impact on your user experience. For Storage, you should monitor the file share capacity to help ensure that file share quotas don't reach maximum capacity. You should also monitor the file share transactions to help ensure that transactions are within defined thresholds.",
+      "lineStart": 124,
+      "lineEnd": 126
+    },
+    {
+      "sectionOrder": 11,
+      "headingLevel": 3,
+      "headingText": "Service limits",
+      "headingPath": [
+        "Monitoring considerations for Azure Virtual Desktop workloads",
+        "Performance monitoring",
+        "Service limits"
+      ],
+      "markdown": "Azure Virtual Desktop has service limits that you should consider during the design phase of your deployment. You need to be aware of these service limits also in production environments, and you should proactively report on these limits. The limits are relatively large. But in larger deployments, where it's easier to reach these limits, it's essential to monitor them. For more information, see [Azure Virtual Desktop limitations](/azure/architecture/example-scenario/azure-virtual-desktop/azure-virtual-desktop#azure-virtual-desktop-limitations).",
+      "lineStart": 128,
+      "lineEnd": 130
+    },
+    {
+      "sectionOrder": 12,
+      "headingLevel": 5,
+      "headingText": "Recommendations",
+      "headingPath": [
+        "Monitoring considerations for Azure Virtual Desktop workloads",
+        "Performance monitoring",
+        "Service limits",
+        "Recommendations"
+      ],
+      "markdown": "- Configure diagnostics data to be sent to Log Analytics.\n- Select from various options for configuring diagnostics settings, such as an Azure Virtual Desktop Insights configuration workbook, Azure Policy, the Azure portal, or a template.\n- Configure performance counters so that you have a record of how your system resources are used.\n- Use diagnostics tables in Log Analytics to query and analyze network information for Azure Virtual Desktop connections.\n- Monitor event logs for connection problems with the Azure Virtual Desktop agent.\n- Monitor the Azure storage solution that you use for hosting FSLogix profiles or App Attach shares.\n- Monitor service usage to make sure your workload doesn't exceed limits.",
+      "lineStart": 132,
+      "lineEnd": 140
+    },
+    {
+      "sectionOrder": 13,
+      "headingLevel": 2,
+      "headingText": "Security monitoring",
+      "headingPath": [
+        "Monitoring considerations for Azure Virtual Desktop workloads",
+        "Security monitoring"
+      ],
+      "markdown": "*Impact: Security*\n\nThe following sections describe several monitoring measures that you can take to improve security in your workload.",
+      "lineStart": 142,
+      "lineEnd": 146
+    },
+    {
+      "sectionOrder": 14,
+      "headingLevel": 3,
+      "headingText": "Microsoft Defender for Cloud and Microsoft Sentinel",
+      "headingPath": [
+        "Monitoring considerations for Azure Virtual Desktop workloads",
+        "Security monitoring",
+        "Microsoft Defender for Cloud and Microsoft Sentinel"
+      ],
+      "markdown": "Ensure that Microsoft Defender for Cloud enhanced security features are enabled on the subscription and Azure Virtual Desktop session hosts that you deploy. Defender for Cloud provides a cloud workload protection platform and Cloud Security Posture Management. You can use Defender for Cloud to manage vulnerabilities and to assess compliance with common frameworks like Payment Card Industry (PCI) and ISO27001. You can also use Defender for Cloud to strengthen the overall security posture of your environment. Defender for Cloud uses the Microsoft monitoring agent or Monitor agent.",
+      "lineStart": 148,
+      "lineEnd": 150
+    },
+    {
+      "sectionOrder": 15,
+      "headingLevel": 3,
+      "headingText": "Microsoft Entra ID authentication and audit logs",
+      "headingPath": [
+        "Monitoring considerations for Azure Virtual Desktop workloads",
+        "Security monitoring",
+        "Microsoft Entra ID authentication and audit logs"
+      ],
+      "markdown": "Microsoft Entra ID is the first-line authentication solution for Azure Virtual Desktop no matter which connection method a client uses. As a result, it's important to collect Microsoft Entra ID authentication and audit logs. You can collect these logs in the following ways:\n\n- In your diagnostics settings, configure audit logs and sign-in logs to be sent to Log Analytics, where the data can be queried and alerted on.\n- Use a connector in Microsoft Sentinel to collect data from Microsoft Entra ID and stream it into Microsoft Sentinel.",
+      "lineStart": 152,
+      "lineEnd": 157
+    },
+    {
+      "sectionOrder": 16,
+      "headingLevel": 3,
+      "headingText": "Security event logs",
+      "headingPath": [
+        "Monitoring considerations for Azure Virtual Desktop workloads",
+        "Security monitoring",
+        "Security event logs"
+      ],
+      "markdown": "You should collect security event logs from your Azure Virtual Desktop session hosts. It's a good idea to add these logs to a centralized repository for security events that involve your Azure Virtual Desktop hosts. You can use the repository for storing and querying the logs. You can use one of the following options to collect the logs:\n\n- Use a Monitor agent data collection rule for collecting security event logs. This option is recommended.\n- Use a Microsoft monitoring agent to collect the logs for Microsoft Sentinel, or use a legacy agent connector to collect security events.\n- Use a Microsoft monitoring agent to collect security events for Defender for Cloud.",
+      "lineStart": 159,
+      "lineEnd": 165
+    },
+    {
+      "sectionOrder": 17,
+      "headingLevel": 3,
+      "headingText": "Maintain compliance",
+      "headingPath": [
+        "Monitoring considerations for Azure Virtual Desktop workloads",
+        "Security monitoring",
+        "Maintain compliance"
+      ],
+      "markdown": "Monthly security updates are critical for the overall health and security of your Azure Virtual Desktop environment. Ensure that you regularly update your Azure Virtual Desktop environment by installing new images or by using an update management tool. It's best to conduct monthly compliance reporting and monitoring of your environment's overall update compliance. This practice helps ensure that your Azure Virtual Desktop administrators and security team stay aware of the overall security compliance status of your environment.",
+      "lineStart": 167,
+      "lineEnd": 169
+    },
+    {
+      "sectionOrder": 18,
+      "headingLevel": 5,
+      "headingText": "Recommendations",
+      "headingPath": [
+        "Monitoring considerations for Azure Virtual Desktop workloads",
+        "Security monitoring",
+        "Maintain compliance",
+        "Recommendations"
+      ],
+      "markdown": "- Use Defender for Cloud to manage vulnerabilities and to assess compliance with common frameworks.\n- Use Defender for Cloud to strengthen the overall security posture of your environment.\n- Collect Microsoft Entra ID authentication and audit logs.\n- Store security event logs from your Azure Virtual Desktop session hosts in a repository.\n- Update your Azure Virtual Desktop environment regularly.\n- Conduct monthly compliance reporting.",
+      "lineStart": 171,
+      "lineEnd": 178
+    },
+    {
+      "sectionOrder": 19,
+      "headingLevel": 2,
+      "headingText": "Reporting",
+      "headingPath": [
+        "Monitoring considerations for Azure Virtual Desktop workloads",
+        "Reporting"
+      ],
+      "markdown": "*Impact: Operational Excellence*\n\nMultiple options are available for Azure Virtual Desktop reporting:\n\n- Azure Virtual Desktop Insights. This dashboard provides many of the required insights and visualizations that you need to understand and monitor your Azure Virtual Desktop environment.\n- Workbooks and external reporting tools. In some scenarios, it's helpful to have a custom workbook and dashboard. You can create your own reports or workbooks by using Log Analytics tables and Azure Resource Graph query results as data sources. Resource Graph is a service that you can use to report on Azure Virtual Desktop objects such as host pools, workspaces, compute components, and storage solutions. Data is only populated in custom solutions if you turn on diagnostics for Azure Virtual Desktop objects and if you use a supported monitoring agent to collect performance and event log data. The following Log Analytics tables are available as data sources:\n  - Azure Virtual Desktop Log Analytics tables\n    - `WVDAgentHealthStatus`\n    - `WVDCheckpoints`\n    - `WVDConnectionGraphicsDataPreview`\n    - `WVDConnectionNetworkData`\n    - `WVDConnections`\n    - `WVDErrors`\n    - `WVDFeeds`\n    - `WVDHostRegistrations`\n    - `WVDManagement`\n  - Performance counters table\n    - `Perf`\n    - `InsightMetrics` (only if the VM insights feature is enabled)\n  - Events tables\n    - `Event`",
+      "lineStart": 180,
+      "lineEnd": 202
+    },
+    {
+      "sectionOrder": 20,
+      "headingLevel": 5,
+      "headingText": "Recommendations",
+      "headingPath": [
+        "Monitoring considerations for Azure Virtual Desktop workloads",
+        "Reporting",
+        "Recommendations"
+      ],
+      "markdown": "- Consider using Azure Virtual Desktop Insights for reporting.\n- Use Log Analytics tables and Resource Graph query results as data sources when you make custom dashboards.",
+      "lineStart": 204,
+      "lineEnd": 207
+    },
+    {
+      "sectionOrder": 21,
+      "headingLevel": 2,
+      "headingText": "Alerting",
+      "headingPath": [
+        "Monitoring considerations for Azure Virtual Desktop workloads",
+        "Alerting"
+      ],
+      "markdown": "*Impact: Performance Efficiency, Operational Excellence*\n\nUse the Monitor alerts framework or an equivalent monitoring solution to stay informed about Azure Virtual Desktop performance and security. You can configure custom alerts for the following types of Azure Virtual Desktop events, diagnostics, and resources:\n\n- VM performance\n- Critical events, such as application events with IDs 3702 or 3703 for unavailable-state problems on session hosts\n- Service Health\n- Resource Health\n- Azure Virtual Desktop diagnostic data\n- Profile and App Attach packages\n- Defender for Cloud",
+      "lineStart": 209,
+      "lineEnd": 221
+    },
+    {
+      "sectionOrder": 22,
+      "headingLevel": 5,
+      "headingText": "Recommendations",
+      "headingPath": [
+        "Monitoring considerations for Azure Virtual Desktop workloads",
+        "Alerting",
+        "Recommendations"
+      ],
+      "markdown": "- Use alerts to stay informed about Azure Virtual Desktop performance and security.\n- Configure alerts for various Azure Virtual Desktop events, diagnostics, and resources.",
+      "lineStart": 223,
+      "lineEnd": 226
+    },
+    {
+      "sectionOrder": 23,
+      "headingLevel": 2,
+      "headingText": "Next steps",
+      "headingPath": [
+        "Monitoring considerations for Azure Virtual Desktop workloads",
+        "Next steps"
+      ],
+      "markdown": "Now that you've looked at observability best practices in Azure Virtual Desktop, explore mechanisms, tools, and perimeters that you can use to further secure your Azure Virtual Desktop workloads.\n\n> [!div class=\"nextstepaction\"]\n> [Security and identity and access management (IAM)](./security.md)\n\nUse the assessment tool to evaluate your design choices.\n\n> [!div class=\"nextstepaction\"]\n> [Assessment](./assessment.md)",
+      "lineStart": 228,
+      "lineEnd": 237
+    }
+  ],
+  "localLinks": [
+    "./assessment.md",
+    "./index.yml",
+    "./overview.md",
+    "./security.md"
+  ],
+  "lastModified": "2026-03-17T16:22:13.427Z"
+}

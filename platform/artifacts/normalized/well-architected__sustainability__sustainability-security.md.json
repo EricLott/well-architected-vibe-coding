@@ -1,0 +1,405 @@
+{
+  "source": {
+    "absolutePath": "C:\\Users\\EricL\\source\\repos\\Well-Architected-Vibe-Coding\\well-architected-vibe-coding\\well-architected\\sustainability\\sustainability-security.md",
+    "repoRelativePath": "well-architected/sustainability/sustainability-security.md",
+    "docsRelativePath": "sustainability/sustainability-security.md"
+  },
+  "frontMatter": {
+    "title": "Security considerations for sustainable workloads on Azure",
+    "description": "This design area explores security design considerations for sustainable workloads on Azure.",
+    "author": "lnyswonger",
+    "ms.author": "lnyswonger",
+    "ms.topic": "concept-article",
+    "ms.date": "10/12/2022"
+  },
+  "title": "Security considerations for sustainable workloads on Azure",
+  "rawBody": "# Security considerations for sustainable workloads on Azure\n\nDesigning sustainable workloads on Azure must encompass security, which is a foundational principle through all phases of a project. Learn about considerations and recommendations leading to a more sustainable security posture.\n\n> [!IMPORTANT]\n> This article is part of the [Azure Well-Architected sustainable workload](index.yml) series. If you aren't familiar with this series, we recommend you start with [what is a sustainable workload?](sustainability-get-started.md#what-is-a-sustainable-workload)\n\n## Security monitoring\n\nUse cloud native security monitoring solutions to optimize for sustainability.\n\n### Use cloud native log collection methods where applicable\n\nTraditionally, log collection methods for ingestion to a Security Information and Event Management (SIEM) solution required the use of an intermediary resource to collect, parse, filter and transmit logs onward to the central collection system. Using this design can carry an overhead with more infrastructure and associated financial and carbon-related costs.\n\n*Green Software Foundation alignment: [Hardware efficiency](sustainability-design-principles.md#hardware-efficiency), [Energy efficiency](sustainability-design-principles.md#energy-efficiency)*\n\n**Recommendation:**\n\n- Using cloud native [service-to-service connectors](/azure/sentinel/connect-data-sources#service-to-service-integration-for-data-connectors) simplify the integration between the services and the SIEM, and removes the overhead of extra infrastructure.\n- It's possible to ingest log data from existing compute resources using previously deployed agents such as the Azure Monitor Analytics agent. Review how to [migrate to Azure Monitor agent from Log Analytics agent](/azure/azure-monitor/agents/azure-monitor-agent-migration).\n- Consider this tradeoff: Deploying more monitoring agents will increase the overhead in processing as it needs more compute resources. Carefully design and plan for how much information is needed to cover the security requirements of the solution and find a suitable level of information to store and keep.\n  - A possible solution to reduce unnecessary data collection is to rely on the [Azure Monitor Data Collection Rules (DCR)](/azure/azure-monitor/essentials/data-collection-rule-overview).\n\n### Avoid transferring large unfiltered data sets from one cloud service provider to another\n\nConventional SIEM solutions required all log data to be ingested and stored in a centralized location. In a multicloud environment, this solution can lead to a large amount of data being transferred out of a cloud service provide and into another, causing increased burden on the network and storage infrastructure.\n\n*Green Software Foundation alignment: [Carbon efficiency](sustainability-design-principles.md#carbon-efficiency), [Energy efficiency](sustainability-design-principles.md#energy-efficiency)*\n\n**Recommendation:**\n\n- Cloud native security services can perform localized analysis on relevant security data source. This analysis allows the bulk of log data to remain within the source cloud service provider environment. Cloud native SIEM solutions can be [connected via an API or connector](/azure/sentinel/connect-aws) to these security services to transmit only the relevant security incident or event data. This solution can greatly reduce the amount of data transferred while maintaining a high level of security information to respond to an incident.\n\nIn time, using the described approach helps reduce data egress and storage costs, which inherently help reduce emissions.\n\n### Filter or exclude log sources before transmission or ingestion into a SIEM\n\nConsider the complexity and cost of storing all logs from all possible sources. For instance, applications, servers, diagnostics and platform activity.\n\n*Green Software Foundation alignment: [Carbon efficiency](sustainability-design-principles.md#carbon-efficiency), [Energy efficiency](sustainability-design-principles.md#energy-efficiency)*\n\n**Recommendation:**\n\n- When designing a log collection strategy for cloud native SIEM solutions, consider the use cases based on the [Microsoft Sentinel analytics rules](/azure/sentinel/detect-threats-built-in) required for your environment and match up the required log sources to support those rules.\n- This option can help remove the unnecessary transmission and storage of log data, reducing the carbon emissions on the  environment.\n\n### Archive log data to long-term storage\n\nMany customers have a requirement to store log data for an extended period due to regulatory compliance reasons. In these cases, storing log data in the primary storage location of the SIEM system is a costly solution.\n\n*Green Software Foundation alignment: [Energy efficiency](sustainability-design-principles.md#energy-efficiency)*\n\n**Recommendation:**\n\n- Log data can be [moved out to a cheaper long-term storage option](https://techcommunity.microsoft.com/t5/microsoft-sentinel-blog/move-your-microsoft-sentinel-logs-to-long-term-storage-with-ease/ba-p/1407153) which respects the retention policies of the customer, but lowers the cost by utilizing separate storage locations.\n\n## Network architecture\n\nIncrease the efficiency and avoid unnecessary traffic by following good practices for network security architectures.\n\n### Use cloud native network security controls to eliminate unnecessary network traffic\n\nWhen you use a centralized routing- and firewall design, all network traffic is sent to the hub for inspection, filtering, and onward routing. While this approach centralizes policy enforcement, it can create an overhead on the network of unnecessary traffic from the source resources.\n\n*Green Software Foundation alignment: [Hardware efficiency](sustainability-design-principles.md#hardware-efficiency), [Energy efficiency](sustainability-design-principles.md#energy-efficiency)*\n\n**Recommendation:**\n\n- Use [Network security groups](/azure/virtual-network/network-security-groups-overview) and [Application security groups](/azure/virtual-network/application-security-groups) to help filter traffic at the source, and to remove the unnecessary data transmission. Using these capabilities can help reduce the burden on the cloud infrastructure, with lower bandwidth requirements and less infrastructure to own and manage.\n\n### Minimize routing from endpoints to the destination\n\nIn many customer environments, especially in hybrid deployments, all end user device network traffic is routed through on-premises systems before being allowed to reach the internet. Usually, this happens due to the requirement to inspect all internet traffic. Often, this requires higher capacity network security appliances within the on-premises environment, or more appliances within the cloud environment.\n\n*Green Software Foundation alignment: [Energy efficiency](sustainability-design-principles.md#energy-efficiency)*\n\n**Recommendation:**\n\n- Minimize routing from endpoints to the destination.\n  - Where possible, end user devices should be optimized to [split out known traffic directly to cloud services](/microsoft-365/enterprise/microsoft-365-vpn-implement-split-tunnel) while continuing to route and inspect traffic for all other destinations. Bringing these capabilities and policies closer to the end user device prevents unnecessary network traffic and its associated overhead.\n\n### Use network security tools with auto-scaling capabilities\n\nBased on network traffic, there will be times when demand of the security appliance will be high, and other times where it will be lower. Many network security appliances are deployed to a scale to cope with the highest expected demand, leading to inefficiencies. Additionally, reconfiguration of these tools often requires a reboot leading to unacceptable downtime and management overhead.\n\n*Green Software Foundation alignment: [Hardware efficiency](sustainability-design-principles.md#hardware-efficiency)*\n\n**Recommendation:**\n\n- Making use of auto-scaling allows the rightsizing of the backend resources to meet demand without manual intervention.\n- This approach will vastly reduce the time to react to network traffic changes, resulting in a reduced waste of unnecessary resources, and increases your sustainability effect.\n- Learn more about relevant services by reading [how to enable a Web Application Firewall (WAF) on an Application Gateway](/azure/web-application-firewall/ag/application-gateway-web-application-firewall-portal), and [deploy and configure Azure Firewall Premium](/azure/firewall/premium-deploy).\n\n### Evaluate whether to use TLS termination\n\nTerminating and re-establishing TLS is CPU consumption that might be unnecessary in certain architectures.\n\n*Green Software Foundation alignment: [Energy efficiency](sustainability-design-principles.md#energy-efficiency)*\n\n**Recommendation:**\n\n- Consider if you can terminate TLS at your border gateway and continue with non-TLS to your workload load balancer and onwards to your workload.\n- Review the information on [TLS termination](/azure/application-gateway/ssl-overview#tls-termination) to better understand the performance and utilization impact it offers.\n- Consider the tradeoff: A balanced level of security can offer a more sustainable and energy efficient workload while a higher level of security may increase the requirements on compute resources.\n\n### Use DDoS protection\n\nDistributed Denial of Service (DDoS) attacks aim to disrupt operational systems by overwhelming them, creating a significant impact on the resources in the cloud. Successful attacks flood network and compute resources, leading to an unnecessary spike in usage and cost.\n\n*Green Software Foundation alignment: [Energy efficiency](sustainability-design-principles.md#energy-efficiency), [Hardware efficiency](sustainability-design-principles.md#hardware-efficiency)*\n\n**Recommendation:**\n\n- DDoS protection seeks to [mitigate attacks at an abstracted layer](/azure/ddos-protection/types-of-attacks), so the attack is mitigated before reaching any customer operated services.\n  - Mitigating any malicious usage of compute and network services will ultimately help reduce unnecessary carbon emissions.\n\n## Endpoint security\n\nIt's imperative that we secure our workloads and solutions in the cloud. Understanding how we can optimize our mitigation tactics all the way down to the client devices can have a positive outcome for reducing emissions.\n\n### Integrate Microsoft Defender for Endpoint\n\nMany attacks on cloud infrastructure seek to misuse deployed resources for the attacker's direct gain. Two such misuse cases are botnets and crypto mining.\n\nBoth of these cases involve taking control of customer-operated compute resources and use them to either create new cryptocurrency coins, or as a network of resources from which to launch a secondary action like a DDoS attack, or mass e-mail spam campaigns.\n\n*Green Software Foundation alignment: [Hardware efficiency](sustainability-design-principles.md#hardware-efficiency)*\n\n**Recommendations:**\n\n- Integrate [Microsoft Defender for Endpoint](/azure/defender-for-cloud/integration-defender-for-endpoint) with Defender for Cloud to identify and shut down crypto mining and botnets.\n  - The EDR capabilities provide advanced attack detections and are able to take response actions to remediate those threats. The unnecessary resource usage created by these common attacks can quickly be discovered and remediated, often without the intervention of a security analyst.\n\n## Reporting\n\nGetting the right information and insights at the right time is important for producing reports around emissions from your security appliances.\n\n### Tag security resources\n\nIt can be a challenge to quickly find and report on all security appliances in your tenant. Identifying the security resources can help when designing a strategy for a more sustainable operating model for your business.\n\n*Green Software Foundation alignment: [Measuring sustainability](sustainability-design-principles.md#measuring-sustainability)*\n\n**Recommendation:**\n\n- Tag security resources to record emissions impact of security resources.\n\n## Next step\n\nReview the considerations and recommendations for designing sustainable AI workloads.\n\n> [!div class=\"nextstepaction\"]\n> [Sustainable AI design](sustainable-ai-design.md)",
+  "headings": [
+    {
+      "level": 1,
+      "text": "Security considerations for sustainable workloads on Azure",
+      "line": 1,
+      "path": [
+        "Security considerations for sustainable workloads on Azure"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Security monitoring",
+      "line": 8,
+      "path": [
+        "Security considerations for sustainable workloads on Azure",
+        "Security monitoring"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Use cloud native log collection methods where applicable",
+      "line": 12,
+      "path": [
+        "Security considerations for sustainable workloads on Azure",
+        "Security monitoring",
+        "Use cloud native log collection methods where applicable"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Avoid transferring large unfiltered data sets from one cloud service provider to another",
+      "line": 25,
+      "path": [
+        "Security considerations for sustainable workloads on Azure",
+        "Security monitoring",
+        "Avoid transferring large unfiltered data sets from one cloud service provider to another"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Filter or exclude log sources before transmission or ingestion into a SIEM",
+      "line": 37,
+      "path": [
+        "Security considerations for sustainable workloads on Azure",
+        "Security monitoring",
+        "Filter or exclude log sources before transmission or ingestion into a SIEM"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Archive log data to long-term storage",
+      "line": 48,
+      "path": [
+        "Security considerations for sustainable workloads on Azure",
+        "Security monitoring",
+        "Archive log data to long-term storage"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Network architecture",
+      "line": 58,
+      "path": [
+        "Security considerations for sustainable workloads on Azure",
+        "Network architecture"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Use cloud native network security controls to eliminate unnecessary network traffic",
+      "line": 62,
+      "path": [
+        "Security considerations for sustainable workloads on Azure",
+        "Network architecture",
+        "Use cloud native network security controls to eliminate unnecessary network traffic"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Minimize routing from endpoints to the destination",
+      "line": 72,
+      "path": [
+        "Security considerations for sustainable workloads on Azure",
+        "Network architecture",
+        "Minimize routing from endpoints to the destination"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Use network security tools with auto-scaling capabilities",
+      "line": 83,
+      "path": [
+        "Security considerations for sustainable workloads on Azure",
+        "Network architecture",
+        "Use network security tools with auto-scaling capabilities"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Evaluate whether to use TLS termination",
+      "line": 95,
+      "path": [
+        "Security considerations for sustainable workloads on Azure",
+        "Network architecture",
+        "Evaluate whether to use TLS termination"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Use DDoS protection",
+      "line": 107,
+      "path": [
+        "Security considerations for sustainable workloads on Azure",
+        "Network architecture",
+        "Use DDoS protection"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Endpoint security",
+      "line": 118,
+      "path": [
+        "Security considerations for sustainable workloads on Azure",
+        "Endpoint security"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Integrate Microsoft Defender for Endpoint",
+      "line": 122,
+      "path": [
+        "Security considerations for sustainable workloads on Azure",
+        "Endpoint security",
+        "Integrate Microsoft Defender for Endpoint"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Reporting",
+      "line": 135,
+      "path": [
+        "Security considerations for sustainable workloads on Azure",
+        "Reporting"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Tag security resources",
+      "line": 139,
+      "path": [
+        "Security considerations for sustainable workloads on Azure",
+        "Reporting",
+        "Tag security resources"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Next step",
+      "line": 149,
+      "path": [
+        "Security considerations for sustainable workloads on Azure",
+        "Next step"
+      ]
+    }
+  ],
+  "sections": [
+    {
+      "sectionOrder": 1,
+      "headingLevel": 1,
+      "headingText": "Security considerations for sustainable workloads on Azure",
+      "headingPath": [
+        "Security considerations for sustainable workloads on Azure"
+      ],
+      "markdown": "Designing sustainable workloads on Azure must encompass security, which is a foundational principle through all phases of a project. Learn about considerations and recommendations leading to a more sustainable security posture.\n\n> [!IMPORTANT]\n> This article is part of the [Azure Well-Architected sustainable workload](index.yml) series. If you aren't familiar with this series, we recommend you start with [what is a sustainable workload?](sustainability-get-started.md#what-is-a-sustainable-workload)",
+      "lineStart": 2,
+      "lineEnd": 7
+    },
+    {
+      "sectionOrder": 2,
+      "headingLevel": 2,
+      "headingText": "Security monitoring",
+      "headingPath": [
+        "Security considerations for sustainable workloads on Azure",
+        "Security monitoring"
+      ],
+      "markdown": "Use cloud native security monitoring solutions to optimize for sustainability.",
+      "lineStart": 9,
+      "lineEnd": 11
+    },
+    {
+      "sectionOrder": 3,
+      "headingLevel": 3,
+      "headingText": "Use cloud native log collection methods where applicable",
+      "headingPath": [
+        "Security considerations for sustainable workloads on Azure",
+        "Security monitoring",
+        "Use cloud native log collection methods where applicable"
+      ],
+      "markdown": "Traditionally, log collection methods for ingestion to a Security Information and Event Management (SIEM) solution required the use of an intermediary resource to collect, parse, filter and transmit logs onward to the central collection system. Using this design can carry an overhead with more infrastructure and associated financial and carbon-related costs.\n\n*Green Software Foundation alignment: [Hardware efficiency](sustainability-design-principles.md#hardware-efficiency), [Energy efficiency](sustainability-design-principles.md#energy-efficiency)*\n\n**Recommendation:**\n\n- Using cloud native [service-to-service connectors](/azure/sentinel/connect-data-sources#service-to-service-integration-for-data-connectors) simplify the integration between the services and the SIEM, and removes the overhead of extra infrastructure.\n- It's possible to ingest log data from existing compute resources using previously deployed agents such as the Azure Monitor Analytics agent. Review how to [migrate to Azure Monitor agent from Log Analytics agent](/azure/azure-monitor/agents/azure-monitor-agent-migration).\n- Consider this tradeoff: Deploying more monitoring agents will increase the overhead in processing as it needs more compute resources. Carefully design and plan for how much information is needed to cover the security requirements of the solution and find a suitable level of information to store and keep.\n  - A possible solution to reduce unnecessary data collection is to rely on the [Azure Monitor Data Collection Rules (DCR)](/azure/azure-monitor/essentials/data-collection-rule-overview).",
+      "lineStart": 13,
+      "lineEnd": 24
+    },
+    {
+      "sectionOrder": 4,
+      "headingLevel": 3,
+      "headingText": "Avoid transferring large unfiltered data sets from one cloud service provider to another",
+      "headingPath": [
+        "Security considerations for sustainable workloads on Azure",
+        "Security monitoring",
+        "Avoid transferring large unfiltered data sets from one cloud service provider to another"
+      ],
+      "markdown": "Conventional SIEM solutions required all log data to be ingested and stored in a centralized location. In a multicloud environment, this solution can lead to a large amount of data being transferred out of a cloud service provide and into another, causing increased burden on the network and storage infrastructure.\n\n*Green Software Foundation alignment: [Carbon efficiency](sustainability-design-principles.md#carbon-efficiency), [Energy efficiency](sustainability-design-principles.md#energy-efficiency)*\n\n**Recommendation:**\n\n- Cloud native security services can perform localized analysis on relevant security data source. This analysis allows the bulk of log data to remain within the source cloud service provider environment. Cloud native SIEM solutions can be [connected via an API or connector](/azure/sentinel/connect-aws) to these security services to transmit only the relevant security incident or event data. This solution can greatly reduce the amount of data transferred while maintaining a high level of security information to respond to an incident.\n\nIn time, using the described approach helps reduce data egress and storage costs, which inherently help reduce emissions.",
+      "lineStart": 26,
+      "lineEnd": 36
+    },
+    {
+      "sectionOrder": 5,
+      "headingLevel": 3,
+      "headingText": "Filter or exclude log sources before transmission or ingestion into a SIEM",
+      "headingPath": [
+        "Security considerations for sustainable workloads on Azure",
+        "Security monitoring",
+        "Filter or exclude log sources before transmission or ingestion into a SIEM"
+      ],
+      "markdown": "Consider the complexity and cost of storing all logs from all possible sources. For instance, applications, servers, diagnostics and platform activity.\n\n*Green Software Foundation alignment: [Carbon efficiency](sustainability-design-principles.md#carbon-efficiency), [Energy efficiency](sustainability-design-principles.md#energy-efficiency)*\n\n**Recommendation:**\n\n- When designing a log collection strategy for cloud native SIEM solutions, consider the use cases based on the [Microsoft Sentinel analytics rules](/azure/sentinel/detect-threats-built-in) required for your environment and match up the required log sources to support those rules.\n- This option can help remove the unnecessary transmission and storage of log data, reducing the carbon emissions on the  environment.",
+      "lineStart": 38,
+      "lineEnd": 47
+    },
+    {
+      "sectionOrder": 6,
+      "headingLevel": 3,
+      "headingText": "Archive log data to long-term storage",
+      "headingPath": [
+        "Security considerations for sustainable workloads on Azure",
+        "Security monitoring",
+        "Archive log data to long-term storage"
+      ],
+      "markdown": "Many customers have a requirement to store log data for an extended period due to regulatory compliance reasons. In these cases, storing log data in the primary storage location of the SIEM system is a costly solution.\n\n*Green Software Foundation alignment: [Energy efficiency](sustainability-design-principles.md#energy-efficiency)*\n\n**Recommendation:**\n\n- Log data can be [moved out to a cheaper long-term storage option](https://techcommunity.microsoft.com/t5/microsoft-sentinel-blog/move-your-microsoft-sentinel-logs-to-long-term-storage-with-ease/ba-p/1407153) which respects the retention policies of the customer, but lowers the cost by utilizing separate storage locations.",
+      "lineStart": 49,
+      "lineEnd": 57
+    },
+    {
+      "sectionOrder": 7,
+      "headingLevel": 2,
+      "headingText": "Network architecture",
+      "headingPath": [
+        "Security considerations for sustainable workloads on Azure",
+        "Network architecture"
+      ],
+      "markdown": "Increase the efficiency and avoid unnecessary traffic by following good practices for network security architectures.",
+      "lineStart": 59,
+      "lineEnd": 61
+    },
+    {
+      "sectionOrder": 8,
+      "headingLevel": 3,
+      "headingText": "Use cloud native network security controls to eliminate unnecessary network traffic",
+      "headingPath": [
+        "Security considerations for sustainable workloads on Azure",
+        "Network architecture",
+        "Use cloud native network security controls to eliminate unnecessary network traffic"
+      ],
+      "markdown": "When you use a centralized routing- and firewall design, all network traffic is sent to the hub for inspection, filtering, and onward routing. While this approach centralizes policy enforcement, it can create an overhead on the network of unnecessary traffic from the source resources.\n\n*Green Software Foundation alignment: [Hardware efficiency](sustainability-design-principles.md#hardware-efficiency), [Energy efficiency](sustainability-design-principles.md#energy-efficiency)*\n\n**Recommendation:**\n\n- Use [Network security groups](/azure/virtual-network/network-security-groups-overview) and [Application security groups](/azure/virtual-network/application-security-groups) to help filter traffic at the source, and to remove the unnecessary data transmission. Using these capabilities can help reduce the burden on the cloud infrastructure, with lower bandwidth requirements and less infrastructure to own and manage.",
+      "lineStart": 63,
+      "lineEnd": 71
+    },
+    {
+      "sectionOrder": 9,
+      "headingLevel": 3,
+      "headingText": "Minimize routing from endpoints to the destination",
+      "headingPath": [
+        "Security considerations for sustainable workloads on Azure",
+        "Network architecture",
+        "Minimize routing from endpoints to the destination"
+      ],
+      "markdown": "In many customer environments, especially in hybrid deployments, all end user device network traffic is routed through on-premises systems before being allowed to reach the internet. Usually, this happens due to the requirement to inspect all internet traffic. Often, this requires higher capacity network security appliances within the on-premises environment, or more appliances within the cloud environment.\n\n*Green Software Foundation alignment: [Energy efficiency](sustainability-design-principles.md#energy-efficiency)*\n\n**Recommendation:**\n\n- Minimize routing from endpoints to the destination.\n  - Where possible, end user devices should be optimized to [split out known traffic directly to cloud services](/microsoft-365/enterprise/microsoft-365-vpn-implement-split-tunnel) while continuing to route and inspect traffic for all other destinations. Bringing these capabilities and policies closer to the end user device prevents unnecessary network traffic and its associated overhead.",
+      "lineStart": 73,
+      "lineEnd": 82
+    },
+    {
+      "sectionOrder": 10,
+      "headingLevel": 3,
+      "headingText": "Use network security tools with auto-scaling capabilities",
+      "headingPath": [
+        "Security considerations for sustainable workloads on Azure",
+        "Network architecture",
+        "Use network security tools with auto-scaling capabilities"
+      ],
+      "markdown": "Based on network traffic, there will be times when demand of the security appliance will be high, and other times where it will be lower. Many network security appliances are deployed to a scale to cope with the highest expected demand, leading to inefficiencies. Additionally, reconfiguration of these tools often requires a reboot leading to unacceptable downtime and management overhead.\n\n*Green Software Foundation alignment: [Hardware efficiency](sustainability-design-principles.md#hardware-efficiency)*\n\n**Recommendation:**\n\n- Making use of auto-scaling allows the rightsizing of the backend resources to meet demand without manual intervention.\n- This approach will vastly reduce the time to react to network traffic changes, resulting in a reduced waste of unnecessary resources, and increases your sustainability effect.\n- Learn more about relevant services by reading [how to enable a Web Application Firewall (WAF) on an Application Gateway](/azure/web-application-firewall/ag/application-gateway-web-application-firewall-portal), and [deploy and configure Azure Firewall Premium](/azure/firewall/premium-deploy).",
+      "lineStart": 84,
+      "lineEnd": 94
+    },
+    {
+      "sectionOrder": 11,
+      "headingLevel": 3,
+      "headingText": "Evaluate whether to use TLS termination",
+      "headingPath": [
+        "Security considerations for sustainable workloads on Azure",
+        "Network architecture",
+        "Evaluate whether to use TLS termination"
+      ],
+      "markdown": "Terminating and re-establishing TLS is CPU consumption that might be unnecessary in certain architectures.\n\n*Green Software Foundation alignment: [Energy efficiency](sustainability-design-principles.md#energy-efficiency)*\n\n**Recommendation:**\n\n- Consider if you can terminate TLS at your border gateway and continue with non-TLS to your workload load balancer and onwards to your workload.\n- Review the information on [TLS termination](/azure/application-gateway/ssl-overview#tls-termination) to better understand the performance and utilization impact it offers.\n- Consider the tradeoff: A balanced level of security can offer a more sustainable and energy efficient workload while a higher level of security may increase the requirements on compute resources.",
+      "lineStart": 96,
+      "lineEnd": 106
+    },
+    {
+      "sectionOrder": 12,
+      "headingLevel": 3,
+      "headingText": "Use DDoS protection",
+      "headingPath": [
+        "Security considerations for sustainable workloads on Azure",
+        "Network architecture",
+        "Use DDoS protection"
+      ],
+      "markdown": "Distributed Denial of Service (DDoS) attacks aim to disrupt operational systems by overwhelming them, creating a significant impact on the resources in the cloud. Successful attacks flood network and compute resources, leading to an unnecessary spike in usage and cost.\n\n*Green Software Foundation alignment: [Energy efficiency](sustainability-design-principles.md#energy-efficiency), [Hardware efficiency](sustainability-design-principles.md#hardware-efficiency)*\n\n**Recommendation:**\n\n- DDoS protection seeks to [mitigate attacks at an abstracted layer](/azure/ddos-protection/types-of-attacks), so the attack is mitigated before reaching any customer operated services.\n  - Mitigating any malicious usage of compute and network services will ultimately help reduce unnecessary carbon emissions.",
+      "lineStart": 108,
+      "lineEnd": 117
+    },
+    {
+      "sectionOrder": 13,
+      "headingLevel": 2,
+      "headingText": "Endpoint security",
+      "headingPath": [
+        "Security considerations for sustainable workloads on Azure",
+        "Endpoint security"
+      ],
+      "markdown": "It's imperative that we secure our workloads and solutions in the cloud. Understanding how we can optimize our mitigation tactics all the way down to the client devices can have a positive outcome for reducing emissions.",
+      "lineStart": 119,
+      "lineEnd": 121
+    },
+    {
+      "sectionOrder": 14,
+      "headingLevel": 3,
+      "headingText": "Integrate Microsoft Defender for Endpoint",
+      "headingPath": [
+        "Security considerations for sustainable workloads on Azure",
+        "Endpoint security",
+        "Integrate Microsoft Defender for Endpoint"
+      ],
+      "markdown": "Many attacks on cloud infrastructure seek to misuse deployed resources for the attacker's direct gain. Two such misuse cases are botnets and crypto mining.\n\nBoth of these cases involve taking control of customer-operated compute resources and use them to either create new cryptocurrency coins, or as a network of resources from which to launch a secondary action like a DDoS attack, or mass e-mail spam campaigns.\n\n*Green Software Foundation alignment: [Hardware efficiency](sustainability-design-principles.md#hardware-efficiency)*\n\n**Recommendations:**\n\n- Integrate [Microsoft Defender for Endpoint](/azure/defender-for-cloud/integration-defender-for-endpoint) with Defender for Cloud to identify and shut down crypto mining and botnets.\n  - The EDR capabilities provide advanced attack detections and are able to take response actions to remediate those threats. The unnecessary resource usage created by these common attacks can quickly be discovered and remediated, often without the intervention of a security analyst.",
+      "lineStart": 123,
+      "lineEnd": 134
+    },
+    {
+      "sectionOrder": 15,
+      "headingLevel": 2,
+      "headingText": "Reporting",
+      "headingPath": [
+        "Security considerations for sustainable workloads on Azure",
+        "Reporting"
+      ],
+      "markdown": "Getting the right information and insights at the right time is important for producing reports around emissions from your security appliances.",
+      "lineStart": 136,
+      "lineEnd": 138
+    },
+    {
+      "sectionOrder": 16,
+      "headingLevel": 3,
+      "headingText": "Tag security resources",
+      "headingPath": [
+        "Security considerations for sustainable workloads on Azure",
+        "Reporting",
+        "Tag security resources"
+      ],
+      "markdown": "It can be a challenge to quickly find and report on all security appliances in your tenant. Identifying the security resources can help when designing a strategy for a more sustainable operating model for your business.\n\n*Green Software Foundation alignment: [Measuring sustainability](sustainability-design-principles.md#measuring-sustainability)*\n\n**Recommendation:**\n\n- Tag security resources to record emissions impact of security resources.",
+      "lineStart": 140,
+      "lineEnd": 148
+    },
+    {
+      "sectionOrder": 17,
+      "headingLevel": 2,
+      "headingText": "Next step",
+      "headingPath": [
+        "Security considerations for sustainable workloads on Azure",
+        "Next step"
+      ],
+      "markdown": "Review the considerations and recommendations for designing sustainable AI workloads.\n\n> [!div class=\"nextstepaction\"]\n> [Sustainable AI design](sustainable-ai-design.md)",
+      "lineStart": 150,
+      "lineEnd": 154
+    }
+  ],
+  "localLinks": [
+    "index.yml",
+    "sustainability-design-principles.md",
+    "sustainability-get-started.md",
+    "sustainable-ai-design.md"
+  ],
+  "lastModified": "2026-03-17T16:22:13.826Z"
+}

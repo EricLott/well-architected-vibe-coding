@@ -1,0 +1,174 @@
+{
+  "source": {
+    "absolutePath": "C:\\Users\\EricL\\source\\repos\\Well-Architected-Vibe-Coding\\well-architected-vibe-coding\\well-architected\\azure-virtual-desktop\\design-principles.md",
+    "repoRelativePath": "well-architected/azure-virtual-desktop/design-principles.md",
+    "docsRelativePath": "azure-virtual-desktop/design-principles.md"
+  },
+  "frontMatter": {
+    "title": "Azure Virtual Desktop design principles",
+    "description": "Review the design principles of the Azure Well-Architected Framework. See how to apply these principles to Azure Virtual Desktop workloads.",
+    "author": "PageWriter-MSFT",
+    "ms.author": "prwilk",
+    "ms.date": "10/12/2023",
+    "ms.topic": "concept-article",
+    "ms.service": "azure-waf",
+    "ms.subservice": "waf-workload-azure-virtual-desktop"
+  },
+  "title": "Azure Virtual Desktop design principles",
+  "rawBody": "# Azure Virtual Desktop design principles\n\nGuidance about Azure Virtual Desktop workloads is built on the Azure Well-Architected Framework and its five pillars of architectural excellence. The following table lists each pillar and a summary of its goals.\n\n| Well-Architected Framework pillar | Summary |\n| --- | --- |\n| Reliability | A virtual desktop environment demands a high level of service reliability to help ensure a consistent and uninterrupted user experience. It's essential to establish a robust infrastructure that enables reliable access and optimal performance of the virtual desktop environment. Evaluate virtual desktop deployments, particularly those that integrate with Azure native services. Specifically, evaluate the native compute, networking, and storage services that your deployment uses. Also evaluate third-party products and partner solutions that you use with Azure Virtual Desktop. These components affect reliability, because they're part of the landing zone design. This approach helps ensure a seamless and dependable user experience. |\n| Security | The security pillar focuses on the implementation of strategies for safeguarding your workload against threats and vulnerabilities. Security also includes considerations for insider risk and data loss protection. Within Azure Virtual Desktop, it's critical to assess your end-to-end security topics. These topics range from identity and access management (IAM), operating systems, applications, networking, and Azure platforms to data. We highly encourage you to review or develop strategies to incorporate a range of security layers across your Azure estate. These strategies should cover your desktops and the applications that are presented under Azure Virtual Desktop. |\n| Cost Optimization | When you optimize your virtual desktop environment for cost, you meet performance expectations that are set by business requirements. You also reduce the total cost of ownership (TCO) by minimizing overspending. You can reduce the TCO by taking advantage of the power of the Azure Virtual Desktop hyperscale infrastructure. Optimizing costs for Azure Virtual Desktop involves several steps. Examples include choosing the right size virtual machines (VMs), using reserved instances or savings plans, setting up scaling plans, and using Microsoft Cost Management to monitor and optimize spending. It's important to continually evaluate your Azure Virtual Desktop deployments to track your usage and identify opportunities for optimizing your workloads. |\n| Performance Efficiency | Performance Efficiency focuses on the ability of your environment to meet or exceed the business requirements that are set for your virtual desktop and applications. In your Azure Virtual Desktop environment, you can meet your required performance with ideal efficiency by ensuring that you select optimal compute families and disk sizes and types. If you use FSLogix profiles, you also need to select optimal storage. In general, it's critical to assess and test a series of VM configurations to understand how your users and workloads use the Azure resources that make up the session hosts within Azure Virtual Desktop. After deployment, we recommend that you continually monitor consumption of your production resources to ensure that you meet or exceed your desired target performance. |\n| Operational Excellence | Apply the principles of DevOps within your Azure virtual desktop workload team. Encourage the adoption of a DevOps mindset, developing standards, and the approach of executing while evolving. With Azure Virtual Desktop, you can establish set procedures for deploying, managing, and maintaining your workloads with ease. These procedures can involve the use of Azure Resource Manager templates, Bicep, Terraform, and other forms of infrastructure as code (IaC). To customize session hosts, you can automate your image build by using tools like the [custom image template feature](/azure/virtual-desktop/create-custom-image-templates) with [Azure DevOps](/azure/devops/pipelines/get-started/key-pipelines-concepts?view=azure-devops&preserve-view=true). These DevOps strategies and others help your organization establish, maintain, and manage your Azure Virtual Desktop environments efficiently. |\n\n> [!IMPORTANT]\n> This article is part of the [Azure Well-Architected Framework Azure Virtual Desktop workload](./index.yml) series. If you aren't familiar with this series, we recommend that you start with [What is an Azure Virtual Desktop workload?](./overview.md#what-is-an-azure-virtual-desktop-workload).\n\n## Reliability\n\nReliability is a foundational pillar in an Azure Virtual Desktop environment. Disruptions can materialize on-premises and in the cloud. As a result, you need to pay meticulous attention to your virtual desktop components, which include Azure services and your on-premises infrastructure. Assess your workload's user data (profiles), applications, and compute availability requirements to determine your strategy for business continuity and disaster recovery. Take into account the different levels of availability that you achieve in Azure Virtual Desktop with different deployment options, such as active-active or active-passive host pools. Also assess your disaster recovery design considerations to help ensure smooth failovers during outages.\n\n- *Resiliency* is the ability to withstand disruptions (transient faults, infrastructure issues, demand spikes) and continue operating (possibly in a degraded mode) to avoid user-impacting downtime.\n- *Availability* ensures uninterrupted uptime. High availability minimizes application downtime during critical maintenance activities. It also enhances recovery from incidents like VM crashes, back-end updates, extended downtimes, and ransomware attacks.\n\nAchieving reliability requires a comprehensive approach that spans architecture, operational procedures, automation, monitoring, regular testing, and validation.\n\n- **Define service-level agreements (SLAs)**. Establishing well-defined SLAs is central to fostering reliability. These agreements specify precise expectations for the availability and performance of user sessions and profiles. By doing so, they lay down a clear benchmark that you can use to assess the operational effectiveness of your system.\n- **Develop effective scaling strategies**. With vertical scaling, you opt for a VM SKU that aligns with the resource needs of user sessions. You also factor in aspects like CPU and memory requirements. With horizontal scaling, you add extra VM instances to accommodate escalating demands while sustaining system stability.\n- **Design for high availability**. This process entails integrating redundancy and failover mechanisms that help ensure uninterrupted operations. High availability minimizes potential disruptions and guarantees users a seamless experience even during unexpected events.\n- **Implement fault tolerance**. The inclusion of fault-tolerant storage plays a critical role in safeguarding the integrity and availability of roaming profiles and user data. This strategy offers a layer of protection against data loss by helping ensure that essential user data remains intact and accessible during failures.\n- **Understand backup and restore capabilities**. Robust backup practices help ensure that you maintain operational continuity in the face of adversity.\n\n## Security\n\nIn a shared-responsibility model:\n\n- Organizations are primarily responsible for managing and operating Azure Virtual Desktop workloads.\n- Microsoft manages the control plane that supports an Azure Virtual Desktop workload.\n\nWe strongly recommended that you regularly assess your services and technologies to help ensure that your security posture adapts to evolving threat landscapes. When you collaborate with vendors to implement suitable security measures, it's essential to establish a clear understanding of the shared-responsibility model.\n\nYou can use several methods to help secure your virtual desktop environment:\n\n- **Network isolation**. Use network isolation techniques such as subnets and network security groups to fortify interactions between Azure native services. This compartmentalization enhances overall security.\n- **Patch management**. Regularly apply patches and updates to bolster defense against vulnerabilities that can be exploited.\n- **Environmental audits**. Regular audits of your environment provide insight into potential security gaps. This practice facilitates early identification and rectification of vulnerabilities.\n- **Security information and event management (SIEM)**. Use a SIEM solution like Microsoft Sentinel. This tool offers real-time monitoring of security events, which helps you respond promptly to potential threats.\n- **Data encryption**. Implement encryption mechanisms for data at rest and data in transit. This practice helps ensure data confidentiality and integrity, even during unauthorized access attempts.\n- **Identity and access management**.\n  - Multifactor authentication: Strengthen the identity verification process by enforcing multifactor authentication. This practice helps deter unauthorized access attempts.\n  - Integration with Microsoft Entra ID: Delegate your identity and access management to Microsoft Entra ID for streamlined access control.\n  - Principle of least privilege: Minimize the potential for misuse by applying the principle of least privilege. Use this principle to restrict access to resources according to roles that focus on just-enough access (JEA) and just-in-time access (JIT) methods.\n  - Role-based access control (RBAC): Promote controlled access by using Azure RBAC to assign permissions that are based on predefined roles.\n\n## Cost Optimization\n\nAzure Virtual Desktop is a cost-effective modernization of Remote Desktop Services (RDS). Certain components are removed from your infrastructure and provided as native services to all Azure regions. Azure Virtual Desktop reduces the requirements for Windows Server and RDS client access licenses (CALs) by offering Windows 10 or Windows 11 Enterprise multi-session remote desktops. In these desktops, the use of existing per-user Microsoft 365 licensing is supported. This support benefits workloads that only have applications that are supported on modern operating systems.\n\nSome key considerations and methods for optimizing Azure Virtual Desktop costs include:\n\n- **Using cost-effective VMs**. Choosing the right size VM helps ensure that you don't pay for more resources than you need. Determine which VM series best fits your workload's consumption of VM resources. Find an appropriate balance between performance and cost effectiveness.\n\n- **Reserved instances or savings plans**. Azure offers reserved instances and savings plans. When you use these plans, you save money by committing to a one-year or three-year term for your VMs. This strategy provides predictable pricing and can help you reduce costs over time.\n\n  Cost Management works with Azure Advisor to identify savings opportunities for reserved instances and savings plans. Ensure that you optimize your Azure Virtual Desktop workloads before you commit to reserved instances or savings plans. Also be aware of how reserved instances and savings plans differ concerning scoping and shared consumption of plans and instances.\n\n- **Service tags**. Instead of using specific IP addresses for Azure services, you can use [service tags](/azure/virtual-network/service-tags-overview). Because addresses change, this approach minimizes the complexity of frequently updating network security rules. By reducing the effort that's required for maintaining networks, service tags help to lower overall costs.\n\n- **Scaling plans**. With Azure Virtual Desktop, you can set up scaling plans for your VMs. This strategy reduces costs by helping to ensure that the correct number of session hosts are running when needed.\n\n- **Cost Management**. When you use Cost Management, you can monitor and optimize your Azure spending. You can use this tool to identify areas where you can reduce costs and optimize your Azure Virtual Desktop deployment. Specifically, you can create budgets in Cost Management, and you can set alerts on those budgets. When spending exceeds your budget, a review is triggered to investigate why costs increased beyond the set level.\n\nKeep in mind that the capabilities of Azure hardware expand frequently. As a result, opportunities regularly come up for workloads to further optimize costs, eliminate waste, and improve performance-to-cost ratios. Organizations find it beneficial to revisit and tweak their cost-saving measures periodically.\n\n## Performance Efficiency\n\nThis pillar focuses on optimizing workloads that run your Azure Virtual Desktop environment. That focus includes many aspects:\n\n- Allocating the proper size, family, and number of session hosts  \n- Continuously monitoring performance and detecting anomalies by using tools such as Azure Monitor, Log Analytics, Application Insights, and alerts\n- Configuring a proper scaling plan so that you have an ideal number of session hosts available for users\n\nConsidering each of these aspects helps you build an Azure Virtual Desktop environment that delivers a consistent, cohesive user experience.\n\n## Operational Excellence\n\nIn Azure Virtual Desktop, Operational Excellence means ensuring the consistency, repeatability, and stability of your operational procedures in the development, deployment, and operating phases.\n\n- Using IaC for repeatable, consistent deployment.\n- Proper monitoring of resources to maintain the health of your environment.\n- An adequate continuous integration/continuous delivery (CI/CD) pipeline that helps you achieve:\n  - Timely disaster recovery.\n  - Preproduction testing.\n  - Replication of resources.\n- Implementing Azure policy-driven governance to help ensure security and compliance within enterprise technical estates.\n- Designing an RBAC delegation schema that implements least-privilege access by using built-in Azure Virtual Desktop roles to streamline the process of assigning and managing access permissions.\n- Maintaining governance and compliance standards for your host pool.\n- Documentation that covers all the points in this list.\n\nThese steps help teams collaborate in a way that's efficient and transparent.\n\n## Next steps\n\nThe design principles are incorporated into specific technical design areas. Each area offers focused guidance that helps you quickly access the information that you need for enhanced productivity in a minimal amount of time. Consider the headings as navigational tools that guide you in the right direction for networking, core infrastructure, the application delivery, monitoring, security, and operational procedures.\n\nStart by reviewing the design considerations for application delivery that are needed to support a workload.\n\n> [!div class=\"nextstepaction\"]\n> [Application delivery](application-delivery.md)",
+  "headings": [
+    {
+      "level": 1,
+      "text": "Azure Virtual Desktop design principles",
+      "line": 1,
+      "path": [
+        "Azure Virtual Desktop design principles"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Reliability",
+      "line": 16,
+      "path": [
+        "Azure Virtual Desktop design principles",
+        "Reliability"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Security",
+      "line": 31,
+      "path": [
+        "Azure Virtual Desktop design principles",
+        "Security"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Cost Optimization",
+      "line": 53,
+      "path": [
+        "Azure Virtual Desktop design principles",
+        "Cost Optimization"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Performance Efficiency",
+      "line": 73,
+      "path": [
+        "Azure Virtual Desktop design principles",
+        "Performance Efficiency"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Operational Excellence",
+      "line": 83,
+      "path": [
+        "Azure Virtual Desktop design principles",
+        "Operational Excellence"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Next steps",
+      "line": 100,
+      "path": [
+        "Azure Virtual Desktop design principles",
+        "Next steps"
+      ]
+    }
+  ],
+  "sections": [
+    {
+      "sectionOrder": 1,
+      "headingLevel": 1,
+      "headingText": "Azure Virtual Desktop design principles",
+      "headingPath": [
+        "Azure Virtual Desktop design principles"
+      ],
+      "markdown": "Guidance about Azure Virtual Desktop workloads is built on the Azure Well-Architected Framework and its five pillars of architectural excellence. The following table lists each pillar and a summary of its goals.\n\n| Well-Architected Framework pillar | Summary |\n| --- | --- |\n| Reliability | A virtual desktop environment demands a high level of service reliability to help ensure a consistent and uninterrupted user experience. It's essential to establish a robust infrastructure that enables reliable access and optimal performance of the virtual desktop environment. Evaluate virtual desktop deployments, particularly those that integrate with Azure native services. Specifically, evaluate the native compute, networking, and storage services that your deployment uses. Also evaluate third-party products and partner solutions that you use with Azure Virtual Desktop. These components affect reliability, because they're part of the landing zone design. This approach helps ensure a seamless and dependable user experience. |\n| Security | The security pillar focuses on the implementation of strategies for safeguarding your workload against threats and vulnerabilities. Security also includes considerations for insider risk and data loss protection. Within Azure Virtual Desktop, it's critical to assess your end-to-end security topics. These topics range from identity and access management (IAM), operating systems, applications, networking, and Azure platforms to data. We highly encourage you to review or develop strategies to incorporate a range of security layers across your Azure estate. These strategies should cover your desktops and the applications that are presented under Azure Virtual Desktop. |\n| Cost Optimization | When you optimize your virtual desktop environment for cost, you meet performance expectations that are set by business requirements. You also reduce the total cost of ownership (TCO) by minimizing overspending. You can reduce the TCO by taking advantage of the power of the Azure Virtual Desktop hyperscale infrastructure. Optimizing costs for Azure Virtual Desktop involves several steps. Examples include choosing the right size virtual machines (VMs), using reserved instances or savings plans, setting up scaling plans, and using Microsoft Cost Management to monitor and optimize spending. It's important to continually evaluate your Azure Virtual Desktop deployments to track your usage and identify opportunities for optimizing your workloads. |\n| Performance Efficiency | Performance Efficiency focuses on the ability of your environment to meet or exceed the business requirements that are set for your virtual desktop and applications. In your Azure Virtual Desktop environment, you can meet your required performance with ideal efficiency by ensuring that you select optimal compute families and disk sizes and types. If you use FSLogix profiles, you also need to select optimal storage. In general, it's critical to assess and test a series of VM configurations to understand how your users and workloads use the Azure resources that make up the session hosts within Azure Virtual Desktop. After deployment, we recommend that you continually monitor consumption of your production resources to ensure that you meet or exceed your desired target performance. |\n| Operational Excellence | Apply the principles of DevOps within your Azure virtual desktop workload team. Encourage the adoption of a DevOps mindset, developing standards, and the approach of executing while evolving. With Azure Virtual Desktop, you can establish set procedures for deploying, managing, and maintaining your workloads with ease. These procedures can involve the use of Azure Resource Manager templates, Bicep, Terraform, and other forms of infrastructure as code (IaC). To customize session hosts, you can automate your image build by using tools like the [custom image template feature](/azure/virtual-desktop/create-custom-image-templates) with [Azure DevOps](/azure/devops/pipelines/get-started/key-pipelines-concepts?view=azure-devops&preserve-view=true). These DevOps strategies and others help your organization establish, maintain, and manage your Azure Virtual Desktop environments efficiently. |\n\n> [!IMPORTANT]\n> This article is part of the [Azure Well-Architected Framework Azure Virtual Desktop workload](./index.yml) series. If you aren't familiar with this series, we recommend that you start with [What is an Azure Virtual Desktop workload?](./overview.md#what-is-an-azure-virtual-desktop-workload).",
+      "lineStart": 2,
+      "lineEnd": 15
+    },
+    {
+      "sectionOrder": 2,
+      "headingLevel": 2,
+      "headingText": "Reliability",
+      "headingPath": [
+        "Azure Virtual Desktop design principles",
+        "Reliability"
+      ],
+      "markdown": "Reliability is a foundational pillar in an Azure Virtual Desktop environment. Disruptions can materialize on-premises and in the cloud. As a result, you need to pay meticulous attention to your virtual desktop components, which include Azure services and your on-premises infrastructure. Assess your workload's user data (profiles), applications, and compute availability requirements to determine your strategy for business continuity and disaster recovery. Take into account the different levels of availability that you achieve in Azure Virtual Desktop with different deployment options, such as active-active or active-passive host pools. Also assess your disaster recovery design considerations to help ensure smooth failovers during outages.\n\n- *Resiliency* is the ability to withstand disruptions (transient faults, infrastructure issues, demand spikes) and continue operating (possibly in a degraded mode) to avoid user-impacting downtime.\n- *Availability* ensures uninterrupted uptime. High availability minimizes application downtime during critical maintenance activities. It also enhances recovery from incidents like VM crashes, back-end updates, extended downtimes, and ransomware attacks.\n\nAchieving reliability requires a comprehensive approach that spans architecture, operational procedures, automation, monitoring, regular testing, and validation.\n\n- **Define service-level agreements (SLAs)**. Establishing well-defined SLAs is central to fostering reliability. These agreements specify precise expectations for the availability and performance of user sessions and profiles. By doing so, they lay down a clear benchmark that you can use to assess the operational effectiveness of your system.\n- **Develop effective scaling strategies**. With vertical scaling, you opt for a VM SKU that aligns with the resource needs of user sessions. You also factor in aspects like CPU and memory requirements. With horizontal scaling, you add extra VM instances to accommodate escalating demands while sustaining system stability.\n- **Design for high availability**. This process entails integrating redundancy and failover mechanisms that help ensure uninterrupted operations. High availability minimizes potential disruptions and guarantees users a seamless experience even during unexpected events.\n- **Implement fault tolerance**. The inclusion of fault-tolerant storage plays a critical role in safeguarding the integrity and availability of roaming profiles and user data. This strategy offers a layer of protection against data loss by helping ensure that essential user data remains intact and accessible during failures.\n- **Understand backup and restore capabilities**. Robust backup practices help ensure that you maintain operational continuity in the face of adversity.",
+      "lineStart": 17,
+      "lineEnd": 30
+    },
+    {
+      "sectionOrder": 3,
+      "headingLevel": 2,
+      "headingText": "Security",
+      "headingPath": [
+        "Azure Virtual Desktop design principles",
+        "Security"
+      ],
+      "markdown": "In a shared-responsibility model:\n\n- Organizations are primarily responsible for managing and operating Azure Virtual Desktop workloads.\n- Microsoft manages the control plane that supports an Azure Virtual Desktop workload.\n\nWe strongly recommended that you regularly assess your services and technologies to help ensure that your security posture adapts to evolving threat landscapes. When you collaborate with vendors to implement suitable security measures, it's essential to establish a clear understanding of the shared-responsibility model.\n\nYou can use several methods to help secure your virtual desktop environment:\n\n- **Network isolation**. Use network isolation techniques such as subnets and network security groups to fortify interactions between Azure native services. This compartmentalization enhances overall security.\n- **Patch management**. Regularly apply patches and updates to bolster defense against vulnerabilities that can be exploited.\n- **Environmental audits**. Regular audits of your environment provide insight into potential security gaps. This practice facilitates early identification and rectification of vulnerabilities.\n- **Security information and event management (SIEM)**. Use a SIEM solution like Microsoft Sentinel. This tool offers real-time monitoring of security events, which helps you respond promptly to potential threats.\n- **Data encryption**. Implement encryption mechanisms for data at rest and data in transit. This practice helps ensure data confidentiality and integrity, even during unauthorized access attempts.\n- **Identity and access management**.\n  - Multifactor authentication: Strengthen the identity verification process by enforcing multifactor authentication. This practice helps deter unauthorized access attempts.\n  - Integration with Microsoft Entra ID: Delegate your identity and access management to Microsoft Entra ID for streamlined access control.\n  - Principle of least privilege: Minimize the potential for misuse by applying the principle of least privilege. Use this principle to restrict access to resources according to roles that focus on just-enough access (JEA) and just-in-time access (JIT) methods.\n  - Role-based access control (RBAC): Promote controlled access by using Azure RBAC to assign permissions that are based on predefined roles.",
+      "lineStart": 32,
+      "lineEnd": 52
+    },
+    {
+      "sectionOrder": 4,
+      "headingLevel": 2,
+      "headingText": "Cost Optimization",
+      "headingPath": [
+        "Azure Virtual Desktop design principles",
+        "Cost Optimization"
+      ],
+      "markdown": "Azure Virtual Desktop is a cost-effective modernization of Remote Desktop Services (RDS). Certain components are removed from your infrastructure and provided as native services to all Azure regions. Azure Virtual Desktop reduces the requirements for Windows Server and RDS client access licenses (CALs) by offering Windows 10 or Windows 11 Enterprise multi-session remote desktops. In these desktops, the use of existing per-user Microsoft 365 licensing is supported. This support benefits workloads that only have applications that are supported on modern operating systems.\n\nSome key considerations and methods for optimizing Azure Virtual Desktop costs include:\n\n- **Using cost-effective VMs**. Choosing the right size VM helps ensure that you don't pay for more resources than you need. Determine which VM series best fits your workload's consumption of VM resources. Find an appropriate balance between performance and cost effectiveness.\n\n- **Reserved instances or savings plans**. Azure offers reserved instances and savings plans. When you use these plans, you save money by committing to a one-year or three-year term for your VMs. This strategy provides predictable pricing and can help you reduce costs over time.\n\n  Cost Management works with Azure Advisor to identify savings opportunities for reserved instances and savings plans. Ensure that you optimize your Azure Virtual Desktop workloads before you commit to reserved instances or savings plans. Also be aware of how reserved instances and savings plans differ concerning scoping and shared consumption of plans and instances.\n\n- **Service tags**. Instead of using specific IP addresses for Azure services, you can use [service tags](/azure/virtual-network/service-tags-overview). Because addresses change, this approach minimizes the complexity of frequently updating network security rules. By reducing the effort that's required for maintaining networks, service tags help to lower overall costs.\n\n- **Scaling plans**. With Azure Virtual Desktop, you can set up scaling plans for your VMs. This strategy reduces costs by helping to ensure that the correct number of session hosts are running when needed.\n\n- **Cost Management**. When you use Cost Management, you can monitor and optimize your Azure spending. You can use this tool to identify areas where you can reduce costs and optimize your Azure Virtual Desktop deployment. Specifically, you can create budgets in Cost Management, and you can set alerts on those budgets. When spending exceeds your budget, a review is triggered to investigate why costs increased beyond the set level.\n\nKeep in mind that the capabilities of Azure hardware expand frequently. As a result, opportunities regularly come up for workloads to further optimize costs, eliminate waste, and improve performance-to-cost ratios. Organizations find it beneficial to revisit and tweak their cost-saving measures periodically.",
+      "lineStart": 54,
+      "lineEnd": 72
+    },
+    {
+      "sectionOrder": 5,
+      "headingLevel": 2,
+      "headingText": "Performance Efficiency",
+      "headingPath": [
+        "Azure Virtual Desktop design principles",
+        "Performance Efficiency"
+      ],
+      "markdown": "This pillar focuses on optimizing workloads that run your Azure Virtual Desktop environment. That focus includes many aspects:\n\n- Allocating the proper size, family, and number of session hosts  \n- Continuously monitoring performance and detecting anomalies by using tools such as Azure Monitor, Log Analytics, Application Insights, and alerts\n- Configuring a proper scaling plan so that you have an ideal number of session hosts available for users\n\nConsidering each of these aspects helps you build an Azure Virtual Desktop environment that delivers a consistent, cohesive user experience.",
+      "lineStart": 74,
+      "lineEnd": 82
+    },
+    {
+      "sectionOrder": 6,
+      "headingLevel": 2,
+      "headingText": "Operational Excellence",
+      "headingPath": [
+        "Azure Virtual Desktop design principles",
+        "Operational Excellence"
+      ],
+      "markdown": "In Azure Virtual Desktop, Operational Excellence means ensuring the consistency, repeatability, and stability of your operational procedures in the development, deployment, and operating phases.\n\n- Using IaC for repeatable, consistent deployment.\n- Proper monitoring of resources to maintain the health of your environment.\n- An adequate continuous integration/continuous delivery (CI/CD) pipeline that helps you achieve:\n  - Timely disaster recovery.\n  - Preproduction testing.\n  - Replication of resources.\n- Implementing Azure policy-driven governance to help ensure security and compliance within enterprise technical estates.\n- Designing an RBAC delegation schema that implements least-privilege access by using built-in Azure Virtual Desktop roles to streamline the process of assigning and managing access permissions.\n- Maintaining governance and compliance standards for your host pool.\n- Documentation that covers all the points in this list.\n\nThese steps help teams collaborate in a way that's efficient and transparent.",
+      "lineStart": 84,
+      "lineEnd": 99
+    },
+    {
+      "sectionOrder": 7,
+      "headingLevel": 2,
+      "headingText": "Next steps",
+      "headingPath": [
+        "Azure Virtual Desktop design principles",
+        "Next steps"
+      ],
+      "markdown": "The design principles are incorporated into specific technical design areas. Each area offers focused guidance that helps you quickly access the information that you need for enhanced productivity in a minimal amount of time. Consider the headings as navigational tools that guide you in the right direction for networking, core infrastructure, the application delivery, monitoring, security, and operational procedures.\n\nStart by reviewing the design considerations for application delivery that are needed to support a workload.\n\n> [!div class=\"nextstepaction\"]\n> [Application delivery](application-delivery.md)",
+      "lineStart": 101,
+      "lineEnd": 107
+    }
+  ],
+  "localLinks": [
+    "./index.yml",
+    "./overview.md",
+    "application-delivery.md"
+  ],
+  "lastModified": "2026-03-17T16:22:13.419Z"
+}

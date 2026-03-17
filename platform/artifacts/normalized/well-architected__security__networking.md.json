@@ -1,0 +1,650 @@
+{
+  "source": {
+    "absolutePath": "C:\\Users\\EricL\\source\\repos\\Well-Architected-Vibe-Coding\\well-architected-vibe-coding\\well-architected\\security\\networking.md",
+    "repoRelativePath": "well-architected/security/networking.md",
+    "docsRelativePath": "security/networking.md"
+  },
+  "frontMatter": {
+    "title": "Architecture strategies for networking and connectivity",
+    "description": "Learn about network security controls that can filter, block, and detect adversaries who cross network boundaries at various depths of your architecture.",
+    "author": "PageWriter-MSFT",
+    "ms.author": "prwilk",
+    "ms.date": "11/15/2023",
+    "ms.topic": "concept-article",
+    "ms.custom": "sfi-image-nochange"
+  },
+  "title": "Architecture strategies for networking and connectivity",
+  "rawBody": "# Architecture strategies for networking and connectivity\n\n**Applies to this Azure Well-Architected Framework Security checklist recommendation:**\n\n|**SE:06**|Isolate, filter, and control network traffic across both ingress and egress flows. Apply defense in depth principles by using localized network controls at all available network boundaries across both east-west and north-south traffic.|\n|---|---|\n\nThis guide describes the recommendations for network design. The focus is on **security controls that can filter, block, and detect adversaries crossing network boundaries** at various depths of your architecture.\n\nYou can strengthen your identity controls by implementing network-based access control measures. Along with identity-based access control, network security is a high priority for protecting assets. Proper network security controls can provide a defense-in-depth element that can help detect and contain threats, and prevent attackers from gaining entry into your workload.\n\n**Definitions**\n\n| Term |Definition |\n|---------|---------|\n|East-west traffic | Network traffic that moves within a trusted boundary. |\n|Egress flow | Outbound workload traffic. |\n|Hostile network | A network that isn't deployed as part of your workload. A hostile network is considered a threat vector. |\n|Ingress flow | Inbound workload traffic. |\n|Network filtering | A mechanism that allows or blocks network traffic based on specified rules. |\n|Network segmentation or isolation | A strategy that divides a network into small, isolated segments, with security controls applied at the boundaries. This technique helps protect resources from hostile networks, such as the internet. |\n|Network transformation | A mechanism that mutates network packets to obscure them. |\n|North-south traffic | Network traffic that moves from a trusted boundary to external networks that are potentially hostile, and vice versa. |\n\n\nNetwork security uses **obscurity to protect workload assets from hostile networks**. Resources that are behind a network boundary are hidden until the boundary controls mark the traffic as safe to move forward. Network security design is built on three main strategies:\n\n- **Segment**. This technique **isolates traffic on separate networks by adding boundaries**. For example, traffic to and from an application tier passes a boundary to communicate with other tiers, which have different security requirements. Layers of segmentation actualize the defense-in-depth approach.\n\n  The foremost security boundary is the **networking edge between your application and public networks**. It's important to clearly define this perimeter so that you establish a boundary for isolating hostile networks. The controls on this edge must be highly effective, because this boundary is your first line of defense.\n\n  Virtual networks provide a logical boundary. By design, a virtual network can't communicate with another virtual network unless the boundary has been intentionally broken through peering. Your architecture should take advantage of this strong, platform-provided security measure.\n\n  You can also use other logical boundaries, such as carved-out **subnets within a virtual network**. A benefit of subnets is that you can use them to group together resources that are within an isolation boundary and have similar security assurances. You can then configure controls on the boundary to filter traffic.\n\n- **Filter**. This strategy helps ensure that **traffic that enters a boundary is expected, allowed, and safe**. From a Zero-Trust perspective, filtering explicitly verifies all available data points at the network level. You can place rules on the boundary to check for specific conditions.\n\n  For example, at the header level, the rules can verify that the traffic originates from an expected location or has an expected volume. But these checks aren't sufficient. Even if the traffic exhibits expected characteristics, the payload might not be safe. Validation checks might reveal an SQL injection attack.\n\n- **Transform**. **Mutate packets at the boundary as a security measure.** For example, you can remove HTTP headers to eliminate the risk of exposure. Or you can turn off Transport Layer Security (TLS) at one point and reestablish it at another hop with a certificate that's managed more rigorously.\n\n## Classify the traffic flows\n\nThe first step in classifying flows is to study a schematic of your workload architecture. From the schematic, **determine the intent and characteristics of the flow** with respect to the functional utility and operational aspects of your workload. Use the following questions to help classify the flow:\n\n- If the workload needs to communicate with external networks, what should the required level of proximity to those networks be?\n\n- What are the network characteristics of the flow, such as the expected protocol and the source and shape of the packets? Are there any compliance requirements at the networking level?\n\nThere are many ways to classify traffic flows. The following sections discuss commonly used criteria.\n\n#### Visibility from external networks\n\n- **Public**. A workload is public facing if its application and other components are reachable from the public internet. The application is exposed through one or more public IP addresses and public Domain Name System (DNS) servers.\n\n- **Private**. A workload is private if it can only be accessed through a private network such as a virtual private network (VPN). It's exposed only through one or more private IP addresses and potentially through a private DNS server.\n\n  In a private network, there's no line of sight from the public internet to the workload. For the gateway, you can use a load balancer or firewall. These options can provide security assurances.\n\nEven with public workloads, **strive to keep as much of the workload private as possible**. This approach forces packets to cross through a private boundary when they arrive from a public network. A gateway in that path can function as a transition point by acting as a reverse proxy.\n\n### Traffic direction\n\n- **Ingress**. Ingress is inbound traffic that flows toward a workload or its components. To help secure ingress, apply the preceding set of key strategies. Determine what the traffic source is and whether it's expected, allowed, and safe. Attackers who scan public cloud provider IP address ranges can successfully penetrate your defenses if you don't check ingress or implement basic network security measures.\n\n- **Egress**. Egress is outbound traffic that flows away from a workload or its components. To check egress, determine where the traffic is headed and whether the destination is expected, allowed, and safe. The destination might be malicious or associated with data exfiltration risks.\n\n:::image type=\"content\" source=\"images/networking/internet-network-public.svg\" alt-text=\"Diagram that shows the flow of network traffic flow between Azure deployments and the internet.\" border=\"false\" lightbox=\"images/networking/internet-network-public-highres.png\":::\n\nYou can also **determine your level of exposure by considering your workload's proximity to the public internet**. For example, the application platform typically serves public IP addresses. The workload component is the face of the solution.\n\n### Scope of influence\n\n- **North-south**. Traffic that flows between a workload network and external networks is north-south traffic. This traffic crosses the edge of your network. External networks can be the public internet, a corporate network, or any other network that's outside your scope of control.\n\n  Ingress and egress can both be north-south traffic.\n\n  As an example, consider the egress flow of a hub-spoke network topology. You can define the networking edge of your workload so that the hub is an external network. In that case, outbound traffic from the virtual network of the spoke is north-south traffic. But if you consider the hub network within your sphere of control, north-south traffic is extended to the firewall in the hub, because the next hop is the internet, which is potentially hostile.\n\n- **East-west**. Traffic that flows within a workload network is east-west traffic. This type of traffic results when components in your workload communicate with each other. An example is traffic between the tiers of an *n*-tier application. In microservices, service-to-service communication is east-west traffic.\n\nTo provide defense in depth, maintain **end-to-end control of security affordances that are included in each hop or that you use when packets cross internal segments**. Different risk levels require different risk remediation methods.\n\n:::image type=\"content\" source=\"images/networking/network-defense-in-depth-private.svg\" alt-text=\"Diagram that shows network defense in depth for a private cloud.\" border=\"false\" lightbox=\"images/networking/network-defense-in-depth-private-highres.png\":::\n\nThe preceding diagram illustrates network defense in depth in the private cloud. In this diagram, the border between the public and private IP address spaces is significantly farther from the workload than in the public cloud diagram. Multiple layers separate the Azure deployments from the public IP address space.\n\n> [!NOTE]\n> Identity is always the primary perimeter. Access management must be applied to networking flows. Use managed identities when you use Azure role-based access control (RBAC) between components of your network.\n\nAfter you classify flows, perform a segmentation exercise to identify firewall injection points on the communication paths of your network segments. When you **design your network defense in depth across all segments and all traffic types, assume a breach at all points**. Use a combination of various localized network controls at all available boundaries. For more information, see [Segmentation strategies](segmentation.md).\n\n## Apply firewalls at the edge\n\nInternet edge traffic is north-south traffic and includes ingress and egress. To detect or block threats, an edge strategy must mitigate as many attacks as possible to and from the internet.\n\nFor egress, **send all internet-bound traffic through a single firewall** that provides enhanced oversight, governance, and control of traffic. For ingress, force all traffic from the internet to go through a network virtual appliance (NVA) or a web application firewall.\n\n- Firewalls are usually singletons that are deployed per region in an organization. As a result, they're shared among workloads and owned by a central team. Make sure that any NVAs that you use are configured to support the needs of your workload.\n\n- We recommend that you use Azure native controls as much as possible.\n\n  In addition to native controls, you can also consider partner NVAs that provide advanced or specialized features. Partner firewall and web application firewall vendor products are available in Azure Marketplace.\n\n  The decision to use native features as opposed to partner solutions should be based on your organization's experience and requirements.\n\n  > :::image type=\"icon\" source=\"../_images/trade-off.svg\"::: **Tradeoff**: Partner capabilities often provide advanced features that can protect against sophisticated, but typically uncommon, attacks. The configuration of partner solutions can be complex and fragile, because these solutions don't integrate with the cloud's fabric controllers. From a cost perspective, native control is preferred because it's cheaper than partner solutions.\n\nAny technological options that you consider should provide security controls and monitoring for both ingress and egress flows. To see options that are available for Azure, see the [Edge security](#edge-security) section in this article.\n\n## Design virtual network and subnet security\n\nThe primary objective of a private cloud is to obscure resources from the public internet. There are several ways of achieving this goal:\n\n- **Move to private IP address spaces**, which you can accomplish by using virtual networks. Minimize network line of sight even within your own private networks.\n\n- **Minimize the number of public DNS entries that you use** to expose less of your workload.\n\n- **Add ingress and egress network flow control**. Don't allow traffic that's not trusted.\n\n#### Segmentation strategy\n\nTo minimize network visibility, **segment your network and start with least-privilege network controls**. If a segment isn't routable, it can't be accessed. Broaden the scope to include only segments that need to communicate with each other through network access.\n\nYou can segment virtual networks by creating subnets. The criteria for division should be intentional. When you collocate services inside a subnet, make sure that those services can see each other.\n\nYou can base your segmentation on many factors. For example, you can place different application tiers in dedicated segments. Another approach is to plan your subnets based on common roles and functions that use well-known protocols.\n\nFor more information, see [Segmentation strategies](segmentation.md).\n\n#### Subnet firewalls\n\nIt's important to inspect each subnet's inbound and outbound traffic. Use the three main strategies discussed earlier in this article. Check whether the flow is expected, allowed, and safe. To verify this information, **define firewall rules that are based on the protocol, source, and destination** of the traffic.\n\nOn Azure, you set firewall rules in network security groups. For more information, see the [Network security groups](#network-security-groups) section in this article.\n\nFor an example of a subnet design, see [Azure Virtual Network subnets](/azure/virtual-network/quick-create-portal).\n\n## Use controls at the component level\n\nAfter you minimize the visibility of your network, map out your Azure resources from a network perspective and evaluate the flows. The following types of flows are possible:\n\n- **Planned traffic**, or intentional communication between services according to your architecture design. For example, you have planned traffic when your architecture recommends that Azure Functions pulls messages from Azure Service Bus.\n\n- **Management traffic**, or communication that happens as part of the service's functionality. This traffic isn't part of your design, and you have no control over it. An example of managed traffic is the communication between the Azure services in your architecture and the Azure management plane.\n\nDistinguishing between planned and management traffic helps you build localized, or service-level, controls. Have a good understanding of the source and destination at each hop. Especially understand how your data plane is exposed.\n\nAs a starting point, determine whether each service is exposed to the internet. If it is, plan how to restrict access. If it isn't, place it in a virtual network.\n\n#### Service firewalls\n\nIf you expect a service to be exposed to the internet, **take advantage of the service-level firewall that's available for most Azure resources**. When you use this firewall, you can set rules based on access patterns. For more information, see the [Azure service firewalls](#azure-service-firewalls) section in this article.\n\n> [!NOTE]\n> When your component isn't a service, use a host-based firewall in addition to network-level firewalls. A virtual machine (VM) is an example of a component that's not a service.\n\n### Connectivity to platform as a service (PaaS) services\n\nConsider using **private endpoints to help secure access to PaaS services**. A private endpoint is assigned a private IP address from your virtual network. The endpoint allows other resources in the network to communicate with the PaaS service over the private IP address.\n\nCommunication with a PaaS service is achieved by using the service's public IP address and DNS record. That communication occurs over the internet. You can make that communication private.\n\nA tunnel from the PaaS service into one of your subnets creates a private channel. All communication takes place from the component's private IP address to a private endpoint in that subnet, which then communicates with the PaaS service.\n\nIn this example, the image on the left shows the flow for publicly exposed endpoints. On the right, that flow is secured by using private endpoints.\n\n:::image type=\"content\" source=\"images/networking/private-endpoints-101.svg\" alt-text=\"Diagram that shows how a private endpoint helps protect a database from internet users.\" border=\"false\" lightbox=\"images/networking/private-endpoints-101-highres.png\":::\n\nFor more information, see the [Private endpoints](#private-endpoints) section in this article.\n\n> [!NOTE]\n> We recommend that you use private endpoints in conjunction with service firewalls. A service firewall blocks incoming internet traffic and then exposes the service privately to internal users who use the private endpoint.\n\nAnother advantage of using private endpoints is that you don't need to open the ports on the firewall for outbound traffic. **Private endpoints lock down all outbound traffic on the port for the public internet.** Connectivity is limited to resources within the network.\n\n  > :::image type=\"icon\" source=\"../_images/trade-off.svg\"::: **Tradeoff**: Azure Private Link is a paid service that has meters for inbound and outbound data that's processed. You're also charged for private endpoints.\n\n## Protect against distributed denial of service (DDoS) attacks\n\nA DDoS attack attempts to exhaust an application's resources to make the application unavailable to legitimate users. DDoS attacks can target any endpoint that's publicly reachable through the internet.\n\nA DDoS attack is usually a massive, widespread, geographically dispersed abuse of your system's resources that makes it hard to pinpoint and block the source.\n\nFor Azure support to help protect against these attacks, see the [Azure DDoS Protection](#azure-ddos-protection) section in this article.\n\n## Azure facilitation\n\nYou can use the following Azure services to add defense-in-depth capabilities to your network.\n\n### Azure Virtual Network\n\n[Virtual Network](/azure/virtual-network/virtual-networks-overview) helps your Azure resources securely communicate with each other, the internet, and on-premises networks.\n\nBy default, all resources in a virtual network can engage in outbound communication with the internet. But inbound communication is restricted by default.\n\nVirtual Network offers features for filtering traffic. You can restrict access at the virtual-network level by using a user-defined route (UDR) and a firewall component. At the subnet level, you can filter traffic by using network security groups.\n\n### Edge security\n\nBy default, ingress and egress both flow over public IP addresses. Depending on the service or topology, either you set these addresses or Azure assigns them. Other ingress and egress possibilities include passing traffic through a load balancer or network address translation (NAT) gateway. But these services are intended for traffic distribution and not necessarily for security.\n\nThe following technology choices are recommended:\n\n- [Azure Firewall](/azure/firewall/overview). You can use Azure Firewall at the network edge and in popular network topologies, such as hub-spoke networks and virtual WANs. You typically **deploy Azure Firewall as an egress firewall** that acts as the final security gate before traffic goes to the internet. Azure Firewall can route traffic that uses non-HTTP and non-HTTPS protocols, such as Remote Desktop Protocol (RDP), Secure Shell Protocol (SSH), and File Transfer Protocol (FTP). The feature set of Azure Firewall includes:\n  - Destination network address translation (DNAT), or port forwarding.\n  - Intrusion detection and prevention system (IDPS) signature detection.\n  - Strong layer 3, layer 4, and fully qualified domain name (FQDN) network rules.\n\n  > [!NOTE]\n  > Most organizations have a forced tunneling policy that forces traffic to flow through an NVA.\n\n  If you don't use a virtual WAN topology, **you must deploy a UDR** with a `NextHopType` of `Internet` to your NVA's private IP address. UDRs are applied at the subnet level. By default, subnet-to-subnet traffic doesn't flow through the NVA.\n\n  You can also use Azure Firewall simultaneously for ingress. It can route HTTP and HTTPS traffic. In higher-tiered SKUs, Azure Firewall offers TLS termination so that you can implement payload-level inspections.\n\n  The following practices are recommended:\n\n  - **Enable diagnostics settings** in Azure Firewall to collect traffic flow logs, IDPS logs, and DNS request logs.\n\n  - Be as specific as possible in rules.\n\n  - Where it's practical, avoid FQDN service tags. But when you use them, use the regional variant, which allows communication with all endpoints of the service.\n\n  - Use IP groups to define sources that must share the same rules over the life of the IP group. IP groups should reflect your segmentation strategy.\n\n  - Override the infrastructure FQDN allow rule only if your workload requires absolute egress control. Overriding this rule comes with a reliability tradeoff, because Azure platform requirements change on services.\n\n  > :::image type=\"icon\" source=\"../_images/trade-off.svg\"::: **Tradeoff**: Azure Firewall can impact your performance. Rule order, quantity, TLS inspection, and other factors can cause significant latency.\n  >\n  > There can also be an impact on the reliability of your workload. It might experience source network address translation (SNAT) port exhaustion. To help overcome this problem, add public IP addresses as needed.\n\n  > :::image type=\"icon\" source=\"../_images/risk.svg\"::: **Risk**: For egress traffic, Azure assigns a public IP address. This assignment can have a downstream impact on your external security gate.\n\n- [Azure Web Application Firewall](/azure/web-application-firewall/overview). This service supports inbound filtering and only targets HTTP and HTTPS traffic.\n\n  It offers basic security for common attacks, such as threats that the Open Worldwide Application Security Project (OWASP) identifies in the OWASP Top 10 document. Azure Web Application Firewall also provides other security features that are focused on layer 7, such as rate limiting, SQL-injection rules, and cross-site scripting.\n\n  With Azure Web Application Firewall, TLS termination is required, because most checks are based on payloads.\n\n  You can integrate Azure Web Application Firewall with routers, such as Azure Application Gateway or Azure Front Door. Azure Web Application Firewall implementations for those kinds of routers can vary.\n\nAzure Firewall and Azure Web Application Firewall aren't mutually exclusive choices. For your edge security solution, various options are available. For examples, see [Firewall and Application Gateway for virtual networks](/azure/architecture/example-scenario/gateway/firewall-application-gateway).\n\n### Network security groups\n\nA [network security group](/azure/virtual-network/manage-network-security-group) is a layer 3 and layer 4 firewall that you apply at the subnet or network interface card (NIC) level. Network security groups aren't created or applied by default.\n\n**Network security group rules act as a firewall** to stop traffic that flows in and out at the perimeter of a subnet. A network security group has a default rule set that's overly permissive. For example, the default rules don't set a firewall from the egress perspective. For ingress, no inbound internet traffic is allowed.\n\nTo create rules, start with the default rule set:\n\n- For **inbound** traffic, or ingress:\n  - Virtual network traffic from direct, peered, and VPN gateway sources is allowed.\n  - Azure Load Balancer health probes are allowed.\n  - All other traffic is blocked.\n- For **outbound** traffic, or egress:\n  - Virtual network traffic to direct, peered, and VPN gateway destinations is allowed.\n  - Traffic to the internet is allowed.\n  - All other traffic is blocked.\n\nThen consider the following five factors:\n\n- Protocol\n- Source IP address\n- Source port\n- Destination IP address\n- Destination port\n\nThe lack of support for FQDN limits network security group functionality. You need to provide specific IP address ranges for your workload, and they're hard to maintain.\n\nBut for Azure services, you can use [service tags](/azure/virtual-network/service-tags-overview#available-service-tags) to summarize source and destination IP address ranges. A security benefit of service tags is that they're **opaque to the user, and the responsibility is offloaded to Azure**. You can also assign an application security group as a destination type to route traffic to. This type of named group contains resources that have similar inbound or outbound access needs.\n\n> :::image type=\"icon\" source=\"../_images/risk.svg\"::: **Risk**: Service tag ranges are very broad so that they accommodate the widest possible range of customers. Updates to service tags lag behind changes in the service.\n\n:::image type=\"content\" source=\"images/networking/vnet-isolation-peer.svg\" alt-text=\"Diagram that shows virtual network default isolation with peering.\" border=\"false\" lightbox=\"images/networking/vnet-isolation-peer-highres.png\":::\n\nIn the preceding image, network security groups are applied at the NIC. Internet traffic and subnet-to-subnet traffic are denied. The network security groups are applied with the `VirtualNetwork` tag. So in this case, the subnets of peered networks have a direct line of sight. The broad definition of the `VirtualNetwork` tag can have a significant security impact.\n\nWhen you use service tags, use regional versions when possible, such as `Storage.WestUS` instead of `Storage`. By taking this approach, you limit the scope to all endpoints in a particular region.\n\nSome tags are exclusively for **inbound** or **outbound** traffic. Others are for *both* types. **Inbound** tags usually allow traffic from all hosting workloads, such as `AzureFrontDoor.Backend`, or from Azure to support service runtimes, such as `LogicAppsManagement`. Similarly, **outbound** tags allow traffic to all hosting workloads or from Azure to support service runtimes.\n\nScope the rules as much as possible. In the following example, the rule is set to specific values. Any other type of traffic is denied.\n\n|Information | Example |\n|---------|---------|\n|Protocol | Transmission Control Protocol (TCP), UDP |\n|Source IP address | Allow ingress to the subnet from \\<source-IP-address-range\\>: 4575/UDP |\n|Source port | Allow ingress to the subnet from \\<service-tag\\>: 443/TCP |\n|Destination IP address | Allow egress from the subnet to \\<destination-IP-address-range\\>: 443/TCP |\n|Destination port | Allow egress from the subnet to \\<service-tag\\>: 443/TCP |\n\nTo summarize:\n\n- **Be precise when you create rules**. Only allow traffic that's necessary for your application to function. Deny everything else. This approach limits the network line of sight to network flows that are needed to support the operation of the workload. **Supporting more network flows than necessary leads to unnecessary attack vectors and extends the surface area.**\n\n  Restricting traffic doesn't imply that allowed flows are beyond the scope of an attack. Because network security groups work at layers 3 and 4 on the Open Systems Interconnection (OSI) stack, they only contain shape and direction information. For example, if your workload needs to allow DNS traffic to the internet, you would use a network security group of `Internet:53:UDP`. In this case, an attacker might be able to exfiltrate data through UDP on port 53 to some other service.\n\n- Understand that network security groups can differ slightly from one another. It's easy to overlook the intent of the differences. **To have granular filtering, it's safer to create extra network security groups.** Set up at least one network security group.\n\n- Use Azure Policy to help control traffic in subnets that don't have network security groups (NSGs).\n\n- If a subnet supports network security groups, add a group, even if it's minimally impactful.\n\n### Azure service firewalls\n\nMost Azure services offer a service-level firewall. This feature inspects ingress traffic to the service from specified classless inter-domain routing (CIDR) ranges. These firewalls offer benefits:\n\n- They provide a **basic level of security**.\n- There's a **tolerable performance impact**.\n- Most services offer these firewalls at **no extra cost**.\n- The firewalls emit logs through Azure diagnostics, which can be useful for analyzing access patterns.\n\nBut there are also security concerns associated with these firewalls, and there are limitations associated with providing parameters. For example, if you use Microsoft-hosted build agents, you have to open the IP address range for all Microsoft-hosted build agents. The range is then open to your build agent, other tenants, and adversaries who might abuse your service.\n\nIf you have access patterns for the service, which can be configured as service firewall rule sets, you should enable the service. You can use Azure Policy to enable it. Make sure you don't enable the trusted Azure services option if it isn't enabled by default. Doing so brings in all dependent services that are in the scope of the rules.\n\nFor more information, see the product documentation of individual Azure services.\n\n### Private endpoints\n\n[Private Link](/azure/private-link/private-link-overview) provides a way for you to give a PaaS instance a private IP address. The service is then unreachable over the internet. [Private endpoints](/azure/private-link/private-endpoint-overview) aren't supported for all SKUs.\n\nKeep the following recommendations in mind when you use private endpoints:\n\n- Configure services that are bound to virtual networks to **contact PaaS services through private endpoints**, even if those PaaS services also need to offer public access.\n\n- Promote the use of **network security groups for private endpoints to restrict access** to private endpoint IP addresses.\n\n- Always **use service firewalls when you use private endpoints**.\n\n- When possible, if you have a service that's only accessible via private endpoints, remove the DNS configuration for its public endpoint.\n\n- Consider runtime **line-of-sight concerns** when you implement private endpoints. But also consider **DevOps and monitoring concerns**.\n\n- Use Azure Policy to **enforce resource configuration**.\n\n> :::image type=\"icon\" source=\"../_images/trade-off.svg\"::: **Tradeoff**: Service SKUs with private endpoints are expensive. Private endpoints can complicate operations because of network obscurity. You need to add self-hosted agents, jump boxes, a VPN, and other components to your architecture.\n\nDNS management can be complex in common network topologies. You might have to introduce DNS forwarders and other components.\n\n### Azure Network Security Perimeter\n\nWhile private endpoints provide direct virtual network integration for PaaS services, [**Azure Network Security Perimeter**](/azure/private-link/network-security-perimeter-concepts) offers logical network isolation for PaaS services outside your  virtual networks. This is beneficial when you need to group related PaaS services under unified access policies without requiring individual private endpoints for each service. \n\nFor example you can use this logical segmentation around all PaaS services supporting a specific workload or business unit. Or, implement uniform perimeter policies for development, staging, and production environments, allowing appropriate access levels while maintaining isolation.\n\nBe aware of the limitations around logging, scalability, and other aspects that come with this feature. For more information, see [Limitations of a network security perimeter](/azure/private-link/network-security-perimeter-concepts#limitations-of-a-network-security-perimeter).\n\n### Virtual network injection\n\nYou can use the **virtual network injection process** to deploy some Azure services into your network. Examples of such services include Azure App Service, Functions, Azure API Management, and Azure Spring Apps. This process **isolates the application** from the internet, systems in private networks, and other Azure services. Inbound and outbound traffic from the application is allowed or denied based on network rules.\n\n### Azure Bastion\n\nYou can use [Azure Bastion](/azure/bastion/bastion-overview) to connect to a VM by using your browser and the Azure portal. Azure Bastion **enhances the security of RDP and SSH connections**. A typical use case includes connecting to a jump box in the same virtual network or a peered virtual network. Using Azure Bastion removes the need for the VM to have a public IP address.\n\n### Azure DDoS Protection\n\nEvery property in Azure is protected by Azure DDoS infrastructure protection at no extra cost and with no added configuration. The level of protection is basic, but the protection has high thresholds. It also doesn't provide telemetry or alerting, and it's workload-agnostic.\n\nHigher-tiered SKUs of DDoS Protection are available but aren't free. The scale and capacity of the globally deployed Azure network offers protection against common network-layer attacks. Technologies like always-on traffic monitoring and real-time mitigation provide this capability.\n\nFor more information, see [Azure DDoS Protection overview](/azure/ddos-protection/ddos-protection-overview).\n\n## Example\n\nHere are some examples that demonstrate the use of network controls recommended in this article.\n\n### IT environment\n\nThis example builds on the Information Technology (IT) environment established in the [security baseline (SE:01)](./establish-baseline.md). This approach provides a broad understanding of network controls applied at various perimeters to restrict traffic. \n\n:::image type=\"content\" source=\"images/networking/network-controls.svg\" alt-text=\"Diagram that shows an example of an organization's security baseline with network controls.\" lightbox=\"images/networking/network-controls.svg\":::\n\n1) **Network attack personas**. Several personas may be considered in a network attack, including Admins, employees, customer’s clients and anonymous attackers. \n\n2) **VPN access**. A bad actor might access the on-premises environment through a VPN or an Azure environment that's  connected to the on-premises environment through a VPN. Configure with IPSec protocol to enable secure communication.\n\n3) **Public access to the application**. Have a web application firewall (WAF) in front of the application to protect it on Layer 7 of the network OSI layer.\n\n4) **Operator access**. Remote access through Layer 4 of network OSI layers must be secured. Consider using Azure Firewall with IDP/IDS features.\n\n5) **DDoS protection**. Have DDoS protection for your entire VNet.\n\n6) **Network topology**. A network topology such as hub-spoke, is more secure, and optimize costs. The hub network provides centralized firewall protection to all the peered spokes. \n\n7) **Private endpoints**: Consider adding publically exposed services into your private network by using private endpoints. These create a Network Card (NIC) in your private VNet and bind with the Azure service.\n\n8) **TLS communication**. Protect data in transit by communicating over TLS.\n\n9) **NSG**: Protect segments within a VNet with NSG, a free resource that filters TCP/UDP inbound and outbound communication considering IP and port ranges. Part of NSG is the Application Security Group (ASG) that allows you to create tags for traffic rules for easier management.\n\n10) **Log Analytics**. Azure resources emit telemetry that's  ingested in Log Analytics then used with a SIEM solution like Microsoft Sentinel for analysis.\n\n11) **Microsoft Sentinel Integration**. Log Analytics is integrated with Microsoft Sentinel and other solutions like Microsoft Defender for Cloud.\n\n12) **Microsoft Defender for Cloud**. Microsoft Defender for Cloud delivers many workload protection solutions, including Network recommendations for your environment.\n\n13) **Traffic analytics**. Use traffic analytics to detect suspicious or unexpected traffic patterns, identify top talkers, and surface actionable insights into potential threats, misconfigurations, and anomalous flows. With built-in queries, you can prevent duplication of data and quickly investigate traffic by source, destination, protocol, or port. These queries help pinpoint security risks and policy violations across your Azure environment.\n\n### Architecture for a containerized workload\n\nThis example architecture combines the network controls that are described in this article. The example doesn't show the complete architecture. Instead, it focuses on ingress controls on the private cloud.\n\n:::image type=\"content\" source=\"images/networking/controlled-ingress.svg\" alt-text=\"Diagram that shows controlled ingress, including Application Gateway, a network security group, Azure Bastion, and Azure DDoS Protection.\" border=\"false\" lightbox=\"images/networking/controlled-ingress-highres.png\":::\n\n**Application Gateway is a web traffic load balancer** that you can use to manage traffic to your web applications. You deploy Application Gateway in a dedicated subnet that has network security group controls and web application firewall controls in place.\n\nCommunication with all PaaS services is conducted through **private endpoints**. All endpoints are placed in a dedicated subnet. DDoS Protection helps protect all public IP addresses that are configured for a basic or higher level of firewall protection.\n\n**Management traffic is restricted through Azure Bastion**, which helps provide secure and seamless RDP and SSH connectivity to your VMs directly from the Azure portal over TLS. Build agents are placed in the virtual network so that they have a network view to workload resources such as compute resources, container registries, and databases. This approach helps provide a secure and isolated environment for your build agents, which boosts protection for your code and artifacts.\n\n:::image type=\"content\" source=\"images/networking/controlled-egress.svg\" alt-text=\"Diagram that shows controlled egress for a network security group and Azure Firewall.\" border=\"false\" lightbox=\"images/networking/controlled-egress.png\":::\n\nNetwork security groups at the subnet level of the compute resources restrict egress traffic. Forced tunneling is used to route all traffic through Azure Firewall. This approach helps provide a secure and isolated environment for your compute resources, which boosts protection for your data and applications.\n\n## Related links\n\n- [Recommendations for designing segmentation strategies](segmentation.md)\n- [Azure Virtual Network subnets](/azure/virtual-network/quick-create-portal)\n- [Azure Virtual Network](/azure/virtual-network/virtual-networks-overview)\n- [Azure Firewall](/azure/firewall/overview)\n- [Azure Web Application Firewall](/azure/web-application-firewall/overview)\n- [Firewall and Application Gateway for virtual networks](/azure/architecture/example-scenario/gateway/firewall-application-gateway)\n- [Network security groups](/azure/virtual-network/manage-network-security-group)\n- [Service tags](/azure/virtual-network/service-tags-overview#available-service-tags)\n- [Azure Private Link](/azure/private-link/private-link-overview)\n- [Private endpoints](/azure/private-link/private-endpoint-overview)\n- [Azure Bastion](/azure/bastion/bastion-overview)\n- [Azure DDoS Protection overview](/azure/ddos-protection/ddos-protection-overview)\n- [Traffic analytics overview](/azure/network-watcher/traffic-analytics)\n\n## Security checklist\n\nRefer to the complete set of recommendations.\n\n> [!div class=\"nextstepaction\"]\n> [Security checklist](checklist.md)\n\n<!-- Updated: August 17, 2025 for Azure Update 496002, 497535 -->",
+  "headings": [
+    {
+      "level": 1,
+      "text": "Architecture strategies for networking and connectivity",
+      "line": 1,
+      "path": [
+        "Architecture strategies for networking and connectivity"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Classify the traffic flows",
+      "line": 42,
+      "path": [
+        "Architecture strategies for networking and connectivity",
+        "Classify the traffic flows"
+      ]
+    },
+    {
+      "level": 4,
+      "text": "Visibility from external networks",
+      "line": 52,
+      "path": [
+        "Architecture strategies for networking and connectivity",
+        "Classify the traffic flows",
+        "Visibility from external networks"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Traffic direction",
+      "line": 62,
+      "path": [
+        "Architecture strategies for networking and connectivity",
+        "Classify the traffic flows",
+        "Traffic direction"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Scope of influence",
+      "line": 72,
+      "path": [
+        "Architecture strategies for networking and connectivity",
+        "Classify the traffic flows",
+        "Scope of influence"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Apply firewalls at the edge",
+      "line": 93,
+      "path": [
+        "Architecture strategies for networking and connectivity",
+        "Apply firewalls at the edge"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Design virtual network and subnet security",
+      "line": 111,
+      "path": [
+        "Architecture strategies for networking and connectivity",
+        "Design virtual network and subnet security"
+      ]
+    },
+    {
+      "level": 4,
+      "text": "Segmentation strategy",
+      "line": 121,
+      "path": [
+        "Architecture strategies for networking and connectivity",
+        "Design virtual network and subnet security",
+        "Segmentation strategy"
+      ]
+    },
+    {
+      "level": 4,
+      "text": "Subnet firewalls",
+      "line": 131,
+      "path": [
+        "Architecture strategies for networking and connectivity",
+        "Design virtual network and subnet security",
+        "Subnet firewalls"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Use controls at the component level",
+      "line": 139,
+      "path": [
+        "Architecture strategies for networking and connectivity",
+        "Use controls at the component level"
+      ]
+    },
+    {
+      "level": 4,
+      "text": "Service firewalls",
+      "line": 151,
+      "path": [
+        "Architecture strategies for networking and connectivity",
+        "Use controls at the component level",
+        "Service firewalls"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Connectivity to platform as a service (PaaS) services",
+      "line": 158,
+      "path": [
+        "Architecture strategies for networking and connectivity",
+        "Use controls at the component level",
+        "Connectivity to platform as a service (PaaS) services"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Protect against distributed denial of service (DDoS) attacks",
+      "line": 179,
+      "path": [
+        "Architecture strategies for networking and connectivity",
+        "Protect against distributed denial of service (DDoS) attacks"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Azure facilitation",
+      "line": 187,
+      "path": [
+        "Architecture strategies for networking and connectivity",
+        "Azure facilitation"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Azure Virtual Network",
+      "line": 191,
+      "path": [
+        "Architecture strategies for networking and connectivity",
+        "Azure facilitation",
+        "Azure Virtual Network"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Edge security",
+      "line": 199,
+      "path": [
+        "Architecture strategies for networking and connectivity",
+        "Azure facilitation",
+        "Edge security"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Network security groups",
+      "line": 245,
+      "path": [
+        "Architecture strategies for networking and connectivity",
+        "Azure facilitation",
+        "Network security groups"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Azure service firewalls",
+      "line": 306,
+      "path": [
+        "Architecture strategies for networking and connectivity",
+        "Azure facilitation",
+        "Azure service firewalls"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Private endpoints",
+      "line": 321,
+      "path": [
+        "Architecture strategies for networking and connectivity",
+        "Azure facilitation",
+        "Private endpoints"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Azure Network Security Perimeter",
+      "line": 343,
+      "path": [
+        "Architecture strategies for networking and connectivity",
+        "Azure facilitation",
+        "Azure Network Security Perimeter"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Virtual network injection",
+      "line": 351,
+      "path": [
+        "Architecture strategies for networking and connectivity",
+        "Azure facilitation",
+        "Virtual network injection"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Azure Bastion",
+      "line": 355,
+      "path": [
+        "Architecture strategies for networking and connectivity",
+        "Azure facilitation",
+        "Azure Bastion"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Azure DDoS Protection",
+      "line": 359,
+      "path": [
+        "Architecture strategies for networking and connectivity",
+        "Azure facilitation",
+        "Azure DDoS Protection"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Example",
+      "line": 367,
+      "path": [
+        "Architecture strategies for networking and connectivity",
+        "Example"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "IT environment",
+      "line": 371,
+      "path": [
+        "Architecture strategies for networking and connectivity",
+        "Example",
+        "IT environment"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Architecture for a containerized workload",
+      "line": 403,
+      "path": [
+        "Architecture strategies for networking and connectivity",
+        "Example",
+        "Architecture for a containerized workload"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Related links",
+      "line": 419,
+      "path": [
+        "Architecture strategies for networking and connectivity",
+        "Related links"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Security checklist",
+      "line": 435,
+      "path": [
+        "Architecture strategies for networking and connectivity",
+        "Security checklist"
+      ]
+    }
+  ],
+  "sections": [
+    {
+      "sectionOrder": 1,
+      "headingLevel": 1,
+      "headingText": "Architecture strategies for networking and connectivity",
+      "headingPath": [
+        "Architecture strategies for networking and connectivity"
+      ],
+      "markdown": "**Applies to this Azure Well-Architected Framework Security checklist recommendation:**\n\n|**SE:06**|Isolate, filter, and control network traffic across both ingress and egress flows. Apply defense in depth principles by using localized network controls at all available network boundaries across both east-west and north-south traffic.|\n|---|---|\n\nThis guide describes the recommendations for network design. The focus is on **security controls that can filter, block, and detect adversaries crossing network boundaries** at various depths of your architecture.\n\nYou can strengthen your identity controls by implementing network-based access control measures. Along with identity-based access control, network security is a high priority for protecting assets. Proper network security controls can provide a defense-in-depth element that can help detect and contain threats, and prevent attackers from gaining entry into your workload.\n\n**Definitions**\n\n| Term |Definition |\n|---------|---------|\n|East-west traffic | Network traffic that moves within a trusted boundary. |\n|Egress flow | Outbound workload traffic. |\n|Hostile network | A network that isn't deployed as part of your workload. A hostile network is considered a threat vector. |\n|Ingress flow | Inbound workload traffic. |\n|Network filtering | A mechanism that allows or blocks network traffic based on specified rules. |\n|Network segmentation or isolation | A strategy that divides a network into small, isolated segments, with security controls applied at the boundaries. This technique helps protect resources from hostile networks, such as the internet. |\n|Network transformation | A mechanism that mutates network packets to obscure them. |\n|North-south traffic | Network traffic that moves from a trusted boundary to external networks that are potentially hostile, and vice versa. |\n\n\nNetwork security uses **obscurity to protect workload assets from hostile networks**. Resources that are behind a network boundary are hidden until the boundary controls mark the traffic as safe to move forward. Network security design is built on three main strategies:\n\n- **Segment**. This technique **isolates traffic on separate networks by adding boundaries**. For example, traffic to and from an application tier passes a boundary to communicate with other tiers, which have different security requirements. Layers of segmentation actualize the defense-in-depth approach.\n\n  The foremost security boundary is the **networking edge between your application and public networks**. It's important to clearly define this perimeter so that you establish a boundary for isolating hostile networks. The controls on this edge must be highly effective, because this boundary is your first line of defense.\n\n  Virtual networks provide a logical boundary. By design, a virtual network can't communicate with another virtual network unless the boundary has been intentionally broken through peering. Your architecture should take advantage of this strong, platform-provided security measure.\n\n  You can also use other logical boundaries, such as carved-out **subnets within a virtual network**. A benefit of subnets is that you can use them to group together resources that are within an isolation boundary and have similar security assurances. You can then configure controls on the boundary to filter traffic.\n\n- **Filter**. This strategy helps ensure that **traffic that enters a boundary is expected, allowed, and safe**. From a Zero-Trust perspective, filtering explicitly verifies all available data points at the network level. You can place rules on the boundary to check for specific conditions.\n\n  For example, at the header level, the rules can verify that the traffic originates from an expected location or has an expected volume. But these checks aren't sufficient. Even if the traffic exhibits expected characteristics, the payload might not be safe. Validation checks might reveal an SQL injection attack.\n\n- **Transform**. **Mutate packets at the boundary as a security measure.** For example, you can remove HTTP headers to eliminate the risk of exposure. Or you can turn off Transport Layer Security (TLS) at one point and reestablish it at another hop with a certificate that's managed more rigorously.",
+      "lineStart": 2,
+      "lineEnd": 41
+    },
+    {
+      "sectionOrder": 2,
+      "headingLevel": 2,
+      "headingText": "Classify the traffic flows",
+      "headingPath": [
+        "Architecture strategies for networking and connectivity",
+        "Classify the traffic flows"
+      ],
+      "markdown": "The first step in classifying flows is to study a schematic of your workload architecture. From the schematic, **determine the intent and characteristics of the flow** with respect to the functional utility and operational aspects of your workload. Use the following questions to help classify the flow:\n\n- If the workload needs to communicate with external networks, what should the required level of proximity to those networks be?\n\n- What are the network characteristics of the flow, such as the expected protocol and the source and shape of the packets? Are there any compliance requirements at the networking level?\n\nThere are many ways to classify traffic flows. The following sections discuss commonly used criteria.",
+      "lineStart": 43,
+      "lineEnd": 51
+    },
+    {
+      "sectionOrder": 3,
+      "headingLevel": 4,
+      "headingText": "Visibility from external networks",
+      "headingPath": [
+        "Architecture strategies for networking and connectivity",
+        "Classify the traffic flows",
+        "Visibility from external networks"
+      ],
+      "markdown": "- **Public**. A workload is public facing if its application and other components are reachable from the public internet. The application is exposed through one or more public IP addresses and public Domain Name System (DNS) servers.\n\n- **Private**. A workload is private if it can only be accessed through a private network such as a virtual private network (VPN). It's exposed only through one or more private IP addresses and potentially through a private DNS server.\n\n  In a private network, there's no line of sight from the public internet to the workload. For the gateway, you can use a load balancer or firewall. These options can provide security assurances.\n\nEven with public workloads, **strive to keep as much of the workload private as possible**. This approach forces packets to cross through a private boundary when they arrive from a public network. A gateway in that path can function as a transition point by acting as a reverse proxy.",
+      "lineStart": 53,
+      "lineEnd": 61
+    },
+    {
+      "sectionOrder": 4,
+      "headingLevel": 3,
+      "headingText": "Traffic direction",
+      "headingPath": [
+        "Architecture strategies for networking and connectivity",
+        "Classify the traffic flows",
+        "Traffic direction"
+      ],
+      "markdown": "- **Ingress**. Ingress is inbound traffic that flows toward a workload or its components. To help secure ingress, apply the preceding set of key strategies. Determine what the traffic source is and whether it's expected, allowed, and safe. Attackers who scan public cloud provider IP address ranges can successfully penetrate your defenses if you don't check ingress or implement basic network security measures.\n\n- **Egress**. Egress is outbound traffic that flows away from a workload or its components. To check egress, determine where the traffic is headed and whether the destination is expected, allowed, and safe. The destination might be malicious or associated with data exfiltration risks.\n\n:::image type=\"content\" source=\"images/networking/internet-network-public.svg\" alt-text=\"Diagram that shows the flow of network traffic flow between Azure deployments and the internet.\" border=\"false\" lightbox=\"images/networking/internet-network-public-highres.png\":::\n\nYou can also **determine your level of exposure by considering your workload's proximity to the public internet**. For example, the application platform typically serves public IP addresses. The workload component is the face of the solution.",
+      "lineStart": 63,
+      "lineEnd": 71
+    },
+    {
+      "sectionOrder": 5,
+      "headingLevel": 3,
+      "headingText": "Scope of influence",
+      "headingPath": [
+        "Architecture strategies for networking and connectivity",
+        "Classify the traffic flows",
+        "Scope of influence"
+      ],
+      "markdown": "- **North-south**. Traffic that flows between a workload network and external networks is north-south traffic. This traffic crosses the edge of your network. External networks can be the public internet, a corporate network, or any other network that's outside your scope of control.\n\n  Ingress and egress can both be north-south traffic.\n\n  As an example, consider the egress flow of a hub-spoke network topology. You can define the networking edge of your workload so that the hub is an external network. In that case, outbound traffic from the virtual network of the spoke is north-south traffic. But if you consider the hub network within your sphere of control, north-south traffic is extended to the firewall in the hub, because the next hop is the internet, which is potentially hostile.\n\n- **East-west**. Traffic that flows within a workload network is east-west traffic. This type of traffic results when components in your workload communicate with each other. An example is traffic between the tiers of an *n*-tier application. In microservices, service-to-service communication is east-west traffic.\n\nTo provide defense in depth, maintain **end-to-end control of security affordances that are included in each hop or that you use when packets cross internal segments**. Different risk levels require different risk remediation methods.\n\n:::image type=\"content\" source=\"images/networking/network-defense-in-depth-private.svg\" alt-text=\"Diagram that shows network defense in depth for a private cloud.\" border=\"false\" lightbox=\"images/networking/network-defense-in-depth-private-highres.png\":::\n\nThe preceding diagram illustrates network defense in depth in the private cloud. In this diagram, the border between the public and private IP address spaces is significantly farther from the workload than in the public cloud diagram. Multiple layers separate the Azure deployments from the public IP address space.\n\n> [!NOTE]\n> Identity is always the primary perimeter. Access management must be applied to networking flows. Use managed identities when you use Azure role-based access control (RBAC) between components of your network.\n\nAfter you classify flows, perform a segmentation exercise to identify firewall injection points on the communication paths of your network segments. When you **design your network defense in depth across all segments and all traffic types, assume a breach at all points**. Use a combination of various localized network controls at all available boundaries. For more information, see [Segmentation strategies](segmentation.md).",
+      "lineStart": 73,
+      "lineEnd": 92
+    },
+    {
+      "sectionOrder": 6,
+      "headingLevel": 2,
+      "headingText": "Apply firewalls at the edge",
+      "headingPath": [
+        "Architecture strategies for networking and connectivity",
+        "Apply firewalls at the edge"
+      ],
+      "markdown": "Internet edge traffic is north-south traffic and includes ingress and egress. To detect or block threats, an edge strategy must mitigate as many attacks as possible to and from the internet.\n\nFor egress, **send all internet-bound traffic through a single firewall** that provides enhanced oversight, governance, and control of traffic. For ingress, force all traffic from the internet to go through a network virtual appliance (NVA) or a web application firewall.\n\n- Firewalls are usually singletons that are deployed per region in an organization. As a result, they're shared among workloads and owned by a central team. Make sure that any NVAs that you use are configured to support the needs of your workload.\n\n- We recommend that you use Azure native controls as much as possible.\n\n  In addition to native controls, you can also consider partner NVAs that provide advanced or specialized features. Partner firewall and web application firewall vendor products are available in Azure Marketplace.\n\n  The decision to use native features as opposed to partner solutions should be based on your organization's experience and requirements.\n\n  > :::image type=\"icon\" source=\"../_images/trade-off.svg\"::: **Tradeoff**: Partner capabilities often provide advanced features that can protect against sophisticated, but typically uncommon, attacks. The configuration of partner solutions can be complex and fragile, because these solutions don't integrate with the cloud's fabric controllers. From a cost perspective, native control is preferred because it's cheaper than partner solutions.\n\nAny technological options that you consider should provide security controls and monitoring for both ingress and egress flows. To see options that are available for Azure, see the [Edge security](#edge-security) section in this article.",
+      "lineStart": 94,
+      "lineEnd": 110
+    },
+    {
+      "sectionOrder": 7,
+      "headingLevel": 2,
+      "headingText": "Design virtual network and subnet security",
+      "headingPath": [
+        "Architecture strategies for networking and connectivity",
+        "Design virtual network and subnet security"
+      ],
+      "markdown": "The primary objective of a private cloud is to obscure resources from the public internet. There are several ways of achieving this goal:\n\n- **Move to private IP address spaces**, which you can accomplish by using virtual networks. Minimize network line of sight even within your own private networks.\n\n- **Minimize the number of public DNS entries that you use** to expose less of your workload.\n\n- **Add ingress and egress network flow control**. Don't allow traffic that's not trusted.",
+      "lineStart": 112,
+      "lineEnd": 120
+    },
+    {
+      "sectionOrder": 8,
+      "headingLevel": 4,
+      "headingText": "Segmentation strategy",
+      "headingPath": [
+        "Architecture strategies for networking and connectivity",
+        "Design virtual network and subnet security",
+        "Segmentation strategy"
+      ],
+      "markdown": "To minimize network visibility, **segment your network and start with least-privilege network controls**. If a segment isn't routable, it can't be accessed. Broaden the scope to include only segments that need to communicate with each other through network access.\n\nYou can segment virtual networks by creating subnets. The criteria for division should be intentional. When you collocate services inside a subnet, make sure that those services can see each other.\n\nYou can base your segmentation on many factors. For example, you can place different application tiers in dedicated segments. Another approach is to plan your subnets based on common roles and functions that use well-known protocols.\n\nFor more information, see [Segmentation strategies](segmentation.md).",
+      "lineStart": 122,
+      "lineEnd": 130
+    },
+    {
+      "sectionOrder": 9,
+      "headingLevel": 4,
+      "headingText": "Subnet firewalls",
+      "headingPath": [
+        "Architecture strategies for networking and connectivity",
+        "Design virtual network and subnet security",
+        "Subnet firewalls"
+      ],
+      "markdown": "It's important to inspect each subnet's inbound and outbound traffic. Use the three main strategies discussed earlier in this article. Check whether the flow is expected, allowed, and safe. To verify this information, **define firewall rules that are based on the protocol, source, and destination** of the traffic.\n\nOn Azure, you set firewall rules in network security groups. For more information, see the [Network security groups](#network-security-groups) section in this article.\n\nFor an example of a subnet design, see [Azure Virtual Network subnets](/azure/virtual-network/quick-create-portal).",
+      "lineStart": 132,
+      "lineEnd": 138
+    },
+    {
+      "sectionOrder": 10,
+      "headingLevel": 2,
+      "headingText": "Use controls at the component level",
+      "headingPath": [
+        "Architecture strategies for networking and connectivity",
+        "Use controls at the component level"
+      ],
+      "markdown": "After you minimize the visibility of your network, map out your Azure resources from a network perspective and evaluate the flows. The following types of flows are possible:\n\n- **Planned traffic**, or intentional communication between services according to your architecture design. For example, you have planned traffic when your architecture recommends that Azure Functions pulls messages from Azure Service Bus.\n\n- **Management traffic**, or communication that happens as part of the service's functionality. This traffic isn't part of your design, and you have no control over it. An example of managed traffic is the communication between the Azure services in your architecture and the Azure management plane.\n\nDistinguishing between planned and management traffic helps you build localized, or service-level, controls. Have a good understanding of the source and destination at each hop. Especially understand how your data plane is exposed.\n\nAs a starting point, determine whether each service is exposed to the internet. If it is, plan how to restrict access. If it isn't, place it in a virtual network.",
+      "lineStart": 140,
+      "lineEnd": 150
+    },
+    {
+      "sectionOrder": 11,
+      "headingLevel": 4,
+      "headingText": "Service firewalls",
+      "headingPath": [
+        "Architecture strategies for networking and connectivity",
+        "Use controls at the component level",
+        "Service firewalls"
+      ],
+      "markdown": "If you expect a service to be exposed to the internet, **take advantage of the service-level firewall that's available for most Azure resources**. When you use this firewall, you can set rules based on access patterns. For more information, see the [Azure service firewalls](#azure-service-firewalls) section in this article.\n\n> [!NOTE]\n> When your component isn't a service, use a host-based firewall in addition to network-level firewalls. A virtual machine (VM) is an example of a component that's not a service.",
+      "lineStart": 152,
+      "lineEnd": 157
+    },
+    {
+      "sectionOrder": 12,
+      "headingLevel": 3,
+      "headingText": "Connectivity to platform as a service (PaaS) services",
+      "headingPath": [
+        "Architecture strategies for networking and connectivity",
+        "Use controls at the component level",
+        "Connectivity to platform as a service (PaaS) services"
+      ],
+      "markdown": "Consider using **private endpoints to help secure access to PaaS services**. A private endpoint is assigned a private IP address from your virtual network. The endpoint allows other resources in the network to communicate with the PaaS service over the private IP address.\n\nCommunication with a PaaS service is achieved by using the service's public IP address and DNS record. That communication occurs over the internet. You can make that communication private.\n\nA tunnel from the PaaS service into one of your subnets creates a private channel. All communication takes place from the component's private IP address to a private endpoint in that subnet, which then communicates with the PaaS service.\n\nIn this example, the image on the left shows the flow for publicly exposed endpoints. On the right, that flow is secured by using private endpoints.\n\n:::image type=\"content\" source=\"images/networking/private-endpoints-101.svg\" alt-text=\"Diagram that shows how a private endpoint helps protect a database from internet users.\" border=\"false\" lightbox=\"images/networking/private-endpoints-101-highres.png\":::\n\nFor more information, see the [Private endpoints](#private-endpoints) section in this article.\n\n> [!NOTE]\n> We recommend that you use private endpoints in conjunction with service firewalls. A service firewall blocks incoming internet traffic and then exposes the service privately to internal users who use the private endpoint.\n\nAnother advantage of using private endpoints is that you don't need to open the ports on the firewall for outbound traffic. **Private endpoints lock down all outbound traffic on the port for the public internet.** Connectivity is limited to resources within the network.\n\n  > :::image type=\"icon\" source=\"../_images/trade-off.svg\"::: **Tradeoff**: Azure Private Link is a paid service that has meters for inbound and outbound data that's processed. You're also charged for private endpoints.",
+      "lineStart": 159,
+      "lineEnd": 178
+    },
+    {
+      "sectionOrder": 13,
+      "headingLevel": 2,
+      "headingText": "Protect against distributed denial of service (DDoS) attacks",
+      "headingPath": [
+        "Architecture strategies for networking and connectivity",
+        "Protect against distributed denial of service (DDoS) attacks"
+      ],
+      "markdown": "A DDoS attack attempts to exhaust an application's resources to make the application unavailable to legitimate users. DDoS attacks can target any endpoint that's publicly reachable through the internet.\n\nA DDoS attack is usually a massive, widespread, geographically dispersed abuse of your system's resources that makes it hard to pinpoint and block the source.\n\nFor Azure support to help protect against these attacks, see the [Azure DDoS Protection](#azure-ddos-protection) section in this article.",
+      "lineStart": 180,
+      "lineEnd": 186
+    },
+    {
+      "sectionOrder": 14,
+      "headingLevel": 2,
+      "headingText": "Azure facilitation",
+      "headingPath": [
+        "Architecture strategies for networking and connectivity",
+        "Azure facilitation"
+      ],
+      "markdown": "You can use the following Azure services to add defense-in-depth capabilities to your network.",
+      "lineStart": 188,
+      "lineEnd": 190
+    },
+    {
+      "sectionOrder": 15,
+      "headingLevel": 3,
+      "headingText": "Azure Virtual Network",
+      "headingPath": [
+        "Architecture strategies for networking and connectivity",
+        "Azure facilitation",
+        "Azure Virtual Network"
+      ],
+      "markdown": "[Virtual Network](/azure/virtual-network/virtual-networks-overview) helps your Azure resources securely communicate with each other, the internet, and on-premises networks.\n\nBy default, all resources in a virtual network can engage in outbound communication with the internet. But inbound communication is restricted by default.\n\nVirtual Network offers features for filtering traffic. You can restrict access at the virtual-network level by using a user-defined route (UDR) and a firewall component. At the subnet level, you can filter traffic by using network security groups.",
+      "lineStart": 192,
+      "lineEnd": 198
+    },
+    {
+      "sectionOrder": 16,
+      "headingLevel": 3,
+      "headingText": "Edge security",
+      "headingPath": [
+        "Architecture strategies for networking and connectivity",
+        "Azure facilitation",
+        "Edge security"
+      ],
+      "markdown": "By default, ingress and egress both flow over public IP addresses. Depending on the service or topology, either you set these addresses or Azure assigns them. Other ingress and egress possibilities include passing traffic through a load balancer or network address translation (NAT) gateway. But these services are intended for traffic distribution and not necessarily for security.\n\nThe following technology choices are recommended:\n\n- [Azure Firewall](/azure/firewall/overview). You can use Azure Firewall at the network edge and in popular network topologies, such as hub-spoke networks and virtual WANs. You typically **deploy Azure Firewall as an egress firewall** that acts as the final security gate before traffic goes to the internet. Azure Firewall can route traffic that uses non-HTTP and non-HTTPS protocols, such as Remote Desktop Protocol (RDP), Secure Shell Protocol (SSH), and File Transfer Protocol (FTP). The feature set of Azure Firewall includes:\n  - Destination network address translation (DNAT), or port forwarding.\n  - Intrusion detection and prevention system (IDPS) signature detection.\n  - Strong layer 3, layer 4, and fully qualified domain name (FQDN) network rules.\n\n  > [!NOTE]\n  > Most organizations have a forced tunneling policy that forces traffic to flow through an NVA.\n\n  If you don't use a virtual WAN topology, **you must deploy a UDR** with a `NextHopType` of `Internet` to your NVA's private IP address. UDRs are applied at the subnet level. By default, subnet-to-subnet traffic doesn't flow through the NVA.\n\n  You can also use Azure Firewall simultaneously for ingress. It can route HTTP and HTTPS traffic. In higher-tiered SKUs, Azure Firewall offers TLS termination so that you can implement payload-level inspections.\n\n  The following practices are recommended:\n\n  - **Enable diagnostics settings** in Azure Firewall to collect traffic flow logs, IDPS logs, and DNS request logs.\n\n  - Be as specific as possible in rules.\n\n  - Where it's practical, avoid FQDN service tags. But when you use them, use the regional variant, which allows communication with all endpoints of the service.\n\n  - Use IP groups to define sources that must share the same rules over the life of the IP group. IP groups should reflect your segmentation strategy.\n\n  - Override the infrastructure FQDN allow rule only if your workload requires absolute egress control. Overriding this rule comes with a reliability tradeoff, because Azure platform requirements change on services.\n\n  > :::image type=\"icon\" source=\"../_images/trade-off.svg\"::: **Tradeoff**: Azure Firewall can impact your performance. Rule order, quantity, TLS inspection, and other factors can cause significant latency.\n  >\n  > There can also be an impact on the reliability of your workload. It might experience source network address translation (SNAT) port exhaustion. To help overcome this problem, add public IP addresses as needed.\n\n  > :::image type=\"icon\" source=\"../_images/risk.svg\"::: **Risk**: For egress traffic, Azure assigns a public IP address. This assignment can have a downstream impact on your external security gate.\n\n- [Azure Web Application Firewall](/azure/web-application-firewall/overview). This service supports inbound filtering and only targets HTTP and HTTPS traffic.\n\n  It offers basic security for common attacks, such as threats that the Open Worldwide Application Security Project (OWASP) identifies in the OWASP Top 10 document. Azure Web Application Firewall also provides other security features that are focused on layer 7, such as rate limiting, SQL-injection rules, and cross-site scripting.\n\n  With Azure Web Application Firewall, TLS termination is required, because most checks are based on payloads.\n\n  You can integrate Azure Web Application Firewall with routers, such as Azure Application Gateway or Azure Front Door. Azure Web Application Firewall implementations for those kinds of routers can vary.\n\nAzure Firewall and Azure Web Application Firewall aren't mutually exclusive choices. For your edge security solution, various options are available. For examples, see [Firewall and Application Gateway for virtual networks](/azure/architecture/example-scenario/gateway/firewall-application-gateway).",
+      "lineStart": 200,
+      "lineEnd": 244
+    },
+    {
+      "sectionOrder": 17,
+      "headingLevel": 3,
+      "headingText": "Network security groups",
+      "headingPath": [
+        "Architecture strategies for networking and connectivity",
+        "Azure facilitation",
+        "Network security groups"
+      ],
+      "markdown": "A [network security group](/azure/virtual-network/manage-network-security-group) is a layer 3 and layer 4 firewall that you apply at the subnet or network interface card (NIC) level. Network security groups aren't created or applied by default.\n\n**Network security group rules act as a firewall** to stop traffic that flows in and out at the perimeter of a subnet. A network security group has a default rule set that's overly permissive. For example, the default rules don't set a firewall from the egress perspective. For ingress, no inbound internet traffic is allowed.\n\nTo create rules, start with the default rule set:\n\n- For **inbound** traffic, or ingress:\n  - Virtual network traffic from direct, peered, and VPN gateway sources is allowed.\n  - Azure Load Balancer health probes are allowed.\n  - All other traffic is blocked.\n- For **outbound** traffic, or egress:\n  - Virtual network traffic to direct, peered, and VPN gateway destinations is allowed.\n  - Traffic to the internet is allowed.\n  - All other traffic is blocked.\n\nThen consider the following five factors:\n\n- Protocol\n- Source IP address\n- Source port\n- Destination IP address\n- Destination port\n\nThe lack of support for FQDN limits network security group functionality. You need to provide specific IP address ranges for your workload, and they're hard to maintain.\n\nBut for Azure services, you can use [service tags](/azure/virtual-network/service-tags-overview#available-service-tags) to summarize source and destination IP address ranges. A security benefit of service tags is that they're **opaque to the user, and the responsibility is offloaded to Azure**. You can also assign an application security group as a destination type to route traffic to. This type of named group contains resources that have similar inbound or outbound access needs.\n\n> :::image type=\"icon\" source=\"../_images/risk.svg\"::: **Risk**: Service tag ranges are very broad so that they accommodate the widest possible range of customers. Updates to service tags lag behind changes in the service.\n\n:::image type=\"content\" source=\"images/networking/vnet-isolation-peer.svg\" alt-text=\"Diagram that shows virtual network default isolation with peering.\" border=\"false\" lightbox=\"images/networking/vnet-isolation-peer-highres.png\":::\n\nIn the preceding image, network security groups are applied at the NIC. Internet traffic and subnet-to-subnet traffic are denied. The network security groups are applied with the `VirtualNetwork` tag. So in this case, the subnets of peered networks have a direct line of sight. The broad definition of the `VirtualNetwork` tag can have a significant security impact.\n\nWhen you use service tags, use regional versions when possible, such as `Storage.WestUS` instead of `Storage`. By taking this approach, you limit the scope to all endpoints in a particular region.\n\nSome tags are exclusively for **inbound** or **outbound** traffic. Others are for *both* types. **Inbound** tags usually allow traffic from all hosting workloads, such as `AzureFrontDoor.Backend`, or from Azure to support service runtimes, such as `LogicAppsManagement`. Similarly, **outbound** tags allow traffic to all hosting workloads or from Azure to support service runtimes.\n\nScope the rules as much as possible. In the following example, the rule is set to specific values. Any other type of traffic is denied.\n\n|Information | Example |\n|---------|---------|\n|Protocol | Transmission Control Protocol (TCP), UDP |\n|Source IP address | Allow ingress to the subnet from \\<source-IP-address-range\\>: 4575/UDP |\n|Source port | Allow ingress to the subnet from \\<service-tag\\>: 443/TCP |\n|Destination IP address | Allow egress from the subnet to \\<destination-IP-address-range\\>: 443/TCP |\n|Destination port | Allow egress from the subnet to \\<service-tag\\>: 443/TCP |\n\nTo summarize:\n\n- **Be precise when you create rules**. Only allow traffic that's necessary for your application to function. Deny everything else. This approach limits the network line of sight to network flows that are needed to support the operation of the workload. **Supporting more network flows than necessary leads to unnecessary attack vectors and extends the surface area.**\n\n  Restricting traffic doesn't imply that allowed flows are beyond the scope of an attack. Because network security groups work at layers 3 and 4 on the Open Systems Interconnection (OSI) stack, they only contain shape and direction information. For example, if your workload needs to allow DNS traffic to the internet, you would use a network security group of `Internet:53:UDP`. In this case, an attacker might be able to exfiltrate data through UDP on port 53 to some other service.\n\n- Understand that network security groups can differ slightly from one another. It's easy to overlook the intent of the differences. **To have granular filtering, it's safer to create extra network security groups.** Set up at least one network security group.\n\n- Use Azure Policy to help control traffic in subnets that don't have network security groups (NSGs).\n\n- If a subnet supports network security groups, add a group, even if it's minimally impactful.",
+      "lineStart": 246,
+      "lineEnd": 305
+    },
+    {
+      "sectionOrder": 18,
+      "headingLevel": 3,
+      "headingText": "Azure service firewalls",
+      "headingPath": [
+        "Architecture strategies for networking and connectivity",
+        "Azure facilitation",
+        "Azure service firewalls"
+      ],
+      "markdown": "Most Azure services offer a service-level firewall. This feature inspects ingress traffic to the service from specified classless inter-domain routing (CIDR) ranges. These firewalls offer benefits:\n\n- They provide a **basic level of security**.\n- There's a **tolerable performance impact**.\n- Most services offer these firewalls at **no extra cost**.\n- The firewalls emit logs through Azure diagnostics, which can be useful for analyzing access patterns.\n\nBut there are also security concerns associated with these firewalls, and there are limitations associated with providing parameters. For example, if you use Microsoft-hosted build agents, you have to open the IP address range for all Microsoft-hosted build agents. The range is then open to your build agent, other tenants, and adversaries who might abuse your service.\n\nIf you have access patterns for the service, which can be configured as service firewall rule sets, you should enable the service. You can use Azure Policy to enable it. Make sure you don't enable the trusted Azure services option if it isn't enabled by default. Doing so brings in all dependent services that are in the scope of the rules.\n\nFor more information, see the product documentation of individual Azure services.",
+      "lineStart": 307,
+      "lineEnd": 320
+    },
+    {
+      "sectionOrder": 19,
+      "headingLevel": 3,
+      "headingText": "Private endpoints",
+      "headingPath": [
+        "Architecture strategies for networking and connectivity",
+        "Azure facilitation",
+        "Private endpoints"
+      ],
+      "markdown": "[Private Link](/azure/private-link/private-link-overview) provides a way for you to give a PaaS instance a private IP address. The service is then unreachable over the internet. [Private endpoints](/azure/private-link/private-endpoint-overview) aren't supported for all SKUs.\n\nKeep the following recommendations in mind when you use private endpoints:\n\n- Configure services that are bound to virtual networks to **contact PaaS services through private endpoints**, even if those PaaS services also need to offer public access.\n\n- Promote the use of **network security groups for private endpoints to restrict access** to private endpoint IP addresses.\n\n- Always **use service firewalls when you use private endpoints**.\n\n- When possible, if you have a service that's only accessible via private endpoints, remove the DNS configuration for its public endpoint.\n\n- Consider runtime **line-of-sight concerns** when you implement private endpoints. But also consider **DevOps and monitoring concerns**.\n\n- Use Azure Policy to **enforce resource configuration**.\n\n> :::image type=\"icon\" source=\"../_images/trade-off.svg\"::: **Tradeoff**: Service SKUs with private endpoints are expensive. Private endpoints can complicate operations because of network obscurity. You need to add self-hosted agents, jump boxes, a VPN, and other components to your architecture.\n\nDNS management can be complex in common network topologies. You might have to introduce DNS forwarders and other components.",
+      "lineStart": 322,
+      "lineEnd": 342
+    },
+    {
+      "sectionOrder": 20,
+      "headingLevel": 3,
+      "headingText": "Azure Network Security Perimeter",
+      "headingPath": [
+        "Architecture strategies for networking and connectivity",
+        "Azure facilitation",
+        "Azure Network Security Perimeter"
+      ],
+      "markdown": "While private endpoints provide direct virtual network integration for PaaS services, [**Azure Network Security Perimeter**](/azure/private-link/network-security-perimeter-concepts) offers logical network isolation for PaaS services outside your  virtual networks. This is beneficial when you need to group related PaaS services under unified access policies without requiring individual private endpoints for each service. \n\nFor example you can use this logical segmentation around all PaaS services supporting a specific workload or business unit. Or, implement uniform perimeter policies for development, staging, and production environments, allowing appropriate access levels while maintaining isolation.\n\nBe aware of the limitations around logging, scalability, and other aspects that come with this feature. For more information, see [Limitations of a network security perimeter](/azure/private-link/network-security-perimeter-concepts#limitations-of-a-network-security-perimeter).",
+      "lineStart": 344,
+      "lineEnd": 350
+    },
+    {
+      "sectionOrder": 21,
+      "headingLevel": 3,
+      "headingText": "Virtual network injection",
+      "headingPath": [
+        "Architecture strategies for networking and connectivity",
+        "Azure facilitation",
+        "Virtual network injection"
+      ],
+      "markdown": "You can use the **virtual network injection process** to deploy some Azure services into your network. Examples of such services include Azure App Service, Functions, Azure API Management, and Azure Spring Apps. This process **isolates the application** from the internet, systems in private networks, and other Azure services. Inbound and outbound traffic from the application is allowed or denied based on network rules.",
+      "lineStart": 352,
+      "lineEnd": 354
+    },
+    {
+      "sectionOrder": 22,
+      "headingLevel": 3,
+      "headingText": "Azure Bastion",
+      "headingPath": [
+        "Architecture strategies for networking and connectivity",
+        "Azure facilitation",
+        "Azure Bastion"
+      ],
+      "markdown": "You can use [Azure Bastion](/azure/bastion/bastion-overview) to connect to a VM by using your browser and the Azure portal. Azure Bastion **enhances the security of RDP and SSH connections**. A typical use case includes connecting to a jump box in the same virtual network or a peered virtual network. Using Azure Bastion removes the need for the VM to have a public IP address.",
+      "lineStart": 356,
+      "lineEnd": 358
+    },
+    {
+      "sectionOrder": 23,
+      "headingLevel": 3,
+      "headingText": "Azure DDoS Protection",
+      "headingPath": [
+        "Architecture strategies for networking and connectivity",
+        "Azure facilitation",
+        "Azure DDoS Protection"
+      ],
+      "markdown": "Every property in Azure is protected by Azure DDoS infrastructure protection at no extra cost and with no added configuration. The level of protection is basic, but the protection has high thresholds. It also doesn't provide telemetry or alerting, and it's workload-agnostic.\n\nHigher-tiered SKUs of DDoS Protection are available but aren't free. The scale and capacity of the globally deployed Azure network offers protection against common network-layer attacks. Technologies like always-on traffic monitoring and real-time mitigation provide this capability.\n\nFor more information, see [Azure DDoS Protection overview](/azure/ddos-protection/ddos-protection-overview).",
+      "lineStart": 360,
+      "lineEnd": 366
+    },
+    {
+      "sectionOrder": 24,
+      "headingLevel": 2,
+      "headingText": "Example",
+      "headingPath": [
+        "Architecture strategies for networking and connectivity",
+        "Example"
+      ],
+      "markdown": "Here are some examples that demonstrate the use of network controls recommended in this article.",
+      "lineStart": 368,
+      "lineEnd": 370
+    },
+    {
+      "sectionOrder": 25,
+      "headingLevel": 3,
+      "headingText": "IT environment",
+      "headingPath": [
+        "Architecture strategies for networking and connectivity",
+        "Example",
+        "IT environment"
+      ],
+      "markdown": "This example builds on the Information Technology (IT) environment established in the [security baseline (SE:01)](./establish-baseline.md). This approach provides a broad understanding of network controls applied at various perimeters to restrict traffic. \n\n:::image type=\"content\" source=\"images/networking/network-controls.svg\" alt-text=\"Diagram that shows an example of an organization's security baseline with network controls.\" lightbox=\"images/networking/network-controls.svg\":::\n\n1) **Network attack personas**. Several personas may be considered in a network attack, including Admins, employees, customer’s clients and anonymous attackers. \n\n2) **VPN access**. A bad actor might access the on-premises environment through a VPN or an Azure environment that's  connected to the on-premises environment through a VPN. Configure with IPSec protocol to enable secure communication.\n\n3) **Public access to the application**. Have a web application firewall (WAF) in front of the application to protect it on Layer 7 of the network OSI layer.\n\n4) **Operator access**. Remote access through Layer 4 of network OSI layers must be secured. Consider using Azure Firewall with IDP/IDS features.\n\n5) **DDoS protection**. Have DDoS protection for your entire VNet.\n\n6) **Network topology**. A network topology such as hub-spoke, is more secure, and optimize costs. The hub network provides centralized firewall protection to all the peered spokes. \n\n7) **Private endpoints**: Consider adding publically exposed services into your private network by using private endpoints. These create a Network Card (NIC) in your private VNet and bind with the Azure service.\n\n8) **TLS communication**. Protect data in transit by communicating over TLS.\n\n9) **NSG**: Protect segments within a VNet with NSG, a free resource that filters TCP/UDP inbound and outbound communication considering IP and port ranges. Part of NSG is the Application Security Group (ASG) that allows you to create tags for traffic rules for easier management.\n\n10) **Log Analytics**. Azure resources emit telemetry that's  ingested in Log Analytics then used with a SIEM solution like Microsoft Sentinel for analysis.\n\n11) **Microsoft Sentinel Integration**. Log Analytics is integrated with Microsoft Sentinel and other solutions like Microsoft Defender for Cloud.\n\n12) **Microsoft Defender for Cloud**. Microsoft Defender for Cloud delivers many workload protection solutions, including Network recommendations for your environment.\n\n13) **Traffic analytics**. Use traffic analytics to detect suspicious or unexpected traffic patterns, identify top talkers, and surface actionable insights into potential threats, misconfigurations, and anomalous flows. With built-in queries, you can prevent duplication of data and quickly investigate traffic by source, destination, protocol, or port. These queries help pinpoint security risks and policy violations across your Azure environment.",
+      "lineStart": 372,
+      "lineEnd": 402
+    },
+    {
+      "sectionOrder": 26,
+      "headingLevel": 3,
+      "headingText": "Architecture for a containerized workload",
+      "headingPath": [
+        "Architecture strategies for networking and connectivity",
+        "Example",
+        "Architecture for a containerized workload"
+      ],
+      "markdown": "This example architecture combines the network controls that are described in this article. The example doesn't show the complete architecture. Instead, it focuses on ingress controls on the private cloud.\n\n:::image type=\"content\" source=\"images/networking/controlled-ingress.svg\" alt-text=\"Diagram that shows controlled ingress, including Application Gateway, a network security group, Azure Bastion, and Azure DDoS Protection.\" border=\"false\" lightbox=\"images/networking/controlled-ingress-highres.png\":::\n\n**Application Gateway is a web traffic load balancer** that you can use to manage traffic to your web applications. You deploy Application Gateway in a dedicated subnet that has network security group controls and web application firewall controls in place.\n\nCommunication with all PaaS services is conducted through **private endpoints**. All endpoints are placed in a dedicated subnet. DDoS Protection helps protect all public IP addresses that are configured for a basic or higher level of firewall protection.\n\n**Management traffic is restricted through Azure Bastion**, which helps provide secure and seamless RDP and SSH connectivity to your VMs directly from the Azure portal over TLS. Build agents are placed in the virtual network so that they have a network view to workload resources such as compute resources, container registries, and databases. This approach helps provide a secure and isolated environment for your build agents, which boosts protection for your code and artifacts.\n\n:::image type=\"content\" source=\"images/networking/controlled-egress.svg\" alt-text=\"Diagram that shows controlled egress for a network security group and Azure Firewall.\" border=\"false\" lightbox=\"images/networking/controlled-egress.png\":::\n\nNetwork security groups at the subnet level of the compute resources restrict egress traffic. Forced tunneling is used to route all traffic through Azure Firewall. This approach helps provide a secure and isolated environment for your compute resources, which boosts protection for your data and applications.",
+      "lineStart": 404,
+      "lineEnd": 418
+    },
+    {
+      "sectionOrder": 27,
+      "headingLevel": 2,
+      "headingText": "Related links",
+      "headingPath": [
+        "Architecture strategies for networking and connectivity",
+        "Related links"
+      ],
+      "markdown": "- [Recommendations for designing segmentation strategies](segmentation.md)\n- [Azure Virtual Network subnets](/azure/virtual-network/quick-create-portal)\n- [Azure Virtual Network](/azure/virtual-network/virtual-networks-overview)\n- [Azure Firewall](/azure/firewall/overview)\n- [Azure Web Application Firewall](/azure/web-application-firewall/overview)\n- [Firewall and Application Gateway for virtual networks](/azure/architecture/example-scenario/gateway/firewall-application-gateway)\n- [Network security groups](/azure/virtual-network/manage-network-security-group)\n- [Service tags](/azure/virtual-network/service-tags-overview#available-service-tags)\n- [Azure Private Link](/azure/private-link/private-link-overview)\n- [Private endpoints](/azure/private-link/private-endpoint-overview)\n- [Azure Bastion](/azure/bastion/bastion-overview)\n- [Azure DDoS Protection overview](/azure/ddos-protection/ddos-protection-overview)\n- [Traffic analytics overview](/azure/network-watcher/traffic-analytics)",
+      "lineStart": 420,
+      "lineEnd": 434
+    },
+    {
+      "sectionOrder": 28,
+      "headingLevel": 2,
+      "headingText": "Security checklist",
+      "headingPath": [
+        "Architecture strategies for networking and connectivity",
+        "Security checklist"
+      ],
+      "markdown": "Refer to the complete set of recommendations.\n\n> [!div class=\"nextstepaction\"]\n> [Security checklist](checklist.md)\n\n<!-- Updated: August 17, 2025 for Azure Update 496002, 497535 -->",
+      "lineStart": 436,
+      "lineEnd": 442
+    }
+  ],
+  "localLinks": [
+    "./establish-baseline.md",
+    "checklist.md",
+    "segmentation.md"
+  ],
+  "lastModified": "2026-03-17T16:22:13.786Z"
+}

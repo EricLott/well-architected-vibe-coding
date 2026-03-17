@@ -1,0 +1,420 @@
+{
+  "source": {
+    "absolutePath": "C:\\Users\\EricL\\source\\repos\\Well-Architected-Vibe-Coding\\well-architected-vibe-coding\\well-architected\\hpc\\hpc-design-principles.md",
+    "repoRelativePath": "well-architected/hpc/hpc-design-principles.md",
+    "docsRelativePath": "hpc/hpc-design-principles.md"
+  },
+  "frontMatter": {
+    "title": "Design Principles for HPC Workloads on Azure",
+    "description": "Review the design principles of the Azure Well-Architected Framework. Learn how to apply these principles to an HPC workload.",
+    "author": "padmalathas",
+    "ms.author": "padmalathas",
+    "ms.date": "03/06/2026",
+    "ms.topic": "concept-article",
+    "ms.update-cycle": "180-days"
+  },
+  "title": "Design Principles for HPC Workloads on Azure",
+  "rawBody": "# Design Principles for HPC Workloads\n\nThe HPC design is grounded in principles derived from the Azure Well‑Architected Framework (WAF) pillars. These principles guide architectural decisions across core HPC design areas such as compute, storage, networking, and job orchestration. Familiarity with these principles helps you understand their impact and the trade‑offs involved when they are not followed. \n\nThese recommendations are most relevant for large‑scale, long‑running HPC workloads and may be adjusted for smaller or exploratory workloads. This methodology helps architects and engineers design HPC environments that are efficient, scalable, reliable, and cost‑aware, while keeping operational complexity manageable.\n\n> :::image type=\"icon\" source=\"../_images/trade-off.svg\"::: **Trade-off.** Maximizing performance and reliability often increases cost. Design decisions should be driven by business requirements and by clearly defined trade‑offs between performance, reliability, and cost.\n\n## Reliability\n\nBuilding reliable HPC environments on Azure requires planning for failures at multiple levels from individual compute nodes to entire regions. The ephemeral nature of cloud resources and the long-running characteristics of HPC jobs demand deliberate strategies for state preservation and recovery.\n\n### Considerations\n\n- **Job state preservation:** Long‑running HPC jobs are vulnerable to infrastructure failures, spot evictions, and maintenance events. Without systematic checkpointing, interruptions can force full job restarts, wasting compute hours and delaying results.\n\n- **Node failure tolerance:** Individual VM failures are expected in large‑scale deployments. The scheduling and orchestration layer must detect failures promptly and either reassign work to healthy nodes or preserve state for recovery.\n\n- **Data protection strategy:** HPC workflows generate data with varying durability requirements, ranging from disposable scratch files to irreplaceable simulation results. Protection mechanisms should align with data value without imposing unnecessary overhead on transient working data.\n\n- **Cross-region continuity:** Critical workloads may require the ability to resume computation in an alternate Azure region after a regional outage. This capability requires advance planning for data replication and environment reproducibility.\n\n### Recommendations\n\n| Recommendation | Benefit |\n|----------------|---------|\n| Implement application-level checkpointing to [Azure Blob Storage](/azure/storage/blobs/) or [Azure Managed Lustre](/azure/azure-managed-lustre/). <br> Align checkpoint frequency with RPO targets and job criticality. | Protects long-running jobs from complete restart after failures. Jobs resume from last checkpoint rather than beginning, saving compute time and cost. |\n| Use [Azure CycleCloud](/azure/cyclecloud/common-issues/node-cyclecloud-connectivity)  or [Azure Batch automatic retry policies](/azure/batch/error-handling) to handle transient node failures and reschedule failed tasks without manual intervention. | Maintains job progress during temporary infrastructure issues. Automatic rescheduling eliminates manual monitoring and reduces time to completion. |\n| Replicate critical datasets and final results to [geo-redundant storage (GRS)](/azure/storage/common/storage-redundancy#geo-redundant-storage) or a paired Azure region. Use locally redundant storage for high-performance scratch data. | Balances data protection with performance needs. Critical data survives regional failures while temporary scratch data maintains high throughput during computation. |\n\n\n## Security\n\nHPC environments often process sensitive data, including proprietary research, regulated information, and competitive intellectual property, while requiring broad access for legitimate users. Security architecture must protect assets without creating barriers that impede computational workflows.\n\n### Considerations\n\n- **Network boundary enforcement:** Operate HPC clusters within defined network perimeters that restrict unauthorized access while permitting required communication between compute nodes, storage systems, and job submission endpoints.\n\n- **Identity, access governance and data protection controls:** Access to HPC resources should be governed by least‑privilege principles, providing users only the permissions required for roles ranging from job submission to cluster administration, and integrated with organizational identity systems. Sensitive data must be protected through encryption at rest and in transit, with enforced policies ensuring that only authorized users and jobs can access protected datasets.\n\n- **Regulatory compliance:** Organizations processing data subject to regulatory requirements such as HIPAA, ITAR, or FedRAMP must implement specific controls and maintain audit evidence to demonstrate compliance.\n\n- **Workload isolation:** Multitenant HPC environments or clusters processing sensitive data require mechanisms to prevent unauthorized access between users or jobs, both at the compute layer and within shared storage systems.\n\n\n### Recommendations\n\n| Recommendation | Benefit |\n|----------------|---------|\n| Deploy HPC clusters within isolated virtual networks using network security groups | Reduces the attack surface by limiting network access to only required endpoints while allowing necessary node‑to‑node and storage communication. |\n| Use Microsoft Entra ID for authentication, and integrate role [Azure RBAC](/azure/role-based-access-control/) | Enforces least-privilege access and provides centralized identity governance across HPC resources. |\n| Use Secure administrative access using [Azure Bastion](/azure/bastion/secure-bastion) | Prevents direct exposure of management ports and reduces the risk of unauthorized access. |\n| Enable [encryption at rest](/azure/storage/common/storage-service-encryption) for all Azure storage services | Provides visibility into security posture, supports compliance audits, and enables rapid detection of misconfigurations or threats. Ensures consistent security controls across clusters and prevents configuration drift over time. | \n| Apply Azure policy to enforce security baselines and policy compliance reporting across HPC clusters | Reduces misconfigurations and configuration drift, improves visibility into compliance posture, supports audit and regulatory requirements, and enables faster detection and remediation of security gaps at scale and without manual intervention. |\n\n\n## Cost Optimization\n\nCloud‑based HPC enables elastic scaling, but costs can grow rapidly without deliberate control. Maximizing business value requires balancing spend with performance and reliability requirements.\n\n### Considerations\n\n- **Storage cost management:** HPC workflows generate large data volumes with varied access patterns. Keeping cold data on high‑performance tiers increases costs without performance benefits.\n  \n- **Compute right-sizing:** Over‑provisioned VMs waste capacity, while under‑provisioned VMs extend job runtimes and increase total cost. Accurate workload profiling supports effective sizing.\n\n- **Elastic scaling alignment:** Static cluster provisioning misaligns costs with workload demand. Infrastructure should scale with queued jobs and contract when demand subsides.\n\n- **Interruptible workload economics:** Many HPC workloads tolerate interruption with checkpointing, making them suitable for discounted capacity.\n\n- **Operational overhead accounting:** Total cost includes infrastructure and operational effort. Managed services can reduce administrative overhead even if unit costs are higher.\n\n### Recommendations\n\n| Recommendation | Benefit |\n|----------------|---------|\n| Use [Azure Blob Storage lifecycle management](/azure/storage/blobs/lifecycle-management-policy-configure) to transition aging data from hot to cool or archive tiers. | Reduces storage costs while maintaining data accessibility. |\n| Analyze [resource usage with Azure CycleCloud](/azure/cyclecloud/concepts/usage-tracking) or [Azure Batch analytics](/azure/batch/batch-pool-vm-sizes) to select appropriate VM sizes. | Avoids unused capacity and balances performance with cost. |\n| Configure [Azure CycleCloud autoscaling](/azure/cyclecloud/how-to/configure-autoscaling) to provision compute nodes based on scheduler queue depth and deallocate idle nodes. | Aligns compute capacity with demand and eliminates idle spend. |\n| Deploy [Azure Spot VMs](/azure/virtual-machines/spot-vms) for fault-tolerant workloads with checkpointing, with fallback to standard VMs. | Lowers compute costs for interruption‑tolerant workloads. |\n\n## Operational Excellence\n\nOperational maturity in HPC environments requires balancing user autonomy with system reliability. Users expect familiar tools and workflows, while operations teams need automation, visibility, and repeatability to manage infrastructure at scale.\n\n\n### Considerations\n\n- **Infrastructure reproducibility:** Manual cluster provisioning introduces inconsistencies and delays. HPC environments should be deployed using automated, version‑controlled processes that produce consistent results across environments.\n\n- **Scheduler integration:** HPC users rely on established job schedulers. Forcing new submission models increases friction and slows adoption of cloud-based HPC.\n\n- **Workflow automation:** HPC pipelines often span data staging, preprocessing, computation, post-processing, and results delivery. Manual coordination increases error rates and limits throughput.\n\n- **Observability and diagnostics:** Failures in large-scale HPC jobs can be difficult to diagnose without comprehensive telemetry. Operators need visibility into job status, resource utilization, and system health.\n\n- **Change management processes:** Updates to software stacks, schedulers, or infrastructure can introduce regressions. Changes should be validated and deployed through controlled, repeatable processes.\n\n### Recommendations\n\n| Recommendation | Benefit |\n|----------------|---------|\n| Define HPC cluster infrastructure using Bicep or Terraform templates with [Azure Resource Manager](/azure/azure-resource-manager/) to manage deployments as code. | Ensures consistent, reproducible deployments and prevents configuration drift. Infrastructure as code also enables faster recovery scenarios. |\n| Deploy Azure CycleCloud with native support for [Slurm](/azure/cyclecloud/qs-deploy-ccws), PBS Pro, Grid Engine, or other schedulers that align with existing workflows. | Preserves user productivity by allowing existing job scripts and submission models to run unchanged. |\n| Use [Azure Batch for managed job scheduling](/azure/batch/batch-job-schedule) with task dependencies, or integrate CycleCloud clusters with workflow orchestration tools for multi-stage pipelines. | Automates complex workflows and ensures pipeline stages execute in the correct order without manual coordination. |\n| Enable [Azure Monitor](/azure/azure-monitor/) for diagnostic logs and metrics. Configure [Log Analytics workspaces](/azure/azure-monitor/logs/log-analytics-overview) to build operational dashboards. | Improves visibility into cluster health and job progress, enabling faster troubleshooting and proactive operations. |\n| Maintain infrastructure-as-code definitions using [Bicep](/azure/azure-resource-manager/bicep/) or [Terraform](/azure/developer/terraform/) in Azure DevOps or GitHub to enable repeatable cluster deployment in alternate regions during disaster recovery. | Enables faster recovery after catastrophic failures by reducing manual reconfiguration and improving deployment consistency. |\n\n\n## Performance Efficiency\n\nHPC workloads require maximum computational throughput, making hardware selection and architectural alignment critical. Azure provides purpose-built HPC infrastructure, but achieving optimal performance depends on matching workload characteristics to compute, networking, and storage configurations.\n\n### Considerations\n\n- **Workload-hardware alignment:** HPC applications vary widely in resource demands, including CPU-bound simulations, memory-intensive analytics, GPU-accelerated computations, and I/O-heavy workflows. Unsuitable VM sizes limit achievable performance.\n\n- **Interconnect performance:** Tightly coupled parallel workloads are highly sensitive to network latency and bandwidth. Standard Ethernet networking can introduce bottlenecks that offset the benefits of horizontal scaling.\n\n- **Parallel storage throughput:** Large-scale HPC jobs generate concurrent access patterns that overwhelm traditional file servers. Storage systems must sustain high aggregate throughput across many nodes.\n\n- **Cluster topology optimization:** Physical VM proximity directly affects MPI performance. Distributed placement increases latency and degrades tightly coupled workload efficiency.\n\n- **Environment consistency:** Configuration drift, library mismatches, or software version inconsistencies across nodes introduce variability and complicate tuning and troubleshooting.\n\n### Recommendations\n\n| Recommendation | Benefit |\n|----------------|---------|\n| Select [HB series VMs](/azure/virtual-machines/sizes/high-performance-compute/hb-family) for CPU-intensive workloads, [ND series VMs](/azure/virtual-machines/sizes/gpu-accelerated/nd-series) for GPU-accelerated workloads, and memory‑optimized VM families for data‑intensive analytics. | Aligning hardware capabilities with application requirements, maximizes performance efficiency and value. |\n| Deploy [InfiniBand-enabled VM series](/azure/virtual-machines/workloads/hpc/enable-infiniband) (HB, HC, ND) for MPI workloads requiring low-latency, high-bandwidth node-to-node communication. | Minimizes communication overhead and enables efficient scaling for tightly coupled parallel workloads. |\n| Use [Azure Managed Lustre](/azure/azure-managed-lustre/blob-integration) for high‑throughput scratch storage, or Azure NetApp Files for shared POSIX‑compliant file access with consistent performance. | Prevents storage bottlenecks by sustaining concurrent access from large numbers of compute nodes. |\n| Configure [Proximity Placement Groups](/azure/virtual-machines/co-location) to place compute nodes within the same datacenter network segment. | Reduces inter‑node latency and improves message‑passing performance for communication‑intensive workloads. |\n\n## Azure facilitation\n\nAzure provides a comprehensive set of services that support HPC workloads across all Well-Architected Framework pillars. The following services enable organizations to build resilient, secure, cost-effective, operationally excellent, and high-performance HPC environments.\n\n**Reliability**: Azure Blob Storage, Managed Lustre, Batch, and CycleCloud use GRS, IaC, checkpointing, retries, and fast recovery to protect long‑running jobs. These services ensure HPC workloads can recover quickly from failures and maintain progress toward completion.\n\nFor more information, see [Reliability design principles](/azure/well-architected/reliability/principles).\n\n**Security**: Azure networking, identity, access control, and secrets management provide defense‑in‑depth security for HPC environments. These services enable network isolation, identity-based access control, private connectivity, and comprehensive encryption to protect sensitive computational workloads and research data from unauthorized access.\n\nFor more information, see [Security design principles](/azure/well-architected/security/principles).\n\n**Cost Optimization**: Azure Blob Storage lifecycle management, Azure Batch analytics, CycleCloud autoscaling, Spot VMs, and Azure Cost Management help reduce HPC costs through automation, scaling, and discounted compute. These capabilities ensure HPC resources deliver maximum value without unnecessary expenditure.\n\nFor more information, see [Cost Optimization design principles](/azure/well-architected/cost-optimization/principles).\n\n**Operational Excellence**: Azure Resource Manager, Bicep, Terraform, Azure CycleCloud, Azure Batch, and Azure Monitor automate HPC deployments, scheduling, and monitoring, reducing operational overhead and improving cluster reliability.\n\nFor more information, see [Operational Excellence design principles](/azure/well-architected/operational-excellence/principles).\n\n**Performance Efficiency**: HBv4, HBv5, and NDv5 VMs with InfiniBand, Azure Managed Lustre, Azure NetApp Files, and Proximity Placement Groups provide the specialized compute, storage, and low‑latency networking needed for high‑performance HPC workloads.\n\nFor more information, see [Performance Efficiency design principles](/azure/well-architected/performance-efficiency/principles).\n\n## Next Steps\n\nDesign areas are interconnected and changes in one area may impact others. Start with the area most critical to your workload, then review how choices create trade-offs across the architecture.",
+  "headings": [
+    {
+      "level": 1,
+      "text": "Design Principles for HPC Workloads",
+      "line": 1,
+      "path": [
+        "Design Principles for HPC Workloads"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Reliability",
+      "line": 9,
+      "path": [
+        "Design Principles for HPC Workloads",
+        "Reliability"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Considerations",
+      "line": 13,
+      "path": [
+        "Design Principles for HPC Workloads",
+        "Reliability",
+        "Considerations"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Recommendations",
+      "line": 23,
+      "path": [
+        "Design Principles for HPC Workloads",
+        "Reliability",
+        "Recommendations"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Security",
+      "line": 32,
+      "path": [
+        "Design Principles for HPC Workloads",
+        "Security"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Considerations",
+      "line": 36,
+      "path": [
+        "Design Principles for HPC Workloads",
+        "Security",
+        "Considerations"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Recommendations",
+      "line": 47,
+      "path": [
+        "Design Principles for HPC Workloads",
+        "Security",
+        "Recommendations"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Cost Optimization",
+      "line": 58,
+      "path": [
+        "Design Principles for HPC Workloads",
+        "Cost Optimization"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Considerations",
+      "line": 62,
+      "path": [
+        "Design Principles for HPC Workloads",
+        "Cost Optimization",
+        "Considerations"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Recommendations",
+      "line": 74,
+      "path": [
+        "Design Principles for HPC Workloads",
+        "Cost Optimization",
+        "Recommendations"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Operational Excellence",
+      "line": 83,
+      "path": [
+        "Design Principles for HPC Workloads",
+        "Operational Excellence"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Considerations",
+      "line": 88,
+      "path": [
+        "Design Principles for HPC Workloads",
+        "Operational Excellence",
+        "Considerations"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Recommendations",
+      "line": 100,
+      "path": [
+        "Design Principles for HPC Workloads",
+        "Operational Excellence",
+        "Recommendations"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Performance Efficiency",
+      "line": 111,
+      "path": [
+        "Design Principles for HPC Workloads",
+        "Performance Efficiency"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Considerations",
+      "line": 115,
+      "path": [
+        "Design Principles for HPC Workloads",
+        "Performance Efficiency",
+        "Considerations"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Recommendations",
+      "line": 127,
+      "path": [
+        "Design Principles for HPC Workloads",
+        "Performance Efficiency",
+        "Recommendations"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Azure facilitation",
+      "line": 136,
+      "path": [
+        "Design Principles for HPC Workloads",
+        "Azure facilitation"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Next Steps",
+      "line": 160,
+      "path": [
+        "Design Principles for HPC Workloads",
+        "Next Steps"
+      ]
+    }
+  ],
+  "sections": [
+    {
+      "sectionOrder": 1,
+      "headingLevel": 1,
+      "headingText": "Design Principles for HPC Workloads",
+      "headingPath": [
+        "Design Principles for HPC Workloads"
+      ],
+      "markdown": "The HPC design is grounded in principles derived from the Azure Well‑Architected Framework (WAF) pillars. These principles guide architectural decisions across core HPC design areas such as compute, storage, networking, and job orchestration. Familiarity with these principles helps you understand their impact and the trade‑offs involved when they are not followed. \n\nThese recommendations are most relevant for large‑scale, long‑running HPC workloads and may be adjusted for smaller or exploratory workloads. This methodology helps architects and engineers design HPC environments that are efficient, scalable, reliable, and cost‑aware, while keeping operational complexity manageable.\n\n> :::image type=\"icon\" source=\"../_images/trade-off.svg\"::: **Trade-off.** Maximizing performance and reliability often increases cost. Design decisions should be driven by business requirements and by clearly defined trade‑offs between performance, reliability, and cost.",
+      "lineStart": 2,
+      "lineEnd": 8
+    },
+    {
+      "sectionOrder": 2,
+      "headingLevel": 2,
+      "headingText": "Reliability",
+      "headingPath": [
+        "Design Principles for HPC Workloads",
+        "Reliability"
+      ],
+      "markdown": "Building reliable HPC environments on Azure requires planning for failures at multiple levels from individual compute nodes to entire regions. The ephemeral nature of cloud resources and the long-running characteristics of HPC jobs demand deliberate strategies for state preservation and recovery.",
+      "lineStart": 10,
+      "lineEnd": 12
+    },
+    {
+      "sectionOrder": 3,
+      "headingLevel": 3,
+      "headingText": "Considerations",
+      "headingPath": [
+        "Design Principles for HPC Workloads",
+        "Reliability",
+        "Considerations"
+      ],
+      "markdown": "- **Job state preservation:** Long‑running HPC jobs are vulnerable to infrastructure failures, spot evictions, and maintenance events. Without systematic checkpointing, interruptions can force full job restarts, wasting compute hours and delaying results.\n\n- **Node failure tolerance:** Individual VM failures are expected in large‑scale deployments. The scheduling and orchestration layer must detect failures promptly and either reassign work to healthy nodes or preserve state for recovery.\n\n- **Data protection strategy:** HPC workflows generate data with varying durability requirements, ranging from disposable scratch files to irreplaceable simulation results. Protection mechanisms should align with data value without imposing unnecessary overhead on transient working data.\n\n- **Cross-region continuity:** Critical workloads may require the ability to resume computation in an alternate Azure region after a regional outage. This capability requires advance planning for data replication and environment reproducibility.",
+      "lineStart": 14,
+      "lineEnd": 22
+    },
+    {
+      "sectionOrder": 4,
+      "headingLevel": 3,
+      "headingText": "Recommendations",
+      "headingPath": [
+        "Design Principles for HPC Workloads",
+        "Reliability",
+        "Recommendations"
+      ],
+      "markdown": "| Recommendation | Benefit |\n|----------------|---------|\n| Implement application-level checkpointing to [Azure Blob Storage](/azure/storage/blobs/) or [Azure Managed Lustre](/azure/azure-managed-lustre/). <br> Align checkpoint frequency with RPO targets and job criticality. | Protects long-running jobs from complete restart after failures. Jobs resume from last checkpoint rather than beginning, saving compute time and cost. |\n| Use [Azure CycleCloud](/azure/cyclecloud/common-issues/node-cyclecloud-connectivity)  or [Azure Batch automatic retry policies](/azure/batch/error-handling) to handle transient node failures and reschedule failed tasks without manual intervention. | Maintains job progress during temporary infrastructure issues. Automatic rescheduling eliminates manual monitoring and reduces time to completion. |\n| Replicate critical datasets and final results to [geo-redundant storage (GRS)](/azure/storage/common/storage-redundancy#geo-redundant-storage) or a paired Azure region. Use locally redundant storage for high-performance scratch data. | Balances data protection with performance needs. Critical data survives regional failures while temporary scratch data maintains high throughput during computation. |",
+      "lineStart": 24,
+      "lineEnd": 31
+    },
+    {
+      "sectionOrder": 5,
+      "headingLevel": 2,
+      "headingText": "Security",
+      "headingPath": [
+        "Design Principles for HPC Workloads",
+        "Security"
+      ],
+      "markdown": "HPC environments often process sensitive data, including proprietary research, regulated information, and competitive intellectual property, while requiring broad access for legitimate users. Security architecture must protect assets without creating barriers that impede computational workflows.",
+      "lineStart": 33,
+      "lineEnd": 35
+    },
+    {
+      "sectionOrder": 6,
+      "headingLevel": 3,
+      "headingText": "Considerations",
+      "headingPath": [
+        "Design Principles for HPC Workloads",
+        "Security",
+        "Considerations"
+      ],
+      "markdown": "- **Network boundary enforcement:** Operate HPC clusters within defined network perimeters that restrict unauthorized access while permitting required communication between compute nodes, storage systems, and job submission endpoints.\n\n- **Identity, access governance and data protection controls:** Access to HPC resources should be governed by least‑privilege principles, providing users only the permissions required for roles ranging from job submission to cluster administration, and integrated with organizational identity systems. Sensitive data must be protected through encryption at rest and in transit, with enforced policies ensuring that only authorized users and jobs can access protected datasets.\n\n- **Regulatory compliance:** Organizations processing data subject to regulatory requirements such as HIPAA, ITAR, or FedRAMP must implement specific controls and maintain audit evidence to demonstrate compliance.\n\n- **Workload isolation:** Multitenant HPC environments or clusters processing sensitive data require mechanisms to prevent unauthorized access between users or jobs, both at the compute layer and within shared storage systems.",
+      "lineStart": 37,
+      "lineEnd": 46
+    },
+    {
+      "sectionOrder": 7,
+      "headingLevel": 3,
+      "headingText": "Recommendations",
+      "headingPath": [
+        "Design Principles for HPC Workloads",
+        "Security",
+        "Recommendations"
+      ],
+      "markdown": "| Recommendation | Benefit |\n|----------------|---------|\n| Deploy HPC clusters within isolated virtual networks using network security groups | Reduces the attack surface by limiting network access to only required endpoints while allowing necessary node‑to‑node and storage communication. |\n| Use Microsoft Entra ID for authentication, and integrate role [Azure RBAC](/azure/role-based-access-control/) | Enforces least-privilege access and provides centralized identity governance across HPC resources. |\n| Use Secure administrative access using [Azure Bastion](/azure/bastion/secure-bastion) | Prevents direct exposure of management ports and reduces the risk of unauthorized access. |\n| Enable [encryption at rest](/azure/storage/common/storage-service-encryption) for all Azure storage services | Provides visibility into security posture, supports compliance audits, and enables rapid detection of misconfigurations or threats. Ensures consistent security controls across clusters and prevents configuration drift over time. | \n| Apply Azure policy to enforce security baselines and policy compliance reporting across HPC clusters | Reduces misconfigurations and configuration drift, improves visibility into compliance posture, supports audit and regulatory requirements, and enables faster detection and remediation of security gaps at scale and without manual intervention. |",
+      "lineStart": 48,
+      "lineEnd": 57
+    },
+    {
+      "sectionOrder": 8,
+      "headingLevel": 2,
+      "headingText": "Cost Optimization",
+      "headingPath": [
+        "Design Principles for HPC Workloads",
+        "Cost Optimization"
+      ],
+      "markdown": "Cloud‑based HPC enables elastic scaling, but costs can grow rapidly without deliberate control. Maximizing business value requires balancing spend with performance and reliability requirements.",
+      "lineStart": 59,
+      "lineEnd": 61
+    },
+    {
+      "sectionOrder": 9,
+      "headingLevel": 3,
+      "headingText": "Considerations",
+      "headingPath": [
+        "Design Principles for HPC Workloads",
+        "Cost Optimization",
+        "Considerations"
+      ],
+      "markdown": "- **Storage cost management:** HPC workflows generate large data volumes with varied access patterns. Keeping cold data on high‑performance tiers increases costs without performance benefits.\n  \n- **Compute right-sizing:** Over‑provisioned VMs waste capacity, while under‑provisioned VMs extend job runtimes and increase total cost. Accurate workload profiling supports effective sizing.\n\n- **Elastic scaling alignment:** Static cluster provisioning misaligns costs with workload demand. Infrastructure should scale with queued jobs and contract when demand subsides.\n\n- **Interruptible workload economics:** Many HPC workloads tolerate interruption with checkpointing, making them suitable for discounted capacity.\n\n- **Operational overhead accounting:** Total cost includes infrastructure and operational effort. Managed services can reduce administrative overhead even if unit costs are higher.",
+      "lineStart": 63,
+      "lineEnd": 73
+    },
+    {
+      "sectionOrder": 10,
+      "headingLevel": 3,
+      "headingText": "Recommendations",
+      "headingPath": [
+        "Design Principles for HPC Workloads",
+        "Cost Optimization",
+        "Recommendations"
+      ],
+      "markdown": "| Recommendation | Benefit |\n|----------------|---------|\n| Use [Azure Blob Storage lifecycle management](/azure/storage/blobs/lifecycle-management-policy-configure) to transition aging data from hot to cool or archive tiers. | Reduces storage costs while maintaining data accessibility. |\n| Analyze [resource usage with Azure CycleCloud](/azure/cyclecloud/concepts/usage-tracking) or [Azure Batch analytics](/azure/batch/batch-pool-vm-sizes) to select appropriate VM sizes. | Avoids unused capacity and balances performance with cost. |\n| Configure [Azure CycleCloud autoscaling](/azure/cyclecloud/how-to/configure-autoscaling) to provision compute nodes based on scheduler queue depth and deallocate idle nodes. | Aligns compute capacity with demand and eliminates idle spend. |\n| Deploy [Azure Spot VMs](/azure/virtual-machines/spot-vms) for fault-tolerant workloads with checkpointing, with fallback to standard VMs. | Lowers compute costs for interruption‑tolerant workloads. |",
+      "lineStart": 75,
+      "lineEnd": 82
+    },
+    {
+      "sectionOrder": 11,
+      "headingLevel": 2,
+      "headingText": "Operational Excellence",
+      "headingPath": [
+        "Design Principles for HPC Workloads",
+        "Operational Excellence"
+      ],
+      "markdown": "Operational maturity in HPC environments requires balancing user autonomy with system reliability. Users expect familiar tools and workflows, while operations teams need automation, visibility, and repeatability to manage infrastructure at scale.",
+      "lineStart": 84,
+      "lineEnd": 87
+    },
+    {
+      "sectionOrder": 12,
+      "headingLevel": 3,
+      "headingText": "Considerations",
+      "headingPath": [
+        "Design Principles for HPC Workloads",
+        "Operational Excellence",
+        "Considerations"
+      ],
+      "markdown": "- **Infrastructure reproducibility:** Manual cluster provisioning introduces inconsistencies and delays. HPC environments should be deployed using automated, version‑controlled processes that produce consistent results across environments.\n\n- **Scheduler integration:** HPC users rely on established job schedulers. Forcing new submission models increases friction and slows adoption of cloud-based HPC.\n\n- **Workflow automation:** HPC pipelines often span data staging, preprocessing, computation, post-processing, and results delivery. Manual coordination increases error rates and limits throughput.\n\n- **Observability and diagnostics:** Failures in large-scale HPC jobs can be difficult to diagnose without comprehensive telemetry. Operators need visibility into job status, resource utilization, and system health.\n\n- **Change management processes:** Updates to software stacks, schedulers, or infrastructure can introduce regressions. Changes should be validated and deployed through controlled, repeatable processes.",
+      "lineStart": 89,
+      "lineEnd": 99
+    },
+    {
+      "sectionOrder": 13,
+      "headingLevel": 3,
+      "headingText": "Recommendations",
+      "headingPath": [
+        "Design Principles for HPC Workloads",
+        "Operational Excellence",
+        "Recommendations"
+      ],
+      "markdown": "| Recommendation | Benefit |\n|----------------|---------|\n| Define HPC cluster infrastructure using Bicep or Terraform templates with [Azure Resource Manager](/azure/azure-resource-manager/) to manage deployments as code. | Ensures consistent, reproducible deployments and prevents configuration drift. Infrastructure as code also enables faster recovery scenarios. |\n| Deploy Azure CycleCloud with native support for [Slurm](/azure/cyclecloud/qs-deploy-ccws), PBS Pro, Grid Engine, or other schedulers that align with existing workflows. | Preserves user productivity by allowing existing job scripts and submission models to run unchanged. |\n| Use [Azure Batch for managed job scheduling](/azure/batch/batch-job-schedule) with task dependencies, or integrate CycleCloud clusters with workflow orchestration tools for multi-stage pipelines. | Automates complex workflows and ensures pipeline stages execute in the correct order without manual coordination. |\n| Enable [Azure Monitor](/azure/azure-monitor/) for diagnostic logs and metrics. Configure [Log Analytics workspaces](/azure/azure-monitor/logs/log-analytics-overview) to build operational dashboards. | Improves visibility into cluster health and job progress, enabling faster troubleshooting and proactive operations. |\n| Maintain infrastructure-as-code definitions using [Bicep](/azure/azure-resource-manager/bicep/) or [Terraform](/azure/developer/terraform/) in Azure DevOps or GitHub to enable repeatable cluster deployment in alternate regions during disaster recovery. | Enables faster recovery after catastrophic failures by reducing manual reconfiguration and improving deployment consistency. |",
+      "lineStart": 101,
+      "lineEnd": 110
+    },
+    {
+      "sectionOrder": 14,
+      "headingLevel": 2,
+      "headingText": "Performance Efficiency",
+      "headingPath": [
+        "Design Principles for HPC Workloads",
+        "Performance Efficiency"
+      ],
+      "markdown": "HPC workloads require maximum computational throughput, making hardware selection and architectural alignment critical. Azure provides purpose-built HPC infrastructure, but achieving optimal performance depends on matching workload characteristics to compute, networking, and storage configurations.",
+      "lineStart": 112,
+      "lineEnd": 114
+    },
+    {
+      "sectionOrder": 15,
+      "headingLevel": 3,
+      "headingText": "Considerations",
+      "headingPath": [
+        "Design Principles for HPC Workloads",
+        "Performance Efficiency",
+        "Considerations"
+      ],
+      "markdown": "- **Workload-hardware alignment:** HPC applications vary widely in resource demands, including CPU-bound simulations, memory-intensive analytics, GPU-accelerated computations, and I/O-heavy workflows. Unsuitable VM sizes limit achievable performance.\n\n- **Interconnect performance:** Tightly coupled parallel workloads are highly sensitive to network latency and bandwidth. Standard Ethernet networking can introduce bottlenecks that offset the benefits of horizontal scaling.\n\n- **Parallel storage throughput:** Large-scale HPC jobs generate concurrent access patterns that overwhelm traditional file servers. Storage systems must sustain high aggregate throughput across many nodes.\n\n- **Cluster topology optimization:** Physical VM proximity directly affects MPI performance. Distributed placement increases latency and degrades tightly coupled workload efficiency.\n\n- **Environment consistency:** Configuration drift, library mismatches, or software version inconsistencies across nodes introduce variability and complicate tuning and troubleshooting.",
+      "lineStart": 116,
+      "lineEnd": 126
+    },
+    {
+      "sectionOrder": 16,
+      "headingLevel": 3,
+      "headingText": "Recommendations",
+      "headingPath": [
+        "Design Principles for HPC Workloads",
+        "Performance Efficiency",
+        "Recommendations"
+      ],
+      "markdown": "| Recommendation | Benefit |\n|----------------|---------|\n| Select [HB series VMs](/azure/virtual-machines/sizes/high-performance-compute/hb-family) for CPU-intensive workloads, [ND series VMs](/azure/virtual-machines/sizes/gpu-accelerated/nd-series) for GPU-accelerated workloads, and memory‑optimized VM families for data‑intensive analytics. | Aligning hardware capabilities with application requirements, maximizes performance efficiency and value. |\n| Deploy [InfiniBand-enabled VM series](/azure/virtual-machines/workloads/hpc/enable-infiniband) (HB, HC, ND) for MPI workloads requiring low-latency, high-bandwidth node-to-node communication. | Minimizes communication overhead and enables efficient scaling for tightly coupled parallel workloads. |\n| Use [Azure Managed Lustre](/azure/azure-managed-lustre/blob-integration) for high‑throughput scratch storage, or Azure NetApp Files for shared POSIX‑compliant file access with consistent performance. | Prevents storage bottlenecks by sustaining concurrent access from large numbers of compute nodes. |\n| Configure [Proximity Placement Groups](/azure/virtual-machines/co-location) to place compute nodes within the same datacenter network segment. | Reduces inter‑node latency and improves message‑passing performance for communication‑intensive workloads. |",
+      "lineStart": 128,
+      "lineEnd": 135
+    },
+    {
+      "sectionOrder": 17,
+      "headingLevel": 2,
+      "headingText": "Azure facilitation",
+      "headingPath": [
+        "Design Principles for HPC Workloads",
+        "Azure facilitation"
+      ],
+      "markdown": "Azure provides a comprehensive set of services that support HPC workloads across all Well-Architected Framework pillars. The following services enable organizations to build resilient, secure, cost-effective, operationally excellent, and high-performance HPC environments.\n\n**Reliability**: Azure Blob Storage, Managed Lustre, Batch, and CycleCloud use GRS, IaC, checkpointing, retries, and fast recovery to protect long‑running jobs. These services ensure HPC workloads can recover quickly from failures and maintain progress toward completion.\n\nFor more information, see [Reliability design principles](/azure/well-architected/reliability/principles).\n\n**Security**: Azure networking, identity, access control, and secrets management provide defense‑in‑depth security for HPC environments. These services enable network isolation, identity-based access control, private connectivity, and comprehensive encryption to protect sensitive computational workloads and research data from unauthorized access.\n\nFor more information, see [Security design principles](/azure/well-architected/security/principles).\n\n**Cost Optimization**: Azure Blob Storage lifecycle management, Azure Batch analytics, CycleCloud autoscaling, Spot VMs, and Azure Cost Management help reduce HPC costs through automation, scaling, and discounted compute. These capabilities ensure HPC resources deliver maximum value without unnecessary expenditure.\n\nFor more information, see [Cost Optimization design principles](/azure/well-architected/cost-optimization/principles).\n\n**Operational Excellence**: Azure Resource Manager, Bicep, Terraform, Azure CycleCloud, Azure Batch, and Azure Monitor automate HPC deployments, scheduling, and monitoring, reducing operational overhead and improving cluster reliability.\n\nFor more information, see [Operational Excellence design principles](/azure/well-architected/operational-excellence/principles).\n\n**Performance Efficiency**: HBv4, HBv5, and NDv5 VMs with InfiniBand, Azure Managed Lustre, Azure NetApp Files, and Proximity Placement Groups provide the specialized compute, storage, and low‑latency networking needed for high‑performance HPC workloads.\n\nFor more information, see [Performance Efficiency design principles](/azure/well-architected/performance-efficiency/principles).",
+      "lineStart": 137,
+      "lineEnd": 159
+    },
+    {
+      "sectionOrder": 18,
+      "headingLevel": 2,
+      "headingText": "Next Steps",
+      "headingPath": [
+        "Design Principles for HPC Workloads",
+        "Next Steps"
+      ],
+      "markdown": "Design areas are interconnected and changes in one area may impact others. Start with the area most critical to your workload, then review how choices create trade-offs across the architecture.",
+      "lineStart": 161,
+      "lineEnd": 162
+    }
+  ],
+  "localLinks": [],
+  "lastModified": "2026-03-17T16:22:13.493Z"
+}

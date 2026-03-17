@@ -1,0 +1,171 @@
+{
+  "source": {
+    "absolutePath": "C:\\Users\\EricL\\source\\repos\\Well-Architected-Vibe-Coding\\well-architected-vibe-coding\\well-architected\\ai\\design-methodology.md",
+    "repoRelativePath": "well-architected/ai/design-methodology.md",
+    "docsRelativePath": "ai/design-methodology.md"
+  },
+  "frontMatter": {
+    "title": "Design Methodology for AI Workloads on Azure",
+    "description": "Learn how to implement a structured approach when you make architectural design decisions and create processes for AI workloads on Azure.",
+    "author": "PageWriter-MSFT",
+    "ms.author": "prwilk",
+    "ms.date": "01/09/2025",
+    "ms.topic": "concept-article",
+    "ms.update-cycle": "180-days"
+  },
+  "title": "Design Methodology for AI Workloads on Azure",
+  "rawBody": "# Design methodology for AI workloads on Azure\n\nWhen you design AI workloads, the code and data that you integrate replaces deterministic behavior. This shift facilitates tasks like prediction, classification, and other functional goals. AI workload architecture can often be complex and must align with business constraints. The Azure Well-Architected Framework provides a solid foundation for architectural excellence, but you should also consider AI-specific design principles.\n\nThis article presents a design methodology based on AI principles. The AI principles systematically guide the design and optimization of solutions. Another benefit of the methodology is collaboration with product owners and stakeholders to justify technical decisions. If you need help making decisions, refer back to this methodology to **align your design direction with high-level AI principles**.\n\nIf you design a capability or introduce an improvement, evaluate the change from the methodology perspective. Does your change affect the user experience? Is your change flexible enough to adapt to future innovations? Does it disrupt the experimentation flow? \n\n## Design with an experimental mindset\n\nDesign with an experimental mindset so that you can **achieve relevancy through iterative and statistically driven processes** based on real-world use cases.\n\nExperimentation in AI involves continuous adjustments with results that you can measure against quality targets after each iteration. Do an experimentation loop during the initial model evaluation and ongoing refinement. The inner loop refines a model's predictive power in a development environment. The outer loop monitors production usage and can trigger further refinement or data preparation. Both loops rely on continuous monitoring and evaluation to identify improvements.\n\nNot every experiment succeeds. Consider worst-case scenarios, and have contingency plans for failed experiments.\n\n## Design responsibly\n\nWhen users interact with your AI system, they place their **trust in its ethical functionality**, even if they don't understand the underlying logic and decision making of the AI model. This trust holds you accountable for designing a system that prevents unethical behaviors, such as manipulation, content toxicity, IP infringement, and fabricated responses. You should embed responsible AI principles in systems operations and in the culture of your team. The practices must extend throughout the lifecycle of user interaction—from the users' initial intent to use the system, during sessions, and even during disruptions caused by system errors.\n\nContent moderation is a key strategy in responsible design of generative AI. Content moderation evaluates requests and responses in real-time to help ensure safety and appropriateness. As part of the experimentation loops, strive to make algorithms fair and inclusive to minimize bias. Bias can enter the system through various channels, including during actual sessions or when you gather feedback.\n\nEthical data management is central to responsible design. Make informed decisions about when to use or avoid relying on user data. Users trust you to ensure that personal information is either removed from the system or retained only with their consent. If retention is inevitable, ensure that you use trusted technology to protect data, which helps ensure privacy and security.\n\n## Design for explainability\n\nAI model results must be explainable and justifiable. You should be able to **trace the origins of the data, the inference processes, and the journey of data** from its source to the serve layer. In discriminative AI, decisions can be justified with each step. In generative models, explainability can be complex. Document the decision-making process, both manually and through technical capabilities.\n\nExplainable results help ensure the system's transparency and accountability to gain users' trust.\n\n## Stay ahead of model decay\n\nModel decay is a unique challenge in AI that affects design decisions. The **quality of AI model outputs can deteriorate** over time without any changes to the code. Sometimes deterioration can even occur suddenly because of changes in data or external factors.\n\nThis deterioration affects various aspects of the system. These aspects include data-ingestion speed, data quality, monitoring needs, evaluation processes, and reaction times to correct problems. Implement early detection through a combination of automated processes for continuous monitoring and model evaluation. Take advantage of user feedback to help identify model decay.\n\nRegardless of the methods that you use to identify model decay, the operations team must engage data scientists to promptly research and address potential decay problems.\n\n## Design for adaptability\n\nAI is advancing at a rapid pace in terms of technological advancement and adoption. Be aware that **what you build today might become obsolete quickly.** Keep this consideration in mind when you make design decisions and create processes.\n\nAI advancement emphasizes the need for **agility and flexibility**. Recognize that some components might have a limited lifespan. Adopt a *pause-and-think* approach that focuses on the research of model discovery, programming libraries and frameworks, and processing technologies.\n\n## Next step\n\nLearn about design principles to build and operate AI workloads on Azure.\n\n> [!div class=\"nextstepaction\"]\n> [Design principles](./design-principles.md)",
+  "headings": [
+    {
+      "level": 1,
+      "text": "Design methodology for AI workloads on Azure",
+      "line": 1,
+      "path": [
+        "Design methodology for AI workloads on Azure"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Design with an experimental mindset",
+      "line": 9,
+      "path": [
+        "Design methodology for AI workloads on Azure",
+        "Design with an experimental mindset"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Design responsibly",
+      "line": 17,
+      "path": [
+        "Design methodology for AI workloads on Azure",
+        "Design responsibly"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Design for explainability",
+      "line": 25,
+      "path": [
+        "Design methodology for AI workloads on Azure",
+        "Design for explainability"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Stay ahead of model decay",
+      "line": 31,
+      "path": [
+        "Design methodology for AI workloads on Azure",
+        "Stay ahead of model decay"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Design for adaptability",
+      "line": 39,
+      "path": [
+        "Design methodology for AI workloads on Azure",
+        "Design for adaptability"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Next step",
+      "line": 45,
+      "path": [
+        "Design methodology for AI workloads on Azure",
+        "Next step"
+      ]
+    }
+  ],
+  "sections": [
+    {
+      "sectionOrder": 1,
+      "headingLevel": 1,
+      "headingText": "Design methodology for AI workloads on Azure",
+      "headingPath": [
+        "Design methodology for AI workloads on Azure"
+      ],
+      "markdown": "When you design AI workloads, the code and data that you integrate replaces deterministic behavior. This shift facilitates tasks like prediction, classification, and other functional goals. AI workload architecture can often be complex and must align with business constraints. The Azure Well-Architected Framework provides a solid foundation for architectural excellence, but you should also consider AI-specific design principles.\n\nThis article presents a design methodology based on AI principles. The AI principles systematically guide the design and optimization of solutions. Another benefit of the methodology is collaboration with product owners and stakeholders to justify technical decisions. If you need help making decisions, refer back to this methodology to **align your design direction with high-level AI principles**.\n\nIf you design a capability or introduce an improvement, evaluate the change from the methodology perspective. Does your change affect the user experience? Is your change flexible enough to adapt to future innovations? Does it disrupt the experimentation flow?",
+      "lineStart": 2,
+      "lineEnd": 8
+    },
+    {
+      "sectionOrder": 2,
+      "headingLevel": 2,
+      "headingText": "Design with an experimental mindset",
+      "headingPath": [
+        "Design methodology for AI workloads on Azure",
+        "Design with an experimental mindset"
+      ],
+      "markdown": "Design with an experimental mindset so that you can **achieve relevancy through iterative and statistically driven processes** based on real-world use cases.\n\nExperimentation in AI involves continuous adjustments with results that you can measure against quality targets after each iteration. Do an experimentation loop during the initial model evaluation and ongoing refinement. The inner loop refines a model's predictive power in a development environment. The outer loop monitors production usage and can trigger further refinement or data preparation. Both loops rely on continuous monitoring and evaluation to identify improvements.\n\nNot every experiment succeeds. Consider worst-case scenarios, and have contingency plans for failed experiments.",
+      "lineStart": 10,
+      "lineEnd": 16
+    },
+    {
+      "sectionOrder": 3,
+      "headingLevel": 2,
+      "headingText": "Design responsibly",
+      "headingPath": [
+        "Design methodology for AI workloads on Azure",
+        "Design responsibly"
+      ],
+      "markdown": "When users interact with your AI system, they place their **trust in its ethical functionality**, even if they don't understand the underlying logic and decision making of the AI model. This trust holds you accountable for designing a system that prevents unethical behaviors, such as manipulation, content toxicity, IP infringement, and fabricated responses. You should embed responsible AI principles in systems operations and in the culture of your team. The practices must extend throughout the lifecycle of user interaction—from the users' initial intent to use the system, during sessions, and even during disruptions caused by system errors.\n\nContent moderation is a key strategy in responsible design of generative AI. Content moderation evaluates requests and responses in real-time to help ensure safety and appropriateness. As part of the experimentation loops, strive to make algorithms fair and inclusive to minimize bias. Bias can enter the system through various channels, including during actual sessions or when you gather feedback.\n\nEthical data management is central to responsible design. Make informed decisions about when to use or avoid relying on user data. Users trust you to ensure that personal information is either removed from the system or retained only with their consent. If retention is inevitable, ensure that you use trusted technology to protect data, which helps ensure privacy and security.",
+      "lineStart": 18,
+      "lineEnd": 24
+    },
+    {
+      "sectionOrder": 4,
+      "headingLevel": 2,
+      "headingText": "Design for explainability",
+      "headingPath": [
+        "Design methodology for AI workloads on Azure",
+        "Design for explainability"
+      ],
+      "markdown": "AI model results must be explainable and justifiable. You should be able to **trace the origins of the data, the inference processes, and the journey of data** from its source to the serve layer. In discriminative AI, decisions can be justified with each step. In generative models, explainability can be complex. Document the decision-making process, both manually and through technical capabilities.\n\nExplainable results help ensure the system's transparency and accountability to gain users' trust.",
+      "lineStart": 26,
+      "lineEnd": 30
+    },
+    {
+      "sectionOrder": 5,
+      "headingLevel": 2,
+      "headingText": "Stay ahead of model decay",
+      "headingPath": [
+        "Design methodology for AI workloads on Azure",
+        "Stay ahead of model decay"
+      ],
+      "markdown": "Model decay is a unique challenge in AI that affects design decisions. The **quality of AI model outputs can deteriorate** over time without any changes to the code. Sometimes deterioration can even occur suddenly because of changes in data or external factors.\n\nThis deterioration affects various aspects of the system. These aspects include data-ingestion speed, data quality, monitoring needs, evaluation processes, and reaction times to correct problems. Implement early detection through a combination of automated processes for continuous monitoring and model evaluation. Take advantage of user feedback to help identify model decay.\n\nRegardless of the methods that you use to identify model decay, the operations team must engage data scientists to promptly research and address potential decay problems.",
+      "lineStart": 32,
+      "lineEnd": 38
+    },
+    {
+      "sectionOrder": 6,
+      "headingLevel": 2,
+      "headingText": "Design for adaptability",
+      "headingPath": [
+        "Design methodology for AI workloads on Azure",
+        "Design for adaptability"
+      ],
+      "markdown": "AI is advancing at a rapid pace in terms of technological advancement and adoption. Be aware that **what you build today might become obsolete quickly.** Keep this consideration in mind when you make design decisions and create processes.\n\nAI advancement emphasizes the need for **agility and flexibility**. Recognize that some components might have a limited lifespan. Adopt a *pause-and-think* approach that focuses on the research of model discovery, programming libraries and frameworks, and processing technologies.",
+      "lineStart": 40,
+      "lineEnd": 44
+    },
+    {
+      "sectionOrder": 7,
+      "headingLevel": 2,
+      "headingText": "Next step",
+      "headingPath": [
+        "Design methodology for AI workloads on Azure",
+        "Next step"
+      ],
+      "markdown": "Learn about design principles to build and operate AI workloads on Azure.\n\n> [!div class=\"nextstepaction\"]\n> [Design principles](./design-principles.md)",
+      "lineStart": 46,
+      "lineEnd": 50
+    }
+  ],
+  "localLinks": [
+    "./design-principles.md"
+  ],
+  "lastModified": "2026-03-17T16:22:13.390Z"
+}

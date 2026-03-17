@@ -1,0 +1,298 @@
+{
+  "source": {
+    "absolutePath": "C:\\Users\\EricL\\source\\repos\\Well-Architected-Vibe-Coding\\well-architected-vibe-coding\\well-architected\\security\\threat-model.md",
+    "repoRelativePath": "well-architected/security/threat-model.md",
+    "docsRelativePath": "security/threat-model.md"
+  },
+  "frontMatter": {
+    "title": "Architecture strategies for application threat analysis",
+    "description": "Use threat modeling to identify threats, attacks, vulnerabilities, and countermeasures that can affect an application.",
+    "author": "PageWriter-MSFT",
+    "ms.author": "prwilk",
+    "ms.date": "11/15/2023",
+    "ms.topic": "concept-article"
+  },
+  "title": "Architecture strategies for application threat analysis",
+  "rawBody": "# Architecture strategies for threat analysis\n\n**Applies to this Azure Well-Architected Framework Security checklist recommendation:**\n\n|**SE:02**|Maintain a secure development lifecycle by using a hardened, mostly automated, and auditable software supply chain. Incorporate a secure design by using threat modeling to safeguard against security-defeating implementations.|\n|---|---|\n\n**Related guide**: [Recommendations for securing a development lifecycle](secure-development-lifecycle.md)\n\nA comprehensive analysis to identify threats, attacks, vulnerabilities, and counter measures is crucial during the design phase of a workload. *Threat modeling* is an engineering exercise that includes defining security requirements, identifying and mitigating threats, and validating those mitigations. You can use this technique at any stage of application development or production, but it's most effective during the design stages of new functionality.\n\nThis guide describes the recommendations for doing threat modeling so that you can identify security gaps quickly and design your security defenses.\n\n**Definitions** \n\n|Term   |Definition|\n|---------|---------|\n|Software development lifecycle (SDLC)|A multistage, systematic process for developing software systems. |\n|STRIDE| A Microsoft-defined taxonomy for categorizing types of threats.|\n|Threat modeling| A process for identifying potential security vulnerabilities in the application and system, mitigating risks, and validating security controls.|\n\n\nThreat modeling is a crucial process that an organization should integrate into its SDLC. Threat modeling is not solely a developer's task. It's a shared responsibility between:\n\n- The workload team, which is responsible for the technical aspects of the system.\n- Business stakeholders, who understand the business outcomes and have a vested interest in security.\n\nThere's often a disconnect between organizational leadership and technical teams regarding business requirements for critical workloads. This disconnect can lead to unwanted outcomes, particularly for security investments.\n\nWhen the workload team is doing a threat modeling exercise, it should consider both business and technical requirements. The workload team and business stakeholders must agree on security-specific needs of the workload so that they can make adequate investments in the countermeasures.\n\nThe security requirements serve as guide for the entire process of threat modeling. To make it an effective exercise, the workload team should have a security mindset and be trained in threat modeling tools.\n\n## Understand the scope of the exercise\n\nA clear understanding of the scope is crucial for effective threat modeling. It helps focus efforts and resources on the most critical areas. This strategy involves defining the boundaries of the system, taking inventory of the assets that need to be protected, and understanding the level of investment that's required in security controls.\n\n## Gather information about each component\n\nA workload architecture diagram is a starting point for gathering information because it provides a visual representation of the system. The diagram highlights technical dimensions of the system. For example, it shows user flows, how data moves through the network, data sensitivity levels and information types, and identity access paths.\n\nThis detailed analysis can often provide insight into potential vulnerabilities in the design. It's important to understand the functionality of each component and its dependencies.\n\n## Evaluate the potential threats\n\nAnalyze each component from an outside-in perspective. For example, how easily can an attacker gain access to sensitive data? If attackers gain access to the environment, can they move laterally and potentially access or even manipulate other resources? These questions help you understand how an attacker might exploit workload assets.\n\n## Classify the threats by using an industry methodology\n\nOne methodology for classifying threats is [STRIDE](/azure/security/develop/threat-modeling-tool-threats), which the Microsoft Security Development Lifecycle uses. Classifying threats helps you understand the nature of each threat and use appropriate security controls.\n\n## Mitigate the threats\n\nDocument all the identified threats. For each threat, define security controls and the response to an attack if those controls fail. Define a process and timeline that minimize exposure to any identified vulnerabilities in the workload, so that those vulnerabilities can't be left unaddressed.\n\nUse the *assume breach* approach. It can help identify controls needed in the design to mitigate risk if a primary security control fails. Evaluate how likely it is for the primary control to fail. If it does fail, what is the extent of the potential organizational risk? Also, what is the effectiveness of the compensating control? Based on the evaluation, apply defense-in-depth measures to address potential failures of security controls.\n\nHere's an example:\n\n|Ask this question|To determine controls that...|\n|---|---|\n|Are connections authenticated through Microsoft Entra ID, Transport Layer Security (TLS) with mutual authentication, or another modern security protocol that the security team approved: <br><br> - Between users and the application? <br><br> - Between application components and services?|Prevent unauthorized access to the application components and data.|\n|Are you limiting access to only accounts that need to write or modify data in the application?| Prevent unauthorized data tampering or alteration.|\n|Is the application activity logged and fed into a security information and event management (SIEM) system through Azure Monitor or a similar solution?|Detect and investigate attacks quickly.|\n|Is critical data protected with encryption that the security team approved?| Prevent unauthorized copying of data at rest.|\n|Are inbound and outbound network traffic encrypted through TLS?|Prevent unauthorized copying of data in transit.|\n|Is the application protected against distributed denial of service (DDoS) attacks through services such as Azure DDoS Protection?|Detect attacks designed to overload the application so it can't be used.|\n|Does the application store sign-in credentials or keys to access other applications, databases, or services?| Identify whether an attack can use your application to attack other systems.|\n|Do the application controls allow you to fulfill regulatory requirements?| Protect users' private data and avoid compliance fines.|\n\n## Track threat modeling results\n\nWe highly recommend that you use a *threat modeling tool*. Tools can automate the process of identifying threats and produce a comprehensive report of all identified threats. Be sure to communicate the results to all interested teams.\n\nTrack the results as part of the workload team's backlog to allow for accountability in a timely way. Assign tasks to individuals who are responsible for mitigating a particular risk that threat modeling identified.\n\nAs you add new features to the solution, update the threat model and integrate it into the code management process. If you find a security problem, make sure there's a process to triage the problem based on severity. The process should help you determine when and how to remediate the problem (for example, in the next release cycle or in a faster release).\n\n## Review business-critical workload requirements regularly\n\nMeet regularly with executive sponsors to define requirements. These reviews provide an opportunity to align expectations and ensure operational resource allocation to the initiative.\n\n## Azure facilitation\n\nThe Microsoft Security Development Lifecycle provides a threat modeling tool to assist with the threat modeling process. This tool is available at no additional cost. For more information, see the [Threat Modeling page](https://www.microsoft.com/securityengineering/sdl/threatmodeling).\n\n## Example\n\nThis example builds on the Information Technology (IT) environment established in the [security baseline (SE:01)](./establish-baseline.md). This approach provides a broad understanding of the threat landscape across different IT scenarios. \n\n:::image type=\"content\" source=\"images/secure-development-lifecycle/threat-analysis.svg\" alt-text=\"Diagram that shows an example of an organization's security baseline with threat landscape.\" lightbox=\"images/secure-development-lifecycle/threat-analysis.svg\":::\n\n1) **Development Lifecycle personas**. There are many personas involved in a development life cycle, including developers, testers, final users, and administrators. All of them may be compromised and put your environment at risk through vulnerabilities or threats created intentionally.\n\n2) **Potential attackers**. Attackers consider a wide range of tools available easily to be used at any time to explore your vulnerabilities and start an attack.\n\n3) **Security controls**. As part of threat analysis, identify Azure security services to be used to protect your solution and how effective those solutions are.\n\n4) **Log collection**. Logs from Azure resources and some on-premises components may be sent to Azure Log Analytics so you may understand the behavior of your solution developed and try to capture initial vulnerabilities. \n\n5) **Security information event management (SIEM) solution**. Microsoft Sentinel may be added even in an early stage of the solution so you can  build some analytics queries to mitigate threats and vulnerabilities, anticipating your security environment when you are in production.\n\n6) **Microsoft Defender for Cloud** might make some security recommendations to improve the security posture.\n\n## Related links\n\n- [STRIDE](/azure/security/develop/threat-modeling-tool-threats)\n- [Threat Modeling](https://www.microsoft.com/securityengineering/sdl/threatmodeling)\n\n## Community links\n\n[Open Web Application Security Project (OWASP)](https://owasp.org/www-community/Threat_Modeling_Process) has documented a threat modeling approach for applications.\n\n## Security checklist\n\nRefer to the complete set of recommendations.\n\n> [!div class=\"nextstepaction\"]\n> [Security checklist](checklist.md)",
+  "headings": [
+    {
+      "level": 1,
+      "text": "Architecture strategies for threat analysis",
+      "line": 1,
+      "path": [
+        "Architecture strategies for threat analysis"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Understand the scope of the exercise",
+      "line": 34,
+      "path": [
+        "Architecture strategies for threat analysis",
+        "Understand the scope of the exercise"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Gather information about each component",
+      "line": 38,
+      "path": [
+        "Architecture strategies for threat analysis",
+        "Gather information about each component"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Evaluate the potential threats",
+      "line": 44,
+      "path": [
+        "Architecture strategies for threat analysis",
+        "Evaluate the potential threats"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Classify the threats by using an industry methodology",
+      "line": 48,
+      "path": [
+        "Architecture strategies for threat analysis",
+        "Classify the threats by using an industry methodology"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Mitigate the threats",
+      "line": 52,
+      "path": [
+        "Architecture strategies for threat analysis",
+        "Mitigate the threats"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Track threat modeling results",
+      "line": 71,
+      "path": [
+        "Architecture strategies for threat analysis",
+        "Track threat modeling results"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Review business-critical workload requirements regularly",
+      "line": 79,
+      "path": [
+        "Architecture strategies for threat analysis",
+        "Review business-critical workload requirements regularly"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Azure facilitation",
+      "line": 83,
+      "path": [
+        "Architecture strategies for threat analysis",
+        "Azure facilitation"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Example",
+      "line": 87,
+      "path": [
+        "Architecture strategies for threat analysis",
+        "Example"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Related links",
+      "line": 105,
+      "path": [
+        "Architecture strategies for threat analysis",
+        "Related links"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Community links",
+      "line": 110,
+      "path": [
+        "Architecture strategies for threat analysis",
+        "Community links"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Security checklist",
+      "line": 114,
+      "path": [
+        "Architecture strategies for threat analysis",
+        "Security checklist"
+      ]
+    }
+  ],
+  "sections": [
+    {
+      "sectionOrder": 1,
+      "headingLevel": 1,
+      "headingText": "Architecture strategies for threat analysis",
+      "headingPath": [
+        "Architecture strategies for threat analysis"
+      ],
+      "markdown": "**Applies to this Azure Well-Architected Framework Security checklist recommendation:**\n\n|**SE:02**|Maintain a secure development lifecycle by using a hardened, mostly automated, and auditable software supply chain. Incorporate a secure design by using threat modeling to safeguard against security-defeating implementations.|\n|---|---|\n\n**Related guide**: [Recommendations for securing a development lifecycle](secure-development-lifecycle.md)\n\nA comprehensive analysis to identify threats, attacks, vulnerabilities, and counter measures is crucial during the design phase of a workload. *Threat modeling* is an engineering exercise that includes defining security requirements, identifying and mitigating threats, and validating those mitigations. You can use this technique at any stage of application development or production, but it's most effective during the design stages of new functionality.\n\nThis guide describes the recommendations for doing threat modeling so that you can identify security gaps quickly and design your security defenses.\n\n**Definitions** \n\n|Term   |Definition|\n|---------|---------|\n|Software development lifecycle (SDLC)|A multistage, systematic process for developing software systems. |\n|STRIDE| A Microsoft-defined taxonomy for categorizing types of threats.|\n|Threat modeling| A process for identifying potential security vulnerabilities in the application and system, mitigating risks, and validating security controls.|\n\n\nThreat modeling is a crucial process that an organization should integrate into its SDLC. Threat modeling is not solely a developer's task. It's a shared responsibility between:\n\n- The workload team, which is responsible for the technical aspects of the system.\n- Business stakeholders, who understand the business outcomes and have a vested interest in security.\n\nThere's often a disconnect between organizational leadership and technical teams regarding business requirements for critical workloads. This disconnect can lead to unwanted outcomes, particularly for security investments.\n\nWhen the workload team is doing a threat modeling exercise, it should consider both business and technical requirements. The workload team and business stakeholders must agree on security-specific needs of the workload so that they can make adequate investments in the countermeasures.\n\nThe security requirements serve as guide for the entire process of threat modeling. To make it an effective exercise, the workload team should have a security mindset and be trained in threat modeling tools.",
+      "lineStart": 2,
+      "lineEnd": 33
+    },
+    {
+      "sectionOrder": 2,
+      "headingLevel": 2,
+      "headingText": "Understand the scope of the exercise",
+      "headingPath": [
+        "Architecture strategies for threat analysis",
+        "Understand the scope of the exercise"
+      ],
+      "markdown": "A clear understanding of the scope is crucial for effective threat modeling. It helps focus efforts and resources on the most critical areas. This strategy involves defining the boundaries of the system, taking inventory of the assets that need to be protected, and understanding the level of investment that's required in security controls.",
+      "lineStart": 35,
+      "lineEnd": 37
+    },
+    {
+      "sectionOrder": 3,
+      "headingLevel": 2,
+      "headingText": "Gather information about each component",
+      "headingPath": [
+        "Architecture strategies for threat analysis",
+        "Gather information about each component"
+      ],
+      "markdown": "A workload architecture diagram is a starting point for gathering information because it provides a visual representation of the system. The diagram highlights technical dimensions of the system. For example, it shows user flows, how data moves through the network, data sensitivity levels and information types, and identity access paths.\n\nThis detailed analysis can often provide insight into potential vulnerabilities in the design. It's important to understand the functionality of each component and its dependencies.",
+      "lineStart": 39,
+      "lineEnd": 43
+    },
+    {
+      "sectionOrder": 4,
+      "headingLevel": 2,
+      "headingText": "Evaluate the potential threats",
+      "headingPath": [
+        "Architecture strategies for threat analysis",
+        "Evaluate the potential threats"
+      ],
+      "markdown": "Analyze each component from an outside-in perspective. For example, how easily can an attacker gain access to sensitive data? If attackers gain access to the environment, can they move laterally and potentially access or even manipulate other resources? These questions help you understand how an attacker might exploit workload assets.",
+      "lineStart": 45,
+      "lineEnd": 47
+    },
+    {
+      "sectionOrder": 5,
+      "headingLevel": 2,
+      "headingText": "Classify the threats by using an industry methodology",
+      "headingPath": [
+        "Architecture strategies for threat analysis",
+        "Classify the threats by using an industry methodology"
+      ],
+      "markdown": "One methodology for classifying threats is [STRIDE](/azure/security/develop/threat-modeling-tool-threats), which the Microsoft Security Development Lifecycle uses. Classifying threats helps you understand the nature of each threat and use appropriate security controls.",
+      "lineStart": 49,
+      "lineEnd": 51
+    },
+    {
+      "sectionOrder": 6,
+      "headingLevel": 2,
+      "headingText": "Mitigate the threats",
+      "headingPath": [
+        "Architecture strategies for threat analysis",
+        "Mitigate the threats"
+      ],
+      "markdown": "Document all the identified threats. For each threat, define security controls and the response to an attack if those controls fail. Define a process and timeline that minimize exposure to any identified vulnerabilities in the workload, so that those vulnerabilities can't be left unaddressed.\n\nUse the *assume breach* approach. It can help identify controls needed in the design to mitigate risk if a primary security control fails. Evaluate how likely it is for the primary control to fail. If it does fail, what is the extent of the potential organizational risk? Also, what is the effectiveness of the compensating control? Based on the evaluation, apply defense-in-depth measures to address potential failures of security controls.\n\nHere's an example:\n\n|Ask this question|To determine controls that...|\n|---|---|\n|Are connections authenticated through Microsoft Entra ID, Transport Layer Security (TLS) with mutual authentication, or another modern security protocol that the security team approved: <br><br> - Between users and the application? <br><br> - Between application components and services?|Prevent unauthorized access to the application components and data.|\n|Are you limiting access to only accounts that need to write or modify data in the application?| Prevent unauthorized data tampering or alteration.|\n|Is the application activity logged and fed into a security information and event management (SIEM) system through Azure Monitor or a similar solution?|Detect and investigate attacks quickly.|\n|Is critical data protected with encryption that the security team approved?| Prevent unauthorized copying of data at rest.|\n|Are inbound and outbound network traffic encrypted through TLS?|Prevent unauthorized copying of data in transit.|\n|Is the application protected against distributed denial of service (DDoS) attacks through services such as Azure DDoS Protection?|Detect attacks designed to overload the application so it can't be used.|\n|Does the application store sign-in credentials or keys to access other applications, databases, or services?| Identify whether an attack can use your application to attack other systems.|\n|Do the application controls allow you to fulfill regulatory requirements?| Protect users' private data and avoid compliance fines.|",
+      "lineStart": 53,
+      "lineEnd": 70
+    },
+    {
+      "sectionOrder": 7,
+      "headingLevel": 2,
+      "headingText": "Track threat modeling results",
+      "headingPath": [
+        "Architecture strategies for threat analysis",
+        "Track threat modeling results"
+      ],
+      "markdown": "We highly recommend that you use a *threat modeling tool*. Tools can automate the process of identifying threats and produce a comprehensive report of all identified threats. Be sure to communicate the results to all interested teams.\n\nTrack the results as part of the workload team's backlog to allow for accountability in a timely way. Assign tasks to individuals who are responsible for mitigating a particular risk that threat modeling identified.\n\nAs you add new features to the solution, update the threat model and integrate it into the code management process. If you find a security problem, make sure there's a process to triage the problem based on severity. The process should help you determine when and how to remediate the problem (for example, in the next release cycle or in a faster release).",
+      "lineStart": 72,
+      "lineEnd": 78
+    },
+    {
+      "sectionOrder": 8,
+      "headingLevel": 2,
+      "headingText": "Review business-critical workload requirements regularly",
+      "headingPath": [
+        "Architecture strategies for threat analysis",
+        "Review business-critical workload requirements regularly"
+      ],
+      "markdown": "Meet regularly with executive sponsors to define requirements. These reviews provide an opportunity to align expectations and ensure operational resource allocation to the initiative.",
+      "lineStart": 80,
+      "lineEnd": 82
+    },
+    {
+      "sectionOrder": 9,
+      "headingLevel": 2,
+      "headingText": "Azure facilitation",
+      "headingPath": [
+        "Architecture strategies for threat analysis",
+        "Azure facilitation"
+      ],
+      "markdown": "The Microsoft Security Development Lifecycle provides a threat modeling tool to assist with the threat modeling process. This tool is available at no additional cost. For more information, see the [Threat Modeling page](https://www.microsoft.com/securityengineering/sdl/threatmodeling).",
+      "lineStart": 84,
+      "lineEnd": 86
+    },
+    {
+      "sectionOrder": 10,
+      "headingLevel": 2,
+      "headingText": "Example",
+      "headingPath": [
+        "Architecture strategies for threat analysis",
+        "Example"
+      ],
+      "markdown": "This example builds on the Information Technology (IT) environment established in the [security baseline (SE:01)](./establish-baseline.md). This approach provides a broad understanding of the threat landscape across different IT scenarios. \n\n:::image type=\"content\" source=\"images/secure-development-lifecycle/threat-analysis.svg\" alt-text=\"Diagram that shows an example of an organization's security baseline with threat landscape.\" lightbox=\"images/secure-development-lifecycle/threat-analysis.svg\":::\n\n1) **Development Lifecycle personas**. There are many personas involved in a development life cycle, including developers, testers, final users, and administrators. All of them may be compromised and put your environment at risk through vulnerabilities or threats created intentionally.\n\n2) **Potential attackers**. Attackers consider a wide range of tools available easily to be used at any time to explore your vulnerabilities and start an attack.\n\n3) **Security controls**. As part of threat analysis, identify Azure security services to be used to protect your solution and how effective those solutions are.\n\n4) **Log collection**. Logs from Azure resources and some on-premises components may be sent to Azure Log Analytics so you may understand the behavior of your solution developed and try to capture initial vulnerabilities. \n\n5) **Security information event management (SIEM) solution**. Microsoft Sentinel may be added even in an early stage of the solution so you can  build some analytics queries to mitigate threats and vulnerabilities, anticipating your security environment when you are in production.\n\n6) **Microsoft Defender for Cloud** might make some security recommendations to improve the security posture.",
+      "lineStart": 88,
+      "lineEnd": 104
+    },
+    {
+      "sectionOrder": 11,
+      "headingLevel": 2,
+      "headingText": "Related links",
+      "headingPath": [
+        "Architecture strategies for threat analysis",
+        "Related links"
+      ],
+      "markdown": "- [STRIDE](/azure/security/develop/threat-modeling-tool-threats)\n- [Threat Modeling](https://www.microsoft.com/securityengineering/sdl/threatmodeling)",
+      "lineStart": 106,
+      "lineEnd": 109
+    },
+    {
+      "sectionOrder": 12,
+      "headingLevel": 2,
+      "headingText": "Community links",
+      "headingPath": [
+        "Architecture strategies for threat analysis",
+        "Community links"
+      ],
+      "markdown": "[Open Web Application Security Project (OWASP)](https://owasp.org/www-community/Threat_Modeling_Process) has documented a threat modeling approach for applications.",
+      "lineStart": 111,
+      "lineEnd": 113
+    },
+    {
+      "sectionOrder": 13,
+      "headingLevel": 2,
+      "headingText": "Security checklist",
+      "headingPath": [
+        "Architecture strategies for threat analysis",
+        "Security checklist"
+      ],
+      "markdown": "Refer to the complete set of recommendations.\n\n> [!div class=\"nextstepaction\"]\n> [Security checklist](checklist.md)",
+      "lineStart": 115,
+      "lineEnd": 119
+    }
+  ],
+  "localLinks": [
+    "./establish-baseline.md",
+    "checklist.md",
+    "secure-development-lifecycle.md"
+  ],
+  "lastModified": "2026-03-17T16:22:13.788Z"
+}

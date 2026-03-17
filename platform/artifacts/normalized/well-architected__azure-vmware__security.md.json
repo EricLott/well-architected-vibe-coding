@@ -1,0 +1,421 @@
+{
+  "source": {
+    "absolutePath": "C:\\Users\\EricL\\source\\repos\\Well-Architected-Vibe-Coding\\well-architected-vibe-coding\\well-architected\\azure-vmware\\security.md",
+    "repoRelativePath": "well-architected/azure-vmware/security.md",
+    "docsRelativePath": "azure-vmware/security.md"
+  },
+  "frontMatter": {
+    "title": "Security considerations for Azure VMware Solution workloads",
+    "description": "Examine Azure VMware Solution security considerations. See how to encrypt data, use network segmentation, detect threats, and implement other security measures.",
+    "author": "PageWriter-MSFT",
+    "ms.author": "prwilk",
+    "ms.date": "08/10/2023",
+    "ms.topic": "concept-article",
+    "ms.service": "azure-waf",
+    "ms.subservice": "waf-workload-azure-vmware",
+    "ms.custom": "sfi-image-nochange"
+  },
+  "title": "Security considerations for Azure VMware Solution workloads",
+  "rawBody": "# Security considerations for Azure VMware Solution workloads\n\nThis article discusses the security design area of an Azure VMware Solution workload. The discussion covers various measures for helping to secure and protect Azure VMware Solution workloads. These measures help protect infrastructure, data, and applications. This approach to security is holistic and aligns with an organization's core priorities.\n\nSecuring Azure VMware Solution requires a shared responsibility model, where Microsoft Azure and VMware are responsible for certain security aspects. To implement appropriate security measures, ensure a clear understanding of the shared responsibility model and collaboration between IT teams, VMware, and Microsoft.\n\n## Manage compliance and governance\n\n*Impact: Security, Operational Excellence*\n\nTo avoid deleting the private cloud by mistake, use [resource locks](/azure/azure-resource-manager/management/lock-resources?tabs=json) to safeguard resources from unwanted deletion or change. They can be set at the subscription, resource group, or resource level and block deletions, modifications, or both. \n\nIt's also important to detect noncompliant servers. You can use Azure Arc for this purpose. Azure Arc extends Azure management capabilities and services to on-premises or multicloud environments. Azure Arc gives you a single-pane view for applying updates and hotfixes by providing centralized server management and governance. The result is a consistent experience for managing components from Azure, on-premises systems, and Azure VMware Solution.\n\n##### Recommendations\n\n- Put a resource lock on the resource group that hosts the private cloud to prevent accidentally deleting it.\n- Configure Azure VMware Solution guest virtual machines (VMs) as Azure Arc–enabled servers. For methods that you can use to connect machines, see [Azure connected machine agent deployment options](/azure/azure-arc/servers/deployment-options).\n- Deploy a certified third-party solution or Azure Arc for Azure VMware Solution (preview).\n- Use Azure Policy for Azure Arc–enabled servers to audit and enforce security controls on Azure VMware Solution guest VMs.\n\n## Protect the guest operating system\n\n*Impact: Security*\n\nIf you don't patch and regularly update your operating system, you make it susceptible to vulnerabilities and put your entire platform at risk. When you apply patches regularly, you keep your system up to date. When you use an endpoint protection solution, you help prevent common attack vectors from targeting your operating system. It's also important to regularly perform vulnerability scans and assessments. These tools help you identify and remediate security weaknesses and vulnerabilities.\n\nMicrosoft Defender for Cloud offers unique tools that provide advanced threat protection across Azure VMware Solution and on-premises VMs, including:\n\n- File integrity monitoring.\n- Fileless attack detection.\n- Operating system patch assessment.\n- Security misconfiguration assessment.\n- Endpoint protection assessment.\n\n##### Recommendations\n\n- Install an Azure security agent on Azure VMware Solution guest VMs through Azure Arc for servers to monitor them for security configurations and vulnerabilities.\n- Configure Azure Arc machines to automatically create an association with the default data collection rule for Defender for Cloud.\n- On the subscription you use to deploy and run the Azure VMware Solution private cloud, use a Defender for Cloud plan that includes server protection.\n- If you have guest VMs with extended security benefits in the Azure VMware Solution private cloud, deploy security updates regularly. Use the Volume Activation Management Tool to deploy these updates.\n\n## Encrypt data\n\n*Impact: Security, Operational Excellence*\n\nData encryption is an important aspect of protecting your Azure VMware Solution workload from unauthorized access and preserving the integrity of sensitive data. Encryption includes data at rest on the systems and data in transit.\n\n##### Recommendations\n\n- Encrypt VMware vSAN datastores with customer-managed keys to encrypt data at rest.\n- Use native encryption tools such as BitLocker to encrypt guest VMs.\n- Use native database encryption options for databases that run on Azure VMware Solution private cloud guest VMs. For instance, you can use transparent data encryption (TDE) for SQL Server.\n- Monitor database activities for suspicious activity. You can use native database monitoring tools like SQL Server Activity Monitor.\n\n## Implement network security\n\n*Impact: Operational excellence*\n\nA goal of network security is to prevent unauthorized access to Azure VMware Solution components. One method for achieving this goal is to implement boundaries via network segmentation. This practice helps to isolate your applications. As part of segmentation, a virtual LAN operates at your data-link layer. That virtual LAN provides physical separation of your VMs by partitioning the physical network into logical ones to separate traffic.\n\nSegments are then created to provide advanced security capabilities and routing. For example, the application, web, and database tier can have separate segments in a three-tier architecture. The application can add a level of micro-segmentation by using security rules to restrict network communication between the VMs in each segment.\n\n:::image type=\"content\" source=\"./images/azure-vmware-solution-segmentation.png\" alt-text=\"Architecture diagram that shows the various tiers and segments of an Azure VMware Solution environment.\" border=\"false\":::\n\nThe tier-1 routers are positioned in front of the segments. These routers provide routing capabilities within the software-defined datacenter (SDDC). You can deploy multiple tier-1 routers to segregate different sets of segments or to achieve a specific routing. For example, say you'd like to restrict East-West traffic that flows to and from your production, development, and testing workloads. You can use distributed level-1 tiers to segment and filter that traffic based on specific rules and policies.\n\n:::image type=\"content\" source=\"./images/azure-vmware-solution-distributed-tiers.png\" alt-text=\"Architecture diagram that shows multiple distributed level-one tiers in an Azure VMware Solution environment.\" border=\"false\":::\n\n##### Recommendations\n\n- Use network segments to separate and monitor components logically.\n- Use micro-segmentation capabilities that are native to VMware NSX-T Data Center to restrict network communication between application components.\n- Use a centralized routing appliance to secure and optimize routing between segments.\n- Use staggered tier-1 routers when network segmentation is driven by organizational security or networking policies, compliance requirements, business units, departments, or environments.\n\n## Use an intrusion detection and prevention system (IDPS)\n\n*Impact: Security*\n\nAn IDPS can help you detect and prevent network-based attacks and malicious activity in your Azure VMware Solution environment.\n\n##### Recommendations\n\n- Use the VMware NSX-T Data Center distributed firewall for help with detecting malicious patterns and malware in East-West traffic between your Azure VMware Solution components.\n- Use an Azure service such as Azure Firewall or a certified third-party NVA that runs in Azure or in Azure VMware Solution.\n\n## Use role-based access control (RBAC) and multifactor authentication\n\n*Impact: Security, Operational excellence*\n\nIdentity security helps control access to Azure VMware Solution private cloud workloads and the applications that run on them. You can use RBAC to assign roles and permissions that are appropriate for specific users and groups. These roles and permissions are granted based on the principle of least privilege.\n\nYou can enforce multifactor authentication for user authentication to provide an extra layer of security against unauthorized access. Various multifactor authentication methods, such as mobile push notifications, offer a convenient user experience and also help to ensure strong authentication. You can integrate Azure VMware Solution with Microsoft Entra ID to centralize user management and take advantage of Microsoft Entra advanced security features. Examples of features include privileged identity management, multifactor authentication, and conditional access.\n\n##### Recommendations\n\n- Use Microsoft Entra Privileged Identity Management to allow time-bound access to the Azure portal and control pane operations. Use privileged identity management audit history to track operations that highly privileged accounts perform.  \n- Reduce the number of Microsoft Entra accounts that can:\n  - Access the Azure portal and APIs.\n  - Navigate to the Azure VMware Solution private cloud.\n  - Read VMware vCenter Server and VMware NSX-T Data Center admin accounts.\n- Rotate local `cloudadmin` account credentials for VMware vCenter Server and VMware NSX-T Data Center to prevent the misuse and abuse of these administrative accounts. Use these accounts only in *break glass* scenarios. Create server groups and users for VMware vCenter Server, and assign them identities from external identity sources. Use these groups and users for specific VMware vCenter Server and VMware NSX-T Data Center operations.\n- Use a centralized identity source for configuring authentication and authorization services for guest VMs and applications.\n\n## Monitor security and detect threats\n\n*Impact: Security, Operational excellence*\n\nSecurity monitoring and threat detection involve detecting and responding to changes in the security posture of Azure VMware Solution private cloud workloads. It's important to follow industry best practices and comply with regulatory requirements, including:\n\n- The Health Insurance Portability and Accountability Act (HIPAA).\n- Payment Card Industry Data Security Standards (PCI DSS).\n\nYou can use a security information and event management (SIEM) tool or Microsoft Sentinel to aggregate, monitor, and analyze security logs and events. This information helps you detect and respond to potential threats. Regularly conducting audit reviews also helps you avert threats. When you regularly monitor your Azure VMware Solution environment, you're in a better position to ensure it aligns with security standards and policies.\n\n##### Recommendations\n\n- Automate responses to recommendations from Defender for Cloud by using the following Azure policies:\n  - Workflow automation for security alerts\n  - Workflow automation for security recommendations\n  - Workflow automation for regulatory compliance changes\n- Deploy Microsoft Sentinel and set the destination to a Log Analytics workspace to collect logs from Azure VMware Solution private cloud guest VMs.\n- Use a data connector to connect Microsoft Sentinel and Defender for Cloud.\n- Automate threat responses by using Microsoft Sentinel playbooks and Azure Automation rules.\n\n## Establish a security baseline\n\n*Impact: Security*\n\nThe Microsoft cloud security benchmark provides recommendations about how you can secure your cloud solutions on Azure. This security baseline applies controls that are defined by Microsoft cloud security benchmark version 1.0 to Azure Policy.\n\n##### Recommendations\n\n- To help protect your workload, apply the recommendations that are given in [Azure security baseline for Azure VMware Solution](/security/benchmark/azure/baselines/azure-vmware-solution-security-baseline).\n\n## Next steps\n\nNow that you've looked at best practices for securing Azure VMware Solution, investigate operational management procedures for achieving business excellence.\n\n> [!div class=\"nextstepaction\"]\n> [Operations](./operations.md)\n\nUse the assessment tool to evaluate your design choices.\n\n> [!div class=\"nextstepaction\"]\n> [Assessment](./assessment.md)",
+  "headings": [
+    {
+      "level": 1,
+      "text": "Security considerations for Azure VMware Solution workloads",
+      "line": 1,
+      "path": [
+        "Security considerations for Azure VMware Solution workloads"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Manage compliance and governance",
+      "line": 7,
+      "path": [
+        "Security considerations for Azure VMware Solution workloads",
+        "Manage compliance and governance"
+      ]
+    },
+    {
+      "level": 5,
+      "text": "Recommendations",
+      "line": 15,
+      "path": [
+        "Security considerations for Azure VMware Solution workloads",
+        "Manage compliance and governance",
+        "Recommendations"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Protect the guest operating system",
+      "line": 22,
+      "path": [
+        "Security considerations for Azure VMware Solution workloads",
+        "Protect the guest operating system"
+      ]
+    },
+    {
+      "level": 5,
+      "text": "Recommendations",
+      "line": 36,
+      "path": [
+        "Security considerations for Azure VMware Solution workloads",
+        "Protect the guest operating system",
+        "Recommendations"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Encrypt data",
+      "line": 43,
+      "path": [
+        "Security considerations for Azure VMware Solution workloads",
+        "Encrypt data"
+      ]
+    },
+    {
+      "level": 5,
+      "text": "Recommendations",
+      "line": 49,
+      "path": [
+        "Security considerations for Azure VMware Solution workloads",
+        "Encrypt data",
+        "Recommendations"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Implement network security",
+      "line": 56,
+      "path": [
+        "Security considerations for Azure VMware Solution workloads",
+        "Implement network security"
+      ]
+    },
+    {
+      "level": 5,
+      "text": "Recommendations",
+      "line": 70,
+      "path": [
+        "Security considerations for Azure VMware Solution workloads",
+        "Implement network security",
+        "Recommendations"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Use an intrusion detection and prevention system (IDPS)",
+      "line": 77,
+      "path": [
+        "Security considerations for Azure VMware Solution workloads",
+        "Use an intrusion detection and prevention system (IDPS)"
+      ]
+    },
+    {
+      "level": 5,
+      "text": "Recommendations",
+      "line": 83,
+      "path": [
+        "Security considerations for Azure VMware Solution workloads",
+        "Use an intrusion detection and prevention system (IDPS)",
+        "Recommendations"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Use role-based access control (RBAC) and multifactor authentication",
+      "line": 88,
+      "path": [
+        "Security considerations for Azure VMware Solution workloads",
+        "Use role-based access control (RBAC) and multifactor authentication"
+      ]
+    },
+    {
+      "level": 5,
+      "text": "Recommendations",
+      "line": 96,
+      "path": [
+        "Security considerations for Azure VMware Solution workloads",
+        "Use role-based access control (RBAC) and multifactor authentication",
+        "Recommendations"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Monitor security and detect threats",
+      "line": 106,
+      "path": [
+        "Security considerations for Azure VMware Solution workloads",
+        "Monitor security and detect threats"
+      ]
+    },
+    {
+      "level": 5,
+      "text": "Recommendations",
+      "line": 117,
+      "path": [
+        "Security considerations for Azure VMware Solution workloads",
+        "Monitor security and detect threats",
+        "Recommendations"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Establish a security baseline",
+      "line": 127,
+      "path": [
+        "Security considerations for Azure VMware Solution workloads",
+        "Establish a security baseline"
+      ]
+    },
+    {
+      "level": 5,
+      "text": "Recommendations",
+      "line": 133,
+      "path": [
+        "Security considerations for Azure VMware Solution workloads",
+        "Establish a security baseline",
+        "Recommendations"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Next steps",
+      "line": 137,
+      "path": [
+        "Security considerations for Azure VMware Solution workloads",
+        "Next steps"
+      ]
+    }
+  ],
+  "sections": [
+    {
+      "sectionOrder": 1,
+      "headingLevel": 1,
+      "headingText": "Security considerations for Azure VMware Solution workloads",
+      "headingPath": [
+        "Security considerations for Azure VMware Solution workloads"
+      ],
+      "markdown": "This article discusses the security design area of an Azure VMware Solution workload. The discussion covers various measures for helping to secure and protect Azure VMware Solution workloads. These measures help protect infrastructure, data, and applications. This approach to security is holistic and aligns with an organization's core priorities.\n\nSecuring Azure VMware Solution requires a shared responsibility model, where Microsoft Azure and VMware are responsible for certain security aspects. To implement appropriate security measures, ensure a clear understanding of the shared responsibility model and collaboration between IT teams, VMware, and Microsoft.",
+      "lineStart": 2,
+      "lineEnd": 6
+    },
+    {
+      "sectionOrder": 2,
+      "headingLevel": 2,
+      "headingText": "Manage compliance and governance",
+      "headingPath": [
+        "Security considerations for Azure VMware Solution workloads",
+        "Manage compliance and governance"
+      ],
+      "markdown": "*Impact: Security, Operational Excellence*\n\nTo avoid deleting the private cloud by mistake, use [resource locks](/azure/azure-resource-manager/management/lock-resources?tabs=json) to safeguard resources from unwanted deletion or change. They can be set at the subscription, resource group, or resource level and block deletions, modifications, or both. \n\nIt's also important to detect noncompliant servers. You can use Azure Arc for this purpose. Azure Arc extends Azure management capabilities and services to on-premises or multicloud environments. Azure Arc gives you a single-pane view for applying updates and hotfixes by providing centralized server management and governance. The result is a consistent experience for managing components from Azure, on-premises systems, and Azure VMware Solution.",
+      "lineStart": 8,
+      "lineEnd": 14
+    },
+    {
+      "sectionOrder": 3,
+      "headingLevel": 5,
+      "headingText": "Recommendations",
+      "headingPath": [
+        "Security considerations for Azure VMware Solution workloads",
+        "Manage compliance and governance",
+        "Recommendations"
+      ],
+      "markdown": "- Put a resource lock on the resource group that hosts the private cloud to prevent accidentally deleting it.\n- Configure Azure VMware Solution guest virtual machines (VMs) as Azure Arc–enabled servers. For methods that you can use to connect machines, see [Azure connected machine agent deployment options](/azure/azure-arc/servers/deployment-options).\n- Deploy a certified third-party solution or Azure Arc for Azure VMware Solution (preview).\n- Use Azure Policy for Azure Arc–enabled servers to audit and enforce security controls on Azure VMware Solution guest VMs.",
+      "lineStart": 16,
+      "lineEnd": 21
+    },
+    {
+      "sectionOrder": 4,
+      "headingLevel": 2,
+      "headingText": "Protect the guest operating system",
+      "headingPath": [
+        "Security considerations for Azure VMware Solution workloads",
+        "Protect the guest operating system"
+      ],
+      "markdown": "*Impact: Security*\n\nIf you don't patch and regularly update your operating system, you make it susceptible to vulnerabilities and put your entire platform at risk. When you apply patches regularly, you keep your system up to date. When you use an endpoint protection solution, you help prevent common attack vectors from targeting your operating system. It's also important to regularly perform vulnerability scans and assessments. These tools help you identify and remediate security weaknesses and vulnerabilities.\n\nMicrosoft Defender for Cloud offers unique tools that provide advanced threat protection across Azure VMware Solution and on-premises VMs, including:\n\n- File integrity monitoring.\n- Fileless attack detection.\n- Operating system patch assessment.\n- Security misconfiguration assessment.\n- Endpoint protection assessment.",
+      "lineStart": 23,
+      "lineEnd": 35
+    },
+    {
+      "sectionOrder": 5,
+      "headingLevel": 5,
+      "headingText": "Recommendations",
+      "headingPath": [
+        "Security considerations for Azure VMware Solution workloads",
+        "Protect the guest operating system",
+        "Recommendations"
+      ],
+      "markdown": "- Install an Azure security agent on Azure VMware Solution guest VMs through Azure Arc for servers to monitor them for security configurations and vulnerabilities.\n- Configure Azure Arc machines to automatically create an association with the default data collection rule for Defender for Cloud.\n- On the subscription you use to deploy and run the Azure VMware Solution private cloud, use a Defender for Cloud plan that includes server protection.\n- If you have guest VMs with extended security benefits in the Azure VMware Solution private cloud, deploy security updates regularly. Use the Volume Activation Management Tool to deploy these updates.",
+      "lineStart": 37,
+      "lineEnd": 42
+    },
+    {
+      "sectionOrder": 6,
+      "headingLevel": 2,
+      "headingText": "Encrypt data",
+      "headingPath": [
+        "Security considerations for Azure VMware Solution workloads",
+        "Encrypt data"
+      ],
+      "markdown": "*Impact: Security, Operational Excellence*\n\nData encryption is an important aspect of protecting your Azure VMware Solution workload from unauthorized access and preserving the integrity of sensitive data. Encryption includes data at rest on the systems and data in transit.",
+      "lineStart": 44,
+      "lineEnd": 48
+    },
+    {
+      "sectionOrder": 7,
+      "headingLevel": 5,
+      "headingText": "Recommendations",
+      "headingPath": [
+        "Security considerations for Azure VMware Solution workloads",
+        "Encrypt data",
+        "Recommendations"
+      ],
+      "markdown": "- Encrypt VMware vSAN datastores with customer-managed keys to encrypt data at rest.\n- Use native encryption tools such as BitLocker to encrypt guest VMs.\n- Use native database encryption options for databases that run on Azure VMware Solution private cloud guest VMs. For instance, you can use transparent data encryption (TDE) for SQL Server.\n- Monitor database activities for suspicious activity. You can use native database monitoring tools like SQL Server Activity Monitor.",
+      "lineStart": 50,
+      "lineEnd": 55
+    },
+    {
+      "sectionOrder": 8,
+      "headingLevel": 2,
+      "headingText": "Implement network security",
+      "headingPath": [
+        "Security considerations for Azure VMware Solution workloads",
+        "Implement network security"
+      ],
+      "markdown": "*Impact: Operational excellence*\n\nA goal of network security is to prevent unauthorized access to Azure VMware Solution components. One method for achieving this goal is to implement boundaries via network segmentation. This practice helps to isolate your applications. As part of segmentation, a virtual LAN operates at your data-link layer. That virtual LAN provides physical separation of your VMs by partitioning the physical network into logical ones to separate traffic.\n\nSegments are then created to provide advanced security capabilities and routing. For example, the application, web, and database tier can have separate segments in a three-tier architecture. The application can add a level of micro-segmentation by using security rules to restrict network communication between the VMs in each segment.\n\n:::image type=\"content\" source=\"./images/azure-vmware-solution-segmentation.png\" alt-text=\"Architecture diagram that shows the various tiers and segments of an Azure VMware Solution environment.\" border=\"false\":::\n\nThe tier-1 routers are positioned in front of the segments. These routers provide routing capabilities within the software-defined datacenter (SDDC). You can deploy multiple tier-1 routers to segregate different sets of segments or to achieve a specific routing. For example, say you'd like to restrict East-West traffic that flows to and from your production, development, and testing workloads. You can use distributed level-1 tiers to segment and filter that traffic based on specific rules and policies.\n\n:::image type=\"content\" source=\"./images/azure-vmware-solution-distributed-tiers.png\" alt-text=\"Architecture diagram that shows multiple distributed level-one tiers in an Azure VMware Solution environment.\" border=\"false\":::",
+      "lineStart": 57,
+      "lineEnd": 69
+    },
+    {
+      "sectionOrder": 9,
+      "headingLevel": 5,
+      "headingText": "Recommendations",
+      "headingPath": [
+        "Security considerations for Azure VMware Solution workloads",
+        "Implement network security",
+        "Recommendations"
+      ],
+      "markdown": "- Use network segments to separate and monitor components logically.\n- Use micro-segmentation capabilities that are native to VMware NSX-T Data Center to restrict network communication between application components.\n- Use a centralized routing appliance to secure and optimize routing between segments.\n- Use staggered tier-1 routers when network segmentation is driven by organizational security or networking policies, compliance requirements, business units, departments, or environments.",
+      "lineStart": 71,
+      "lineEnd": 76
+    },
+    {
+      "sectionOrder": 10,
+      "headingLevel": 2,
+      "headingText": "Use an intrusion detection and prevention system (IDPS)",
+      "headingPath": [
+        "Security considerations for Azure VMware Solution workloads",
+        "Use an intrusion detection and prevention system (IDPS)"
+      ],
+      "markdown": "*Impact: Security*\n\nAn IDPS can help you detect and prevent network-based attacks and malicious activity in your Azure VMware Solution environment.",
+      "lineStart": 78,
+      "lineEnd": 82
+    },
+    {
+      "sectionOrder": 11,
+      "headingLevel": 5,
+      "headingText": "Recommendations",
+      "headingPath": [
+        "Security considerations for Azure VMware Solution workloads",
+        "Use an intrusion detection and prevention system (IDPS)",
+        "Recommendations"
+      ],
+      "markdown": "- Use the VMware NSX-T Data Center distributed firewall for help with detecting malicious patterns and malware in East-West traffic between your Azure VMware Solution components.\n- Use an Azure service such as Azure Firewall or a certified third-party NVA that runs in Azure or in Azure VMware Solution.",
+      "lineStart": 84,
+      "lineEnd": 87
+    },
+    {
+      "sectionOrder": 12,
+      "headingLevel": 2,
+      "headingText": "Use role-based access control (RBAC) and multifactor authentication",
+      "headingPath": [
+        "Security considerations for Azure VMware Solution workloads",
+        "Use role-based access control (RBAC) and multifactor authentication"
+      ],
+      "markdown": "*Impact: Security, Operational excellence*\n\nIdentity security helps control access to Azure VMware Solution private cloud workloads and the applications that run on them. You can use RBAC to assign roles and permissions that are appropriate for specific users and groups. These roles and permissions are granted based on the principle of least privilege.\n\nYou can enforce multifactor authentication for user authentication to provide an extra layer of security against unauthorized access. Various multifactor authentication methods, such as mobile push notifications, offer a convenient user experience and also help to ensure strong authentication. You can integrate Azure VMware Solution with Microsoft Entra ID to centralize user management and take advantage of Microsoft Entra advanced security features. Examples of features include privileged identity management, multifactor authentication, and conditional access.",
+      "lineStart": 89,
+      "lineEnd": 95
+    },
+    {
+      "sectionOrder": 13,
+      "headingLevel": 5,
+      "headingText": "Recommendations",
+      "headingPath": [
+        "Security considerations for Azure VMware Solution workloads",
+        "Use role-based access control (RBAC) and multifactor authentication",
+        "Recommendations"
+      ],
+      "markdown": "- Use Microsoft Entra Privileged Identity Management to allow time-bound access to the Azure portal and control pane operations. Use privileged identity management audit history to track operations that highly privileged accounts perform.  \n- Reduce the number of Microsoft Entra accounts that can:\n  - Access the Azure portal and APIs.\n  - Navigate to the Azure VMware Solution private cloud.\n  - Read VMware vCenter Server and VMware NSX-T Data Center admin accounts.\n- Rotate local `cloudadmin` account credentials for VMware vCenter Server and VMware NSX-T Data Center to prevent the misuse and abuse of these administrative accounts. Use these accounts only in *break glass* scenarios. Create server groups and users for VMware vCenter Server, and assign them identities from external identity sources. Use these groups and users for specific VMware vCenter Server and VMware NSX-T Data Center operations.\n- Use a centralized identity source for configuring authentication and authorization services for guest VMs and applications.",
+      "lineStart": 97,
+      "lineEnd": 105
+    },
+    {
+      "sectionOrder": 14,
+      "headingLevel": 2,
+      "headingText": "Monitor security and detect threats",
+      "headingPath": [
+        "Security considerations for Azure VMware Solution workloads",
+        "Monitor security and detect threats"
+      ],
+      "markdown": "*Impact: Security, Operational excellence*\n\nSecurity monitoring and threat detection involve detecting and responding to changes in the security posture of Azure VMware Solution private cloud workloads. It's important to follow industry best practices and comply with regulatory requirements, including:\n\n- The Health Insurance Portability and Accountability Act (HIPAA).\n- Payment Card Industry Data Security Standards (PCI DSS).\n\nYou can use a security information and event management (SIEM) tool or Microsoft Sentinel to aggregate, monitor, and analyze security logs and events. This information helps you detect and respond to potential threats. Regularly conducting audit reviews also helps you avert threats. When you regularly monitor your Azure VMware Solution environment, you're in a better position to ensure it aligns with security standards and policies.",
+      "lineStart": 107,
+      "lineEnd": 116
+    },
+    {
+      "sectionOrder": 15,
+      "headingLevel": 5,
+      "headingText": "Recommendations",
+      "headingPath": [
+        "Security considerations for Azure VMware Solution workloads",
+        "Monitor security and detect threats",
+        "Recommendations"
+      ],
+      "markdown": "- Automate responses to recommendations from Defender for Cloud by using the following Azure policies:\n  - Workflow automation for security alerts\n  - Workflow automation for security recommendations\n  - Workflow automation for regulatory compliance changes\n- Deploy Microsoft Sentinel and set the destination to a Log Analytics workspace to collect logs from Azure VMware Solution private cloud guest VMs.\n- Use a data connector to connect Microsoft Sentinel and Defender for Cloud.\n- Automate threat responses by using Microsoft Sentinel playbooks and Azure Automation rules.",
+      "lineStart": 118,
+      "lineEnd": 126
+    },
+    {
+      "sectionOrder": 16,
+      "headingLevel": 2,
+      "headingText": "Establish a security baseline",
+      "headingPath": [
+        "Security considerations for Azure VMware Solution workloads",
+        "Establish a security baseline"
+      ],
+      "markdown": "*Impact: Security*\n\nThe Microsoft cloud security benchmark provides recommendations about how you can secure your cloud solutions on Azure. This security baseline applies controls that are defined by Microsoft cloud security benchmark version 1.0 to Azure Policy.",
+      "lineStart": 128,
+      "lineEnd": 132
+    },
+    {
+      "sectionOrder": 17,
+      "headingLevel": 5,
+      "headingText": "Recommendations",
+      "headingPath": [
+        "Security considerations for Azure VMware Solution workloads",
+        "Establish a security baseline",
+        "Recommendations"
+      ],
+      "markdown": "- To help protect your workload, apply the recommendations that are given in [Azure security baseline for Azure VMware Solution](/security/benchmark/azure/baselines/azure-vmware-solution-security-baseline).",
+      "lineStart": 134,
+      "lineEnd": 136
+    },
+    {
+      "sectionOrder": 18,
+      "headingLevel": 2,
+      "headingText": "Next steps",
+      "headingPath": [
+        "Security considerations for Azure VMware Solution workloads",
+        "Next steps"
+      ],
+      "markdown": "Now that you've looked at best practices for securing Azure VMware Solution, investigate operational management procedures for achieving business excellence.\n\n> [!div class=\"nextstepaction\"]\n> [Operations](./operations.md)\n\nUse the assessment tool to evaluate your design choices.\n\n> [!div class=\"nextstepaction\"]\n> [Assessment](./assessment.md)",
+      "lineStart": 138,
+      "lineEnd": 147
+    }
+  ],
+  "localLinks": [
+    "./assessment.md",
+    "./operations.md"
+  ],
+  "lastModified": "2026-03-17T16:22:13.452Z"
+}

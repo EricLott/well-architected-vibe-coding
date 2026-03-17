@@ -1,0 +1,152 @@
+{
+  "source": {
+    "absolutePath": "C:\\Users\\EricL\\source\\repos\\Well-Architected-Vibe-Coding\\well-architected-vibe-coding\\well-architected\\architect-role\\ongoing-support.md",
+    "repoRelativePath": "well-architected/architect-role/ongoing-support.md",
+    "docsRelativePath": "architect-role/ongoing-support.md"
+  },
+  "frontMatter": {
+    "title": "Support the workload in a consultative role",
+    "description": "Learn about how an architect's continued consultative role supports the workload team after product implementation.",
+    "author": "ckittel",
+    "ms.author": "chkittel",
+    "ms.date": "11/24/2025",
+    "ms.topic": "concept-article",
+    "ms.update-cycle": "1095-days"
+  },
+  "title": "Support the workload in a consultative role",
+  "rawBody": "# Support the workload in a consultative role\n\nArchitects should seek ways to stay involved with the workload as it changes over time. Their role doesn't end with design handoff or consultation during the initial implementation. Architects bring perspective that can be used in other activities related to the product's evolution.\n\n## Support modeling exercises\n\nTeams can model workloads in multiple dimensions and for multiple purposes. These models often build on pre-deployment assumptions. For example, workloads can abstract health signals out of implementation details and into business constructs. Or they can model system growth over time or the licensing process to evaluate alternative billing models.\n\nWhether the model is an abstraction or evaluates hypotheticals to inform a future business decision, architects contribute to that process. They use their insight into the workload design, its known or predicted limitations, and its scaling characteristics, to validate or tune the assumptions in the model and approximate the system more accurately. For example, does the health model accurately predict failures and align with the workload's service-level objectives (SLOs)? Is the cost model tracking with actual spend? You ensure that business decisions are based on empirical evidence rather than outdated hypotheses.\n\n## Share potential improvements\n\nArchitects stay current with fundamentals like cloud provider offerings and industry design patterns.\n\n- Features that were state of the art when a workload was designed might now be missing out on new cloud capabilities that offer better performance, security, or cost efficiency.\n- The expected usage patterns of the application might not manifest as predicted.\n- The workload might have accumulated \"technical debt\" or drifted from its original design principles due to rapid iteration.\n\nIn cases like these, there's an opportunity for you to present a recommendation to further optimize or refine the current design based on this new knowledge.\n\nDon't wait for a crisis to suggest improvements. Proactively evaluate the workload against the current technology landscape and the evolving business strategy. Identify opportunities to simplify complexity or pay down technical debt.\n\nAs an architect, you should follow up with the workload team periodically after the workload is live. Continued communication helps you expand your knowledge for future design work by seeing how the design was implemented and how it's performing with actual use. It also allows you to offer optimization recommendations based on the actual implementation and use.\n\n## Assist in reviews\n\nAudits, compliance reviews, and due diligence events can be stressful for workload teams. Architects reduce the burden by providing the authoritative context.\n\nLeverage the [Architecture Decision Record (ADR)](./architecture-decision-record.md) and [diagrams](./design-diagrams.md) to demonstrate that design choices were made deliberately and aligned with requirements at the time. Use these engagements not to defend the current state, but to identify gaps where the compliance landscape has shifted.\n\nArchitects have authoritative knowledge that builds confidence in the product during select customer or funding engagements. They can learn about unique demands that customers have for the product and consider those needs in the design of the system.\n\n## Review proposed changes\n\nEvery workload has a backlog of work that ranges from broad, directional-level work to specific tasks. Architects should be involved in gathering requirements, scoping, and building acceptance criteria for work items.\n\nThe implementation team is busy delivering on current work items, so architects can use their time to review, validate, and refine future work items. They can help detect when a new feature requires a redesign of a component in the system, provide cost analysis on a proposed change, or propose an approach to incrementally introduce new changes. Ultimately, involving an architect early in the process for a proposed change that involves new functionality or an expanded user base minimizes rework and helps the team discover cliffs in the design.\n\n## Next steps\n\n> [!div class=\"nextstepaction\"]\n> [Architect's checklist](checklist.md)",
+  "headings": [
+    {
+      "level": 1,
+      "text": "Support the workload in a consultative role",
+      "line": 1,
+      "path": [
+        "Support the workload in a consultative role"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Support modeling exercises",
+      "line": 5,
+      "path": [
+        "Support the workload in a consultative role",
+        "Support modeling exercises"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Share potential improvements",
+      "line": 11,
+      "path": [
+        "Support the workload in a consultative role",
+        "Share potential improvements"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Assist in reviews",
+      "line": 25,
+      "path": [
+        "Support the workload in a consultative role",
+        "Assist in reviews"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Review proposed changes",
+      "line": 33,
+      "path": [
+        "Support the workload in a consultative role",
+        "Review proposed changes"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Next steps",
+      "line": 39,
+      "path": [
+        "Support the workload in a consultative role",
+        "Next steps"
+      ]
+    }
+  ],
+  "sections": [
+    {
+      "sectionOrder": 1,
+      "headingLevel": 1,
+      "headingText": "Support the workload in a consultative role",
+      "headingPath": [
+        "Support the workload in a consultative role"
+      ],
+      "markdown": "Architects should seek ways to stay involved with the workload as it changes over time. Their role doesn't end with design handoff or consultation during the initial implementation. Architects bring perspective that can be used in other activities related to the product's evolution.",
+      "lineStart": 2,
+      "lineEnd": 4
+    },
+    {
+      "sectionOrder": 2,
+      "headingLevel": 2,
+      "headingText": "Support modeling exercises",
+      "headingPath": [
+        "Support the workload in a consultative role",
+        "Support modeling exercises"
+      ],
+      "markdown": "Teams can model workloads in multiple dimensions and for multiple purposes. These models often build on pre-deployment assumptions. For example, workloads can abstract health signals out of implementation details and into business constructs. Or they can model system growth over time or the licensing process to evaluate alternative billing models.\n\nWhether the model is an abstraction or evaluates hypotheticals to inform a future business decision, architects contribute to that process. They use their insight into the workload design, its known or predicted limitations, and its scaling characteristics, to validate or tune the assumptions in the model and approximate the system more accurately. For example, does the health model accurately predict failures and align with the workload's service-level objectives (SLOs)? Is the cost model tracking with actual spend? You ensure that business decisions are based on empirical evidence rather than outdated hypotheses.",
+      "lineStart": 6,
+      "lineEnd": 10
+    },
+    {
+      "sectionOrder": 3,
+      "headingLevel": 2,
+      "headingText": "Share potential improvements",
+      "headingPath": [
+        "Support the workload in a consultative role",
+        "Share potential improvements"
+      ],
+      "markdown": "Architects stay current with fundamentals like cloud provider offerings and industry design patterns.\n\n- Features that were state of the art when a workload was designed might now be missing out on new cloud capabilities that offer better performance, security, or cost efficiency.\n- The expected usage patterns of the application might not manifest as predicted.\n- The workload might have accumulated \"technical debt\" or drifted from its original design principles due to rapid iteration.\n\nIn cases like these, there's an opportunity for you to present a recommendation to further optimize or refine the current design based on this new knowledge.\n\nDon't wait for a crisis to suggest improvements. Proactively evaluate the workload against the current technology landscape and the evolving business strategy. Identify opportunities to simplify complexity or pay down technical debt.\n\nAs an architect, you should follow up with the workload team periodically after the workload is live. Continued communication helps you expand your knowledge for future design work by seeing how the design was implemented and how it's performing with actual use. It also allows you to offer optimization recommendations based on the actual implementation and use.",
+      "lineStart": 12,
+      "lineEnd": 24
+    },
+    {
+      "sectionOrder": 4,
+      "headingLevel": 2,
+      "headingText": "Assist in reviews",
+      "headingPath": [
+        "Support the workload in a consultative role",
+        "Assist in reviews"
+      ],
+      "markdown": "Audits, compliance reviews, and due diligence events can be stressful for workload teams. Architects reduce the burden by providing the authoritative context.\n\nLeverage the [Architecture Decision Record (ADR)](./architecture-decision-record.md) and [diagrams](./design-diagrams.md) to demonstrate that design choices were made deliberately and aligned with requirements at the time. Use these engagements not to defend the current state, but to identify gaps where the compliance landscape has shifted.\n\nArchitects have authoritative knowledge that builds confidence in the product during select customer or funding engagements. They can learn about unique demands that customers have for the product and consider those needs in the design of the system.",
+      "lineStart": 26,
+      "lineEnd": 32
+    },
+    {
+      "sectionOrder": 5,
+      "headingLevel": 2,
+      "headingText": "Review proposed changes",
+      "headingPath": [
+        "Support the workload in a consultative role",
+        "Review proposed changes"
+      ],
+      "markdown": "Every workload has a backlog of work that ranges from broad, directional-level work to specific tasks. Architects should be involved in gathering requirements, scoping, and building acceptance criteria for work items.\n\nThe implementation team is busy delivering on current work items, so architects can use their time to review, validate, and refine future work items. They can help detect when a new feature requires a redesign of a component in the system, provide cost analysis on a proposed change, or propose an approach to incrementally introduce new changes. Ultimately, involving an architect early in the process for a proposed change that involves new functionality or an expanded user base minimizes rework and helps the team discover cliffs in the design.",
+      "lineStart": 34,
+      "lineEnd": 38
+    },
+    {
+      "sectionOrder": 6,
+      "headingLevel": 2,
+      "headingText": "Next steps",
+      "headingPath": [
+        "Support the workload in a consultative role",
+        "Next steps"
+      ],
+      "markdown": "> [!div class=\"nextstepaction\"]\n> [Architect's checklist](checklist.md)",
+      "lineStart": 40,
+      "lineEnd": 42
+    }
+  ],
+  "localLinks": [
+    "./architecture-decision-record.md",
+    "./design-diagrams.md",
+    "checklist.md"
+  ],
+  "lastModified": "2026-03-17T16:22:13.417Z"
+}

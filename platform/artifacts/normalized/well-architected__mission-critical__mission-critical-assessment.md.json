@@ -1,0 +1,66 @@
+{
+  "source": {
+    "absolutePath": "C:\\Users\\EricL\\source\\repos\\Well-Architected-Vibe-Coding\\well-architected-vibe-coding\\well-architected\\mission-critical\\mission-critical-assessment.md",
+    "repoRelativePath": "well-architected/mission-critical/mission-critical-assessment.md",
+    "docsRelativePath": "mission-critical/mission-critical-assessment.md"
+  },
+  "frontMatter": {
+    "title": "Well-Architected assessment for mission-critical workloads on Azure",
+    "description": "Check the readiness of your mission-critical workload by using an assessment review tool.",
+    "author": "calcof",
+    "ms.author": "prwilk",
+    "ms.date": "03/15/2023",
+    "ms.topic": "concept-article"
+  },
+  "title": "Well-Architected assessment for mission-critical workloads on Azure",
+  "rawBody": "# Well-Architected assessment for mission-critical workloads\n\nThe [Assessment](/assessments/?mode=pre-assessment&id=23513bdb-e8a2-4f0b-8b6b-191ee1f52d34) is a review tool for self-assessing the readiness of your mission-critical workload in production. Working towards building a resilient mission critical architecture can be a complex process. The assessment is organized in a way that you'll be able to methodically check the alignment to the best practices for resiliency, reliability, and availability.\n\nWe recommend that the team doing the assessment is well versed in the architecture of the specific workload and has a strong understanding of cloud principles and patterns. These roles include, but aren't limited to, cloud architect, operators, DevOps engineer. \n\nThe assessment is a set of questions based on the [mission-critical design methodology](/azure/well-architected/mission-critical/mission-critical-design-principles?branch=main) as a way of checking the foundational design choices of a workload’s architecture and the end-to-end operational approach.\n\n[![Screenshot of the mission-critical review tool.](./images/assessment-review.png)](./images/assessment-review.png)\n\nThese questions are designed to help benchmark a workload’s maturity and alignment to the recommended approach for operating a mission-critical workload. The outcome of the assessment is the delivery of technical recommendations and documentation that provide guidance on how to implement a highly reliable solution on Azure. \n\n[![Screenshot of the guidance page in the mission-critical review tool.](./images/assessment-recommendations.png)](images/assessment-recommendations.png)\n\n## Next step\n\n> [!div class=\"nextstepaction\"]\n> [Mission-critical review tool](/assessments/?mode=pre-assessment&id=23513bdb-e8a2-4f0b-8b6b-191ee1f52d34)",
+  "headings": [
+    {
+      "level": 1,
+      "text": "Well-Architected assessment for mission-critical workloads",
+      "line": 1,
+      "path": [
+        "Well-Architected assessment for mission-critical workloads"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Next step",
+      "line": 15,
+      "path": [
+        "Well-Architected assessment for mission-critical workloads",
+        "Next step"
+      ]
+    }
+  ],
+  "sections": [
+    {
+      "sectionOrder": 1,
+      "headingLevel": 1,
+      "headingText": "Well-Architected assessment for mission-critical workloads",
+      "headingPath": [
+        "Well-Architected assessment for mission-critical workloads"
+      ],
+      "markdown": "The [Assessment](/assessments/?mode=pre-assessment&id=23513bdb-e8a2-4f0b-8b6b-191ee1f52d34) is a review tool for self-assessing the readiness of your mission-critical workload in production. Working towards building a resilient mission critical architecture can be a complex process. The assessment is organized in a way that you'll be able to methodically check the alignment to the best practices for resiliency, reliability, and availability.\n\nWe recommend that the team doing the assessment is well versed in the architecture of the specific workload and has a strong understanding of cloud principles and patterns. These roles include, but aren't limited to, cloud architect, operators, DevOps engineer. \n\nThe assessment is a set of questions based on the [mission-critical design methodology](/azure/well-architected/mission-critical/mission-critical-design-principles?branch=main) as a way of checking the foundational design choices of a workload’s architecture and the end-to-end operational approach.\n\n[![Screenshot of the mission-critical review tool.](./images/assessment-review.png)](./images/assessment-review.png)\n\nThese questions are designed to help benchmark a workload’s maturity and alignment to the recommended approach for operating a mission-critical workload. The outcome of the assessment is the delivery of technical recommendations and documentation that provide guidance on how to implement a highly reliable solution on Azure. \n\n[![Screenshot of the guidance page in the mission-critical review tool.](./images/assessment-recommendations.png)](images/assessment-recommendations.png)",
+      "lineStart": 2,
+      "lineEnd": 14
+    },
+    {
+      "sectionOrder": 2,
+      "headingLevel": 2,
+      "headingText": "Next step",
+      "headingPath": [
+        "Well-Architected assessment for mission-critical workloads",
+        "Next step"
+      ],
+      "markdown": "> [!div class=\"nextstepaction\"]\n> [Mission-critical review tool](/assessments/?mode=pre-assessment&id=23513bdb-e8a2-4f0b-8b6b-191ee1f52d34)",
+      "lineStart": 16,
+      "lineEnd": 18
+    }
+  ],
+  "localLinks": [
+    "./images/assessment-recommendations.png",
+    "./images/assessment-review.png"
+  ],
+  "lastModified": "2026-03-17T16:22:13.667Z"
+}

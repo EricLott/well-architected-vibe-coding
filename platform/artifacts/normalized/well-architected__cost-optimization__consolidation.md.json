@@ -1,0 +1,196 @@
+{
+  "source": {
+    "absolutePath": "C:\\Users\\EricL\\source\\repos\\Well-Architected-Vibe-Coding\\well-architected-vibe-coding\\well-architected\\cost-optimization\\consolidation.md",
+    "repoRelativePath": "well-architected/cost-optimization/consolidation.md",
+    "docsRelativePath": "cost-optimization/consolidation.md"
+  },
+  "frontMatter": {
+    "title": "Architecture strategies for consolidation",
+    "description": "Learn how to use consolidation to restructure your workloads, resources, and team roles to achieve maximum cost efficiency.",
+    "author": "stephen-sumner",
+    "ms.author": "ssumner",
+    "ms.date": "11/15/2023",
+    "ms.topic": "concept-article"
+  },
+  "title": "Architecture strategies for consolidation",
+  "rawBody": "# Architecture strategies for consolidation\n\n**Applies to this Azure Well-Architected Framework Cost Optimization checklist recommendation:**\n\n|**CO:14**| Consolidate resources and responsibility. In a workload, determine ways to consolidate resources and increase density. Outside a workload, use existing centralized resources and services, so you can consolidate workload responsibilities. |\n|---|---|\n\nThis guide describes the recommendations for consolidating resources and responsibilities to optimize workload costs. Consolidating resources is a nuanced task that differs from simply eliminating waste. Consolidation involves combining components of a workload, such as servers, databases, applications, and responsibilities.\n\nConsolidation can reduce redundant resources and licenses, and increase density. Look for opportunities to consolidate your workload responsibilities. Use centralized resources or teams to optimize costs. If you don't consolidate resources and responsibilities by using shared resources and optimizing economies of scale, you might miss opportunities for cost savings.\n\n**Definitions**\n\n| Term | Definition |\n|---|---|\n| Centralized resource | A shared resource that multiple components use, rather than each component having its own dedicated resource. |\n| Change control | A structured methodology for managing and implementing changes.  |\n| Consolidate | The act of combining components to optimally meet workload requirements.|\n| Resource density  | A measure of logical separation within a resource. Increased density typically equates to higher utilization due to the collocation of disparate components, consumers, or environments. |\n\n\nThe primary objective of consolidation is optimization, not reduction. Consolidation involves restructuring workloads, resources, and team roles to achieve maximum cost efficiency. Unlike [optimizing component costs](optimize-component-costs.md), consolidation is a process that requires careful consideration.\n\nAlmost every consolidation effort has tradeoffs and potential risks but can significantly reduce costs. It's important to analyze the potential benefits and associated tradeoffs. All consolidation strategies follow these steps:\n\n1. *Assessment*: Perform a thorough evaluation to identify areas where consolidation might be advantageous.\n\n1. *Identification and evaluation*: Pinpoint and assess potential consolidation targets to determine whether potential cost benefits and tradeoffs justify the effort of consolidating.\n\n1. *Communication and implementation*: If you determine that consolidation is beneficial, announce the impending changes and apply them.\n\n## Consolidate resources\n\nConsolidating resources involves combining resources within a workload. You can collocate functionalities or consumers. For example, you might consolidate three web servers into a single server or three databases into a single database server. You might consolidate multiple firewalls into a single firewall that serves multiple environments.\n\nThe aim is to increase resource density, so you can maximize the cost efficiency of each resource. Expand the use of a resource and minimize resource redundancy.\n\nCommon types of services that you can consolidate include application platforms, databases, network appliances, gateways, and distributed denial-of-service (DDoS) protection. To consolidate resources within a workload, consider the following recommendations:\n\n**Assess the workload resources.** Assess the existing workload and its resource utilization. Analyze factors such as CPU usage, memory usage, storage capacity, and network bandwidth. Identify areas in which consolidation might be beneficial. Consolidation might involve optimizing resource allocation, eliminating redundant or underutilized resources, or reconfiguring the workload to run more efficiently. Consider factors such as workload dependencies, performance requirements, and scalability.\n\n**Identify a consolidation target.** Choose a resource to consolidate. It can be an existing resource or a new resource created within the workload. Identify existing resources that you might use for consolidation. For example, you might have servers that can accommodate some of the workload components. If no existing resources meet the consolidation requirements or if it's more beneficial to consolidate a new resource, consider creating a new resource.\n\n**Evaluate the consolidation viability.** Ensure functional and technical requirements, such as CPU, memory, and growth, support consolidation. Avoid compromising requirements like performance, reliability, and security. For example, don't create an undesired cross-regional dependency or consolidate resources across preproduction and production environments.\n\n**Estimate the cost.** Determine the effort and potential complications of consolidation. You should calculate costs, including resource, licensing, and operational expenses. Consider the implications, such as potential challenges in resource monitoring due to consolidation.\n\n**Communicate and coordinate with your team.** Ensure that you inform all stakeholders about upcoming changes and necessary actions that they need to take. Coordinate with teams to avoid conflicts and ensure a smooth implementation.\n\n> :::image type=\"icon\" source=\"../_images/risk.svg\"::: **Risk**: Consider the effects of resource density, such as noisy neighbors, scale-unit effects, and reduced redundancy. Resource consolidation is often too risky for mission-critical and business-critical workload flows.\n\n> :::image type=\"icon\" source=\"../_images/trade-off.svg\"::: **Tradeoffs**:\n>\n> - Resource consolidation reduces isolation and can create a noisy neighbor scenario in a workload. Find other ways to implement logical isolation and increased capacity for the hosting environment. For example, increase firewall capacity if it supports multiple workloads.\n>\n> - Consolidation eliminates segmentation and can increase security risk, which makes it easier for attackers to move horizontally. It also makes some compliance standards hard to achieve. Prioritize compliance over consolidation.\n>\n> - Resource consolidation results in less redundancy. Carefully plan to ensure that you have the proper amount of reliability in the workload.\n\n## Consolidate responsibilities\n\nThe goal of consolidating workload responsibilities is to reduce the workload team's responsibilities. It’s a strategic cost optimization effort that requires organizational awareness and collaboration outside the workload team.\n\nThere are two principal ways to consolidate your workload team's responsibilities. You can use external shared or centralized resources and not run that resource in the workload environment. You can also offload workload responsibilities to other teams in your organization, so your team isn't directly responsible for those tasks or personnel.\n\n### Use external centralized resources\n\nExternal centralized resources refer to shared resources outside the workload environment. For example, an organization might have a centralized gateway that serves multiple workloads. The goal of external centralized resources is to minimize duplication and overhead. Instead of having a dedicated resource for your workload, you can use a shared resource to optimize costs. Consider the following recommendations:\n\n- *Assess the workload resources*. Evaluate the current state of the workload, and identify areas in which consolidation might be beneficial.\n\n- *Find external opportunities*. Survey your organization for pre-existing centralized resources. These resources might be potential solutions for your workload. For example, you can use a shared security information and event management (SIEM) instead of setting up an independent SIEM tool.\n\n- *Consider change control*. Understand the process of managing changes to the centralized resource. Consider the approval workflow, testing protocols, and deployment methods. Analyze potential challenges if you reduced control of resource modifications.\n\n- *Estimate the cost*. Before you implement centralized resources, clearly quantify the expected savings against the costs that are associated with a transition. Weigh the cost-saving benefits against risks to make an informed decision.\n\n- *Communicate and coordinate with your team*. Establish a mechanism for continuous feedback among teams to address concerns, improve collaboration, and refine processes.\n\n- *Document and track changes*. Maintain detailed documentation of all approved changes, including their scope, implementation steps, and associated risks or issues. Use a centralized system or change-management tool to track and monitor the status of changes throughout their lifecycle.\n\n> :::image type=\"icon\" source=\"../_images/trade-off.svg\"::: **Tradeoff**: Over-consolidation can result in resource contention, which can lead to performance issues. Consolidation might limit the flexibility and agility of individual teams and workloads because they must adhere to centralized standards that can inhibit customization.\n\n### Offload responsibilities to external teams\n\nOffloading workload responsibilities to external teams refers to using expert centralized teams that perform specialized services such as a security operations team. You can offload responsibilities to existing teams to help optimize costs and delegate expertise for specific functions.\n\n- *Evaluate team skills*. Assess the current skill set of your team. Identify skill gaps or areas in which a centralized team optimizes costs.\n\n- *Find available opportunities*. Explore your organization for available services, such as the services of a security operations team. Ensure that the centralized team can accommodate the added responsibilities without compromising quality.\n\n- *Consider change control*. Familiarize yourself with how the centralized team handles changes, like approval workflows, testing protocols, and deployment strategies. Determine potential challenges that might arise if you have less direct control of these functions.\n\n- *Communicate and coordinate with your team*. Ensure that teams are familiar with each other's processes, tools, and expectations. Consider a phased transition or pilot period to ease the shift and identify potential challenges early.\n\n- *Document and track changes*. Maintain detailed documentation of all approved changes, including their scope, implementation steps, and associated risks or issues. Use a centralized system or change-management tool to track and monitor the status of changes throughout their lifecycle.\n\n## Azure facilitation\n\n**Density support**: Many Azure services support increased resource density. The following table shows a sampling of these services.\n\n|Azure service|Segmentation control|\n| --- | --- |\n|Azure Front Door|Customer domains and URL paths|\n|Azure Firewall|Network and application rules|\n|Azure Application Gateway|Listeners, URL path-based routing|\n|API Management|API policies|\n|Azure Kubernetes Service (AKS)| Namespaces, node pools|\n|Azure App Service|Multiple web apps and APIs on an App Service plan|\n|Azure SQL Database|Multiple databases on a server|\n\n**Resource observability:** [Azure Monitor](/azure/azure-monitor/overview) provides a centralized platform for monitoring and managing the performance and health of your Azure resources. You can collect and analyze telemetry data, set up alerts, and gain insight into resource utilization and opportunities for consolidation.\n\nLog Analytics provides centralized log management and analysis. You can collect, analyze, and visualize log data from various Azure resources, which helps to identify issues, troubleshoot problems, and gain operational insight.\n\n**Centralized network management:** [Azure Virtual Network Manager IP address management](/azure/virtual-network-manager/concept-ip-address-management) provides centralized IP planning and allocation across complex virtual network environments. This consolidates IP management responsibilities and prevents resource conflicts across multiple subscriptions and virtual networks. Centralized management reduces operational overhead by providing visibility and control over IP allocation, essential for managing large enterprise environments with hundreds of virtual networks.\n\n## Related links\n\n- [Azure Monitor](/azure/azure-monitor/overview)\n- [Recommendations for optimizing component costs](optimize-component-costs.md)\n\n## Cost Optimization checklist\n\nRefer to the complete set of recommendations.\n\n> [!div class=\"nextstepaction\"]\n> [Cost Optimization checklist](checklist.md)\n\n<!-- Azure Update: 484347 - 2025-07-23 -->\n<!-- Azure Update: 498568 - 2025-01-23 -->",
+  "headings": [
+    {
+      "level": 1,
+      "text": "Architecture strategies for consolidation",
+      "line": 1,
+      "path": [
+        "Architecture strategies for consolidation"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Consolidate resources",
+      "line": 32,
+      "path": [
+        "Architecture strategies for consolidation",
+        "Consolidate resources"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Consolidate responsibilities",
+      "line": 60,
+      "path": [
+        "Architecture strategies for consolidation",
+        "Consolidate responsibilities"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Use external centralized resources",
+      "line": 66,
+      "path": [
+        "Architecture strategies for consolidation",
+        "Consolidate responsibilities",
+        "Use external centralized resources"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Offload responsibilities to external teams",
+      "line": 84,
+      "path": [
+        "Architecture strategies for consolidation",
+        "Consolidate responsibilities",
+        "Offload responsibilities to external teams"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Azure facilitation",
+      "line": 98,
+      "path": [
+        "Architecture strategies for consolidation",
+        "Azure facilitation"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Related links",
+      "line": 118,
+      "path": [
+        "Architecture strategies for consolidation",
+        "Related links"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Cost Optimization checklist",
+      "line": 123,
+      "path": [
+        "Architecture strategies for consolidation",
+        "Cost Optimization checklist"
+      ]
+    }
+  ],
+  "sections": [
+    {
+      "sectionOrder": 1,
+      "headingLevel": 1,
+      "headingText": "Architecture strategies for consolidation",
+      "headingPath": [
+        "Architecture strategies for consolidation"
+      ],
+      "markdown": "**Applies to this Azure Well-Architected Framework Cost Optimization checklist recommendation:**\n\n|**CO:14**| Consolidate resources and responsibility. In a workload, determine ways to consolidate resources and increase density. Outside a workload, use existing centralized resources and services, so you can consolidate workload responsibilities. |\n|---|---|\n\nThis guide describes the recommendations for consolidating resources and responsibilities to optimize workload costs. Consolidating resources is a nuanced task that differs from simply eliminating waste. Consolidation involves combining components of a workload, such as servers, databases, applications, and responsibilities.\n\nConsolidation can reduce redundant resources and licenses, and increase density. Look for opportunities to consolidate your workload responsibilities. Use centralized resources or teams to optimize costs. If you don't consolidate resources and responsibilities by using shared resources and optimizing economies of scale, you might miss opportunities for cost savings.\n\n**Definitions**\n\n| Term | Definition |\n|---|---|\n| Centralized resource | A shared resource that multiple components use, rather than each component having its own dedicated resource. |\n| Change control | A structured methodology for managing and implementing changes.  |\n| Consolidate | The act of combining components to optimally meet workload requirements.|\n| Resource density  | A measure of logical separation within a resource. Increased density typically equates to higher utilization due to the collocation of disparate components, consumers, or environments. |\n\n\nThe primary objective of consolidation is optimization, not reduction. Consolidation involves restructuring workloads, resources, and team roles to achieve maximum cost efficiency. Unlike [optimizing component costs](optimize-component-costs.md), consolidation is a process that requires careful consideration.\n\nAlmost every consolidation effort has tradeoffs and potential risks but can significantly reduce costs. It's important to analyze the potential benefits and associated tradeoffs. All consolidation strategies follow these steps:\n\n1. *Assessment*: Perform a thorough evaluation to identify areas where consolidation might be advantageous.\n\n1. *Identification and evaluation*: Pinpoint and assess potential consolidation targets to determine whether potential cost benefits and tradeoffs justify the effort of consolidating.\n\n1. *Communication and implementation*: If you determine that consolidation is beneficial, announce the impending changes and apply them.",
+      "lineStart": 2,
+      "lineEnd": 31
+    },
+    {
+      "sectionOrder": 2,
+      "headingLevel": 2,
+      "headingText": "Consolidate resources",
+      "headingPath": [
+        "Architecture strategies for consolidation",
+        "Consolidate resources"
+      ],
+      "markdown": "Consolidating resources involves combining resources within a workload. You can collocate functionalities or consumers. For example, you might consolidate three web servers into a single server or three databases into a single database server. You might consolidate multiple firewalls into a single firewall that serves multiple environments.\n\nThe aim is to increase resource density, so you can maximize the cost efficiency of each resource. Expand the use of a resource and minimize resource redundancy.\n\nCommon types of services that you can consolidate include application platforms, databases, network appliances, gateways, and distributed denial-of-service (DDoS) protection. To consolidate resources within a workload, consider the following recommendations:\n\n**Assess the workload resources.** Assess the existing workload and its resource utilization. Analyze factors such as CPU usage, memory usage, storage capacity, and network bandwidth. Identify areas in which consolidation might be beneficial. Consolidation might involve optimizing resource allocation, eliminating redundant or underutilized resources, or reconfiguring the workload to run more efficiently. Consider factors such as workload dependencies, performance requirements, and scalability.\n\n**Identify a consolidation target.** Choose a resource to consolidate. It can be an existing resource or a new resource created within the workload. Identify existing resources that you might use for consolidation. For example, you might have servers that can accommodate some of the workload components. If no existing resources meet the consolidation requirements or if it's more beneficial to consolidate a new resource, consider creating a new resource.\n\n**Evaluate the consolidation viability.** Ensure functional and technical requirements, such as CPU, memory, and growth, support consolidation. Avoid compromising requirements like performance, reliability, and security. For example, don't create an undesired cross-regional dependency or consolidate resources across preproduction and production environments.\n\n**Estimate the cost.** Determine the effort and potential complications of consolidation. You should calculate costs, including resource, licensing, and operational expenses. Consider the implications, such as potential challenges in resource monitoring due to consolidation.\n\n**Communicate and coordinate with your team.** Ensure that you inform all stakeholders about upcoming changes and necessary actions that they need to take. Coordinate with teams to avoid conflicts and ensure a smooth implementation.\n\n> :::image type=\"icon\" source=\"../_images/risk.svg\"::: **Risk**: Consider the effects of resource density, such as noisy neighbors, scale-unit effects, and reduced redundancy. Resource consolidation is often too risky for mission-critical and business-critical workload flows.\n\n> :::image type=\"icon\" source=\"../_images/trade-off.svg\"::: **Tradeoffs**:\n>\n> - Resource consolidation reduces isolation and can create a noisy neighbor scenario in a workload. Find other ways to implement logical isolation and increased capacity for the hosting environment. For example, increase firewall capacity if it supports multiple workloads.\n>\n> - Consolidation eliminates segmentation and can increase security risk, which makes it easier for attackers to move horizontally. It also makes some compliance standards hard to achieve. Prioritize compliance over consolidation.\n>\n> - Resource consolidation results in less redundancy. Carefully plan to ensure that you have the proper amount of reliability in the workload.",
+      "lineStart": 33,
+      "lineEnd": 59
+    },
+    {
+      "sectionOrder": 3,
+      "headingLevel": 2,
+      "headingText": "Consolidate responsibilities",
+      "headingPath": [
+        "Architecture strategies for consolidation",
+        "Consolidate responsibilities"
+      ],
+      "markdown": "The goal of consolidating workload responsibilities is to reduce the workload team's responsibilities. It’s a strategic cost optimization effort that requires organizational awareness and collaboration outside the workload team.\n\nThere are two principal ways to consolidate your workload team's responsibilities. You can use external shared or centralized resources and not run that resource in the workload environment. You can also offload workload responsibilities to other teams in your organization, so your team isn't directly responsible for those tasks or personnel.",
+      "lineStart": 61,
+      "lineEnd": 65
+    },
+    {
+      "sectionOrder": 4,
+      "headingLevel": 3,
+      "headingText": "Use external centralized resources",
+      "headingPath": [
+        "Architecture strategies for consolidation",
+        "Consolidate responsibilities",
+        "Use external centralized resources"
+      ],
+      "markdown": "External centralized resources refer to shared resources outside the workload environment. For example, an organization might have a centralized gateway that serves multiple workloads. The goal of external centralized resources is to minimize duplication and overhead. Instead of having a dedicated resource for your workload, you can use a shared resource to optimize costs. Consider the following recommendations:\n\n- *Assess the workload resources*. Evaluate the current state of the workload, and identify areas in which consolidation might be beneficial.\n\n- *Find external opportunities*. Survey your organization for pre-existing centralized resources. These resources might be potential solutions for your workload. For example, you can use a shared security information and event management (SIEM) instead of setting up an independent SIEM tool.\n\n- *Consider change control*. Understand the process of managing changes to the centralized resource. Consider the approval workflow, testing protocols, and deployment methods. Analyze potential challenges if you reduced control of resource modifications.\n\n- *Estimate the cost*. Before you implement centralized resources, clearly quantify the expected savings against the costs that are associated with a transition. Weigh the cost-saving benefits against risks to make an informed decision.\n\n- *Communicate and coordinate with your team*. Establish a mechanism for continuous feedback among teams to address concerns, improve collaboration, and refine processes.\n\n- *Document and track changes*. Maintain detailed documentation of all approved changes, including their scope, implementation steps, and associated risks or issues. Use a centralized system or change-management tool to track and monitor the status of changes throughout their lifecycle.\n\n> :::image type=\"icon\" source=\"../_images/trade-off.svg\"::: **Tradeoff**: Over-consolidation can result in resource contention, which can lead to performance issues. Consolidation might limit the flexibility and agility of individual teams and workloads because they must adhere to centralized standards that can inhibit customization.",
+      "lineStart": 67,
+      "lineEnd": 83
+    },
+    {
+      "sectionOrder": 5,
+      "headingLevel": 3,
+      "headingText": "Offload responsibilities to external teams",
+      "headingPath": [
+        "Architecture strategies for consolidation",
+        "Consolidate responsibilities",
+        "Offload responsibilities to external teams"
+      ],
+      "markdown": "Offloading workload responsibilities to external teams refers to using expert centralized teams that perform specialized services such as a security operations team. You can offload responsibilities to existing teams to help optimize costs and delegate expertise for specific functions.\n\n- *Evaluate team skills*. Assess the current skill set of your team. Identify skill gaps or areas in which a centralized team optimizes costs.\n\n- *Find available opportunities*. Explore your organization for available services, such as the services of a security operations team. Ensure that the centralized team can accommodate the added responsibilities without compromising quality.\n\n- *Consider change control*. Familiarize yourself with how the centralized team handles changes, like approval workflows, testing protocols, and deployment strategies. Determine potential challenges that might arise if you have less direct control of these functions.\n\n- *Communicate and coordinate with your team*. Ensure that teams are familiar with each other's processes, tools, and expectations. Consider a phased transition or pilot period to ease the shift and identify potential challenges early.\n\n- *Document and track changes*. Maintain detailed documentation of all approved changes, including their scope, implementation steps, and associated risks or issues. Use a centralized system or change-management tool to track and monitor the status of changes throughout their lifecycle.",
+      "lineStart": 85,
+      "lineEnd": 97
+    },
+    {
+      "sectionOrder": 6,
+      "headingLevel": 2,
+      "headingText": "Azure facilitation",
+      "headingPath": [
+        "Architecture strategies for consolidation",
+        "Azure facilitation"
+      ],
+      "markdown": "**Density support**: Many Azure services support increased resource density. The following table shows a sampling of these services.\n\n|Azure service|Segmentation control|\n| --- | --- |\n|Azure Front Door|Customer domains and URL paths|\n|Azure Firewall|Network and application rules|\n|Azure Application Gateway|Listeners, URL path-based routing|\n|API Management|API policies|\n|Azure Kubernetes Service (AKS)| Namespaces, node pools|\n|Azure App Service|Multiple web apps and APIs on an App Service plan|\n|Azure SQL Database|Multiple databases on a server|\n\n**Resource observability:** [Azure Monitor](/azure/azure-monitor/overview) provides a centralized platform for monitoring and managing the performance and health of your Azure resources. You can collect and analyze telemetry data, set up alerts, and gain insight into resource utilization and opportunities for consolidation.\n\nLog Analytics provides centralized log management and analysis. You can collect, analyze, and visualize log data from various Azure resources, which helps to identify issues, troubleshoot problems, and gain operational insight.\n\n**Centralized network management:** [Azure Virtual Network Manager IP address management](/azure/virtual-network-manager/concept-ip-address-management) provides centralized IP planning and allocation across complex virtual network environments. This consolidates IP management responsibilities and prevents resource conflicts across multiple subscriptions and virtual networks. Centralized management reduces operational overhead by providing visibility and control over IP allocation, essential for managing large enterprise environments with hundreds of virtual networks.",
+      "lineStart": 99,
+      "lineEnd": 117
+    },
+    {
+      "sectionOrder": 7,
+      "headingLevel": 2,
+      "headingText": "Related links",
+      "headingPath": [
+        "Architecture strategies for consolidation",
+        "Related links"
+      ],
+      "markdown": "- [Azure Monitor](/azure/azure-monitor/overview)\n- [Recommendations for optimizing component costs](optimize-component-costs.md)",
+      "lineStart": 119,
+      "lineEnd": 122
+    },
+    {
+      "sectionOrder": 8,
+      "headingLevel": 2,
+      "headingText": "Cost Optimization checklist",
+      "headingPath": [
+        "Architecture strategies for consolidation",
+        "Cost Optimization checklist"
+      ],
+      "markdown": "Refer to the complete set of recommendations.\n\n> [!div class=\"nextstepaction\"]\n> [Cost Optimization checklist](checklist.md)\n\n<!-- Azure Update: 484347 - 2025-07-23 -->\n<!-- Azure Update: 498568 - 2025-01-23 -->",
+      "lineStart": 124,
+      "lineEnd": 131
+    }
+  ],
+  "localLinks": [
+    "checklist.md",
+    "optimize-component-costs.md"
+  ],
+  "lastModified": "2026-03-17T16:22:13.456Z"
+}

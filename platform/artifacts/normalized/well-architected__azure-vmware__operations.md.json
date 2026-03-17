@@ -1,0 +1,464 @@
+{
+  "source": {
+    "absolutePath": "C:\\Users\\EricL\\source\\repos\\Well-Architected-Vibe-Coding\\well-architected-vibe-coding\\well-architected\\azure-vmware\\operations.md",
+    "repoRelativePath": "well-architected/azure-vmware/operations.md",
+    "docsRelativePath": "azure-vmware/operations.md"
+  },
+  "frontMatter": {
+    "title": "Operations considerations for Azure VMware Solution workloads",
+    "description": "Examine Azure VMware Solution operational procedures. See how to use tools and practices like tagging and incident management to efficiently operate workloads.",
+    "author": "PageWriter-MSFT",
+    "ms.author": "prwilk",
+    "ms.date": "08/10/2023",
+    "ms.topic": "concept-article",
+    "ms.service": "azure-waf",
+    "ms.subservice": "waf-workload-azure-vmware"
+  },
+  "title": "Operations considerations for Azure VMware Solution workloads",
+  "rawBody": "# Operations considerations for Azure VMware Solution workloads\n\nThis article discusses the operations design area for Azure VMware Solution. The aim of this article is to build an operating model for Azure VMware Solution and the applications within the VMware software-defined datacenter (SDDC). Standard operating procedures (SOPs) are documented processes for managing a workload. Each Azure VMware Solution workload should have SOPs to govern operations. To stay aligned with business objectives and to help prevent drift from best practices, use SOPs in a continuous cycle of assessment and health checks that you run on your Azure VMware Solution workload.\n\n## Track application dependencies\n\n*Impact: Operational excellence*\n\nIT teams continuously look to optimize the deployment, management, and maintenance of applications, sites, and services. This practice helps to ensure high performance, reliability, scalability, and security. Optimizing involves understanding how applications flow inside the Azure VMware Solution platform. It also involves examining external dependencies and relationships that are outside the private cloud. A dependency map is a valuable tool for developers, application architects, and IT teams as they seek to understand the structure and behavior of applications. Having insight into application components such as software and infrastructure, services, and external dependencies provides a visual way to understand data flows, functionality, and API calls.\n\n##### Recommendations\n\n- Use Application Insights to track dependencies such as databases, API calls, and external services.\n- Use the service map feature of Azure Monitor to automatically discover and visualize different application and infrastructure components.\n- Use third-party tools like New Relic and Datadog to discover and map dependencies.\n- Use custom scripts or third-party configuration management tools that track the automation and deployment of dependencies.\n\n## Use automation, version control systems, and blue-green deployments\n\n*Impact: Operational excellence*\n\nOrganizations can decrease time to market and benefit from improved collaboration and software quality by adopting DevOps practices. For example, automation can expedite the deployment and maintenance of applications.\n\nWhen you use infrastructure as code (IaC) to organize infrastructure deployments, you can benefit from improved efficiency in your infrastructure provisioning. IaC can also facilitate the adoption of DevOps principles in infrastructure management.\n\n- You can use IaC to create several resources in Azure VMware Solution. Examples include the entire private cloud or individual components like clusters, network appliances, and storage. Tools such as Azure Resource Manager, Bicep, Terraform, the Azure CLI, and PowerShell automate the provisioning and configuration of resources in Azure VMware Solution.\n- When you use IaC, you can update your infrastructure by modifying code. This approach reduces the time and effort that are required for manual configuration and provisioning.\n- The output that's returned from deploying IaC can serve as documentation to help maintain and provide extra visibility into the state and configuration of provisioned resources.\n\nVersion control systems provide a way for you to manage your code and use versioning to track and roll back changes as needed.\n\nWhen you need to update application code across servers, blue-green deployments can be helpful in many ways:\n\n- They aid in managing the lifecycle of an application from development to production.\n- They help give customers a consistent web experience when updates and patches are being applied.\n- They use weighted algorithms to distribute traffic only to healthy servers during maintenance.\n\nAzure VMware Solution doesn't offer methods that a cloud-native application offers for achieving blue-green deployments. But these deployments are still possible in Azure VMware Solution:\n\n- Before you make changes to your application configuration, take snapshots of your environment.\n- Use version control to ensure that you can return to a last-known good state.\n- Consider creating a staging environment that mirrors production and deploys updates before you go live.\n- From the staging environment, perform rolling updates to a subset of servers and test your application.\n\nYou can reduce manual effort, minimize errors, and improve resource usage by automating routine tasks like provisioning, scaling, and patching. DevOps methodologies are an important element of a well-architected solution for streamlining operations, saving time, and helping teams focus on value-added activities.\n\n##### Recommendations\n\n- Use IaC to deploy and provision infrastructure in a way that's repeatable, auditable, and consistent.\n- Automate expansion and contraction by using IaC.\n- Use version control systems to track changes, collaborate, and roll back code to previous versions as needed.\n- Take advantage of the blue-green concept by creating a staging environment that mirrors production and test environments before you go live.\n- Maintain the last good state of your application by using snapshots, cloning your disks, and having version-controlled code.\n\n## Define roles and processes\n\n*Impact: Operational excellence*\n\nWell-defined roles and responsibilities help ensure clarity, accountability, and effective management of a well-architected Azure VMware Solution workload. Having a defined set of standards and structured processes and knowing who runs them leads to efficient operations and helps IT organizations align their technical offerings with business objectives and strategies. As the Azure VMware Solution environment grows and evolves, well-defined roles and responsibilities lead to easier task delegation and the potential to scale the solution without disruption. The result is a better experience for the application's users.\n\nIt's important to have a culture of continual improvement that focuses on efficient day-to-day operations for applications in the private cloud. Examples of operations include maintaining service-level agreements (SLAs), maintaining availability, having the capacity to minimize service disruptions, and having a smooth delivery. For instance, Azure VMware Solution makes it possible to expand an environment with minimal user input. If you manually expand your contract, you should document who performs the associated activities and how to carry them out. Azure VMware Solution operators should ensure node reservation is available for expanding the environment as needed. For example, designate individuals who are responsible for identifying underutilized or idle resources. Provide those individuals with a process for right-sizing virtual machines (VMs) to reduce unnecessary costs.\n\nApplication teams and developers should define coding guidelines for code structure, exceptions, and error handling. You should also have methods for tracking changes, such as regular code reviews, API documentation, and regular code refactoring. When you use version control, enforce best practices such as branching, commit messages, and approval workflows. These practices can help make your code consistent, easy to debug, and maintainable.\n\n##### Recommendations\n\n- Work with the cloud center of excellence (CCoE) team to understand the standards and guidelines for compliance, security, application architecture, and operational processes.\n- Have a security and compliance team focus on security policies that are specific to Azure VMware Solution. Also have the team perform risk assessments and ensure compliance with regulatory requirements.\n- Adopt a framework such as the Information Technology Infrastructure Library (ITIL). Or use International Organization for Standardization (ISO) practices to map day-to-day operations, processes, and activities. These practices can result in faster knowledge transfers, continuous improvements, and improved change management.\n- Define coding standards and implement security practices during application development.\n- Ensure that key service components such as HCX Manager are protected before undertaking critical activities or starting maintenance activity. Use [Run command to take HCX Manager snapshot](/azure/azure-vmware/use-hcx-run-commands#take-a-snapshot-of-vmware-hcx-cloud-manager). Snapshots are retained for 72 hours and can be restored by creating a support ticket with Microsoft.\n\n## Use tagging strategies and best practices\n\n*Impact: Operational excellence*\n\nYou can use a tagging strategy for chargeback and resource tracking. Tags are key-pair values that you define at the resource level and apply during provisioning. You can use IaC to create, update, and destroy guest VMs. Tags and IaC work together with configuration management tools. You can use tags in the following areas:\n\n- Environments. You can apply tags like *production*, *QA*, or *dev test* to identify resources.\n- Cost centers, for tracking resource costs and expenses.\n- SLAs, to prioritize SLA requirements of resources.\n- Lifecycles. You can label applications as *active*, *archived*, or *retired*.\n- Criticality, by labeling resources based on their business impact and significance.\n\nAs part of your governance and compliance strategy, a group should be responsible for identifying resources without tags. That group can combine automation, auditing, and processes to help identify and remediate resources that don't meet tagging compliance policies.\n\nThese tagging considerations are general. It's important that your tagging strategy supports effective resource categorization, resource lifecycle management, and reporting within Azure VMware Solution.\n\n##### Recommendations\n\n- Apply tags for resource management by using an organizational taxonomy to identify workloads and infrastructure. The taxonomy should include the host, business, owner, and environment.\n- Use appropriate tooling to maintain and apply tags programmatically during provisioning.\n- Use tags that align with your organization's compliance and governance initiatives, such as SLAs, chargeback policies, and lifecycle management practices.\n- Have processes in place to identify and remedy resources that don't adhere to tagging requirements.\n\n## Establish incident response teams\n\n*Impact: Operational excellence*\n\nTo track workload status in a private cloud, it's essential to monitor metrics such as CPU usage, operating system logs, and security alerts. To ensure the effectiveness of your alerting system, you need to evaluate several key operational aspects. Specifically, check that:\n\n- All critical components are identified, such as databases, network devices, and storage.\n- Thresholds are set appropriately.\n- Alerts are specific and actionable.\n- The right people receive alerts.\n- There isn't a substantial amount of noise and false positives.\n- Adequate escalation procedures are in place.\n\nBefore an incident or outage, it's crucial to establish a well-defined notification process to ensure timely communication. Identifying the relevant personnel responsible for resolution is vital. A dedicated remediation team can include operations personnel, application owners, and DevOps experts who possess the expertise that's needed to resolve issues quickly. The operations team must be aware of the appropriate individuals to involve in triaging each problem.\n\nAn incident response team can effectively coordinate responses by maintaining a comprehensive distribution list. This list should include key stakeholders from business-critical departments and designated escalation contacts. Business stakeholders must be informed of any potential impact on operations that result from an incident. The assigned escalation contacts should be individuals who are capable of making decisions or escalating issues to higher levels for guidance.\n\nRegularly reviewing the distribution list is essential to ensure its accuracy and alignment with current roles and responsibilities. Reviews ensure that key stakeholders are promptly informed about significant events that occur in Azure VMware Solution.\n\nAn IT service management (ITSM) solution can map events to tasks. For example, an Azure native ITSM might use Azure DevOps to manage tasks. It might use Azure Automation for automating IT processes and Azure Logic Apps for building workflows. The result is a customized solution for problem management in Azure VMware Solution.  \n\n##### Recommendations\n\n- Define the appropriate recipients for Azure VMware Solution alerts and incidents.\n- Clearly define escalation contacts who should be reachable and authorized to make decisions or escalate issues.\n- Identify key business stakeholders or representatives to ensure visibility into any potential impact and to provide guidance.\n- Have a remediation team in place that consists of administrators, infrastructure engineers, and personnel who have the expertise that's needed to address and resolve issues.\n- Integrate alerts with an ITSM like Azure DevOps, JIRA, or ServiceNow.\n\n## Document procedures\n\n*Impact: Reliability*\n\nIt's important to have a clear understanding of the backup and recovery infrastructure that exists in your environment. To configure a backup solution, you first need to define backup targets for your infrastructure. You should back up your applications, databases, and assets in blob storage or an Azure backup vault. You should also designate owners who are responsible for backing up and restoring your application.\n\n##### Recommendations\n\n- Clearly document your backup and recovery infrastructure.\n- Clearly document your backup and recovery procedures.\n\n## Implement backup and restore solutions\n\n*Impact: Reliability*\n\nThe private cloud should protect against data loss, minimize downtime, and maintain the continuity of operations when there are unexpected disruptions or disasters.\n\nFor business continuity, you need to implement robust data protection to help ensure the availability, integrity, and recoverability of your VMs and the critical data within the Azure VMware Solution environment. The backup tools need to be in place, and you must also confirm that they work. A key principle of Azure VMware Solution is to provide independent software vendor (ISV) technology support that's validated with Azure VMware Solution. Understanding the partners and options that are available to you is critical to your backup success.\n\n##### Recommendations\n\n- Use backup solutions that Microsoft supports, such as Microsoft Azure Backup Server, or approved third-party vendors.\n\n>[!Caution]\n>Make sure the VMs in your backup environment are running OSs that have supportability. [Learn about the supported OSs](/azure/virtual-machines/enable-nvme-interface).\n\n## Use Azure Site Recovery\n\n*Impact: Reliability*\n\nAzure Site Recovery is a disaster recovery solution that's designed to minimize downtime of the VMs in an Azure VMware Solution environment when there's a disaster. Azure Site Recovery automates and orchestrates failover and failback. Built-in nondisruptive testing helps ensure your recovery time objectives (RTOs) are met. Azure Site Recovery simplifies management through automation and helps ensure fast and highly predictable recovery times.\n\n##### Recommendations\n\n- In a prolonged regional outage, protect your workloads by replicating them to an alternate Azure region.\n- Configure Azure Site Recovery to send backups to an alternate region.\n\n## Rotate secrets\n\n*Impact: Security*\n\nIt's more challenging for attackers to access or misuse encrypted data if they don't have access to encryption keys. You should securely store keys, secrets, and certificates, and you should rotate them frequently. Comprehensive steps for securing and maintaining data integrity include:\n\n- Encrypting data.\n- Storing keys securely.\n- Encrypting data at the application level before you transmit data.\n\n##### Recommendations\n\n- Use Azure Key Vault to store encryption keys.\n\n## Next steps\n\nNow that you've looked at operational management procedures, see how to integrate an Azure VMware Solution workload with Azure landing zones.\n\n> [!div class=\"nextstepaction\"]\n> [Landing zone integration](./landing-zone-integration.md)\n\nUse the assessment tool to evaluate your design choices.\n\n> [!div class=\"nextstepaction\"]\n> [Assessment](./assessment.md)",
+  "headings": [
+    {
+      "level": 1,
+      "text": "Operations considerations for Azure VMware Solution workloads",
+      "line": 1,
+      "path": [
+        "Operations considerations for Azure VMware Solution workloads"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Track application dependencies",
+      "line": 5,
+      "path": [
+        "Operations considerations for Azure VMware Solution workloads",
+        "Track application dependencies"
+      ]
+    },
+    {
+      "level": 5,
+      "text": "Recommendations",
+      "line": 11,
+      "path": [
+        "Operations considerations for Azure VMware Solution workloads",
+        "Track application dependencies",
+        "Recommendations"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Use automation, version control systems, and blue-green deployments",
+      "line": 18,
+      "path": [
+        "Operations considerations for Azure VMware Solution workloads",
+        "Use automation, version control systems, and blue-green deployments"
+      ]
+    },
+    {
+      "level": 5,
+      "text": "Recommendations",
+      "line": 47,
+      "path": [
+        "Operations considerations for Azure VMware Solution workloads",
+        "Use automation, version control systems, and blue-green deployments",
+        "Recommendations"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Define roles and processes",
+      "line": 55,
+      "path": [
+        "Operations considerations for Azure VMware Solution workloads",
+        "Define roles and processes"
+      ]
+    },
+    {
+      "level": 5,
+      "text": "Recommendations",
+      "line": 65,
+      "path": [
+        "Operations considerations for Azure VMware Solution workloads",
+        "Define roles and processes",
+        "Recommendations"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Use tagging strategies and best practices",
+      "line": 73,
+      "path": [
+        "Operations considerations for Azure VMware Solution workloads",
+        "Use tagging strategies and best practices"
+      ]
+    },
+    {
+      "level": 5,
+      "text": "Recommendations",
+      "line": 89,
+      "path": [
+        "Operations considerations for Azure VMware Solution workloads",
+        "Use tagging strategies and best practices",
+        "Recommendations"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Establish incident response teams",
+      "line": 96,
+      "path": [
+        "Operations considerations for Azure VMware Solution workloads",
+        "Establish incident response teams"
+      ]
+    },
+    {
+      "level": 5,
+      "text": "Recommendations",
+      "line": 117,
+      "path": [
+        "Operations considerations for Azure VMware Solution workloads",
+        "Establish incident response teams",
+        "Recommendations"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Document procedures",
+      "line": 125,
+      "path": [
+        "Operations considerations for Azure VMware Solution workloads",
+        "Document procedures"
+      ]
+    },
+    {
+      "level": 5,
+      "text": "Recommendations",
+      "line": 131,
+      "path": [
+        "Operations considerations for Azure VMware Solution workloads",
+        "Document procedures",
+        "Recommendations"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Implement backup and restore solutions",
+      "line": 136,
+      "path": [
+        "Operations considerations for Azure VMware Solution workloads",
+        "Implement backup and restore solutions"
+      ]
+    },
+    {
+      "level": 5,
+      "text": "Recommendations",
+      "line": 144,
+      "path": [
+        "Operations considerations for Azure VMware Solution workloads",
+        "Implement backup and restore solutions",
+        "Recommendations"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Use Azure Site Recovery",
+      "line": 151,
+      "path": [
+        "Operations considerations for Azure VMware Solution workloads",
+        "Use Azure Site Recovery"
+      ]
+    },
+    {
+      "level": 5,
+      "text": "Recommendations",
+      "line": 157,
+      "path": [
+        "Operations considerations for Azure VMware Solution workloads",
+        "Use Azure Site Recovery",
+        "Recommendations"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Rotate secrets",
+      "line": 162,
+      "path": [
+        "Operations considerations for Azure VMware Solution workloads",
+        "Rotate secrets"
+      ]
+    },
+    {
+      "level": 5,
+      "text": "Recommendations",
+      "line": 172,
+      "path": [
+        "Operations considerations for Azure VMware Solution workloads",
+        "Rotate secrets",
+        "Recommendations"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Next steps",
+      "line": 176,
+      "path": [
+        "Operations considerations for Azure VMware Solution workloads",
+        "Next steps"
+      ]
+    }
+  ],
+  "sections": [
+    {
+      "sectionOrder": 1,
+      "headingLevel": 1,
+      "headingText": "Operations considerations for Azure VMware Solution workloads",
+      "headingPath": [
+        "Operations considerations for Azure VMware Solution workloads"
+      ],
+      "markdown": "This article discusses the operations design area for Azure VMware Solution. The aim of this article is to build an operating model for Azure VMware Solution and the applications within the VMware software-defined datacenter (SDDC). Standard operating procedures (SOPs) are documented processes for managing a workload. Each Azure VMware Solution workload should have SOPs to govern operations. To stay aligned with business objectives and to help prevent drift from best practices, use SOPs in a continuous cycle of assessment and health checks that you run on your Azure VMware Solution workload.",
+      "lineStart": 2,
+      "lineEnd": 4
+    },
+    {
+      "sectionOrder": 2,
+      "headingLevel": 2,
+      "headingText": "Track application dependencies",
+      "headingPath": [
+        "Operations considerations for Azure VMware Solution workloads",
+        "Track application dependencies"
+      ],
+      "markdown": "*Impact: Operational excellence*\n\nIT teams continuously look to optimize the deployment, management, and maintenance of applications, sites, and services. This practice helps to ensure high performance, reliability, scalability, and security. Optimizing involves understanding how applications flow inside the Azure VMware Solution platform. It also involves examining external dependencies and relationships that are outside the private cloud. A dependency map is a valuable tool for developers, application architects, and IT teams as they seek to understand the structure and behavior of applications. Having insight into application components such as software and infrastructure, services, and external dependencies provides a visual way to understand data flows, functionality, and API calls.",
+      "lineStart": 6,
+      "lineEnd": 10
+    },
+    {
+      "sectionOrder": 3,
+      "headingLevel": 5,
+      "headingText": "Recommendations",
+      "headingPath": [
+        "Operations considerations for Azure VMware Solution workloads",
+        "Track application dependencies",
+        "Recommendations"
+      ],
+      "markdown": "- Use Application Insights to track dependencies such as databases, API calls, and external services.\n- Use the service map feature of Azure Monitor to automatically discover and visualize different application and infrastructure components.\n- Use third-party tools like New Relic and Datadog to discover and map dependencies.\n- Use custom scripts or third-party configuration management tools that track the automation and deployment of dependencies.",
+      "lineStart": 12,
+      "lineEnd": 17
+    },
+    {
+      "sectionOrder": 4,
+      "headingLevel": 2,
+      "headingText": "Use automation, version control systems, and blue-green deployments",
+      "headingPath": [
+        "Operations considerations for Azure VMware Solution workloads",
+        "Use automation, version control systems, and blue-green deployments"
+      ],
+      "markdown": "*Impact: Operational excellence*\n\nOrganizations can decrease time to market and benefit from improved collaboration and software quality by adopting DevOps practices. For example, automation can expedite the deployment and maintenance of applications.\n\nWhen you use infrastructure as code (IaC) to organize infrastructure deployments, you can benefit from improved efficiency in your infrastructure provisioning. IaC can also facilitate the adoption of DevOps principles in infrastructure management.\n\n- You can use IaC to create several resources in Azure VMware Solution. Examples include the entire private cloud or individual components like clusters, network appliances, and storage. Tools such as Azure Resource Manager, Bicep, Terraform, the Azure CLI, and PowerShell automate the provisioning and configuration of resources in Azure VMware Solution.\n- When you use IaC, you can update your infrastructure by modifying code. This approach reduces the time and effort that are required for manual configuration and provisioning.\n- The output that's returned from deploying IaC can serve as documentation to help maintain and provide extra visibility into the state and configuration of provisioned resources.\n\nVersion control systems provide a way for you to manage your code and use versioning to track and roll back changes as needed.\n\nWhen you need to update application code across servers, blue-green deployments can be helpful in many ways:\n\n- They aid in managing the lifecycle of an application from development to production.\n- They help give customers a consistent web experience when updates and patches are being applied.\n- They use weighted algorithms to distribute traffic only to healthy servers during maintenance.\n\nAzure VMware Solution doesn't offer methods that a cloud-native application offers for achieving blue-green deployments. But these deployments are still possible in Azure VMware Solution:\n\n- Before you make changes to your application configuration, take snapshots of your environment.\n- Use version control to ensure that you can return to a last-known good state.\n- Consider creating a staging environment that mirrors production and deploys updates before you go live.\n- From the staging environment, perform rolling updates to a subset of servers and test your application.\n\nYou can reduce manual effort, minimize errors, and improve resource usage by automating routine tasks like provisioning, scaling, and patching. DevOps methodologies are an important element of a well-architected solution for streamlining operations, saving time, and helping teams focus on value-added activities.",
+      "lineStart": 19,
+      "lineEnd": 46
+    },
+    {
+      "sectionOrder": 5,
+      "headingLevel": 5,
+      "headingText": "Recommendations",
+      "headingPath": [
+        "Operations considerations for Azure VMware Solution workloads",
+        "Use automation, version control systems, and blue-green deployments",
+        "Recommendations"
+      ],
+      "markdown": "- Use IaC to deploy and provision infrastructure in a way that's repeatable, auditable, and consistent.\n- Automate expansion and contraction by using IaC.\n- Use version control systems to track changes, collaborate, and roll back code to previous versions as needed.\n- Take advantage of the blue-green concept by creating a staging environment that mirrors production and test environments before you go live.\n- Maintain the last good state of your application by using snapshots, cloning your disks, and having version-controlled code.",
+      "lineStart": 48,
+      "lineEnd": 54
+    },
+    {
+      "sectionOrder": 6,
+      "headingLevel": 2,
+      "headingText": "Define roles and processes",
+      "headingPath": [
+        "Operations considerations for Azure VMware Solution workloads",
+        "Define roles and processes"
+      ],
+      "markdown": "*Impact: Operational excellence*\n\nWell-defined roles and responsibilities help ensure clarity, accountability, and effective management of a well-architected Azure VMware Solution workload. Having a defined set of standards and structured processes and knowing who runs them leads to efficient operations and helps IT organizations align their technical offerings with business objectives and strategies. As the Azure VMware Solution environment grows and evolves, well-defined roles and responsibilities lead to easier task delegation and the potential to scale the solution without disruption. The result is a better experience for the application's users.\n\nIt's important to have a culture of continual improvement that focuses on efficient day-to-day operations for applications in the private cloud. Examples of operations include maintaining service-level agreements (SLAs), maintaining availability, having the capacity to minimize service disruptions, and having a smooth delivery. For instance, Azure VMware Solution makes it possible to expand an environment with minimal user input. If you manually expand your contract, you should document who performs the associated activities and how to carry them out. Azure VMware Solution operators should ensure node reservation is available for expanding the environment as needed. For example, designate individuals who are responsible for identifying underutilized or idle resources. Provide those individuals with a process for right-sizing virtual machines (VMs) to reduce unnecessary costs.\n\nApplication teams and developers should define coding guidelines for code structure, exceptions, and error handling. You should also have methods for tracking changes, such as regular code reviews, API documentation, and regular code refactoring. When you use version control, enforce best practices such as branching, commit messages, and approval workflows. These practices can help make your code consistent, easy to debug, and maintainable.",
+      "lineStart": 56,
+      "lineEnd": 64
+    },
+    {
+      "sectionOrder": 7,
+      "headingLevel": 5,
+      "headingText": "Recommendations",
+      "headingPath": [
+        "Operations considerations for Azure VMware Solution workloads",
+        "Define roles and processes",
+        "Recommendations"
+      ],
+      "markdown": "- Work with the cloud center of excellence (CCoE) team to understand the standards and guidelines for compliance, security, application architecture, and operational processes.\n- Have a security and compliance team focus on security policies that are specific to Azure VMware Solution. Also have the team perform risk assessments and ensure compliance with regulatory requirements.\n- Adopt a framework such as the Information Technology Infrastructure Library (ITIL). Or use International Organization for Standardization (ISO) practices to map day-to-day operations, processes, and activities. These practices can result in faster knowledge transfers, continuous improvements, and improved change management.\n- Define coding standards and implement security practices during application development.\n- Ensure that key service components such as HCX Manager are protected before undertaking critical activities or starting maintenance activity. Use [Run command to take HCX Manager snapshot](/azure/azure-vmware/use-hcx-run-commands#take-a-snapshot-of-vmware-hcx-cloud-manager). Snapshots are retained for 72 hours and can be restored by creating a support ticket with Microsoft.",
+      "lineStart": 66,
+      "lineEnd": 72
+    },
+    {
+      "sectionOrder": 8,
+      "headingLevel": 2,
+      "headingText": "Use tagging strategies and best practices",
+      "headingPath": [
+        "Operations considerations for Azure VMware Solution workloads",
+        "Use tagging strategies and best practices"
+      ],
+      "markdown": "*Impact: Operational excellence*\n\nYou can use a tagging strategy for chargeback and resource tracking. Tags are key-pair values that you define at the resource level and apply during provisioning. You can use IaC to create, update, and destroy guest VMs. Tags and IaC work together with configuration management tools. You can use tags in the following areas:\n\n- Environments. You can apply tags like *production*, *QA*, or *dev test* to identify resources.\n- Cost centers, for tracking resource costs and expenses.\n- SLAs, to prioritize SLA requirements of resources.\n- Lifecycles. You can label applications as *active*, *archived*, or *retired*.\n- Criticality, by labeling resources based on their business impact and significance.\n\nAs part of your governance and compliance strategy, a group should be responsible for identifying resources without tags. That group can combine automation, auditing, and processes to help identify and remediate resources that don't meet tagging compliance policies.\n\nThese tagging considerations are general. It's important that your tagging strategy supports effective resource categorization, resource lifecycle management, and reporting within Azure VMware Solution.",
+      "lineStart": 74,
+      "lineEnd": 88
+    },
+    {
+      "sectionOrder": 9,
+      "headingLevel": 5,
+      "headingText": "Recommendations",
+      "headingPath": [
+        "Operations considerations for Azure VMware Solution workloads",
+        "Use tagging strategies and best practices",
+        "Recommendations"
+      ],
+      "markdown": "- Apply tags for resource management by using an organizational taxonomy to identify workloads and infrastructure. The taxonomy should include the host, business, owner, and environment.\n- Use appropriate tooling to maintain and apply tags programmatically during provisioning.\n- Use tags that align with your organization's compliance and governance initiatives, such as SLAs, chargeback policies, and lifecycle management practices.\n- Have processes in place to identify and remedy resources that don't adhere to tagging requirements.",
+      "lineStart": 90,
+      "lineEnd": 95
+    },
+    {
+      "sectionOrder": 10,
+      "headingLevel": 2,
+      "headingText": "Establish incident response teams",
+      "headingPath": [
+        "Operations considerations for Azure VMware Solution workloads",
+        "Establish incident response teams"
+      ],
+      "markdown": "*Impact: Operational excellence*\n\nTo track workload status in a private cloud, it's essential to monitor metrics such as CPU usage, operating system logs, and security alerts. To ensure the effectiveness of your alerting system, you need to evaluate several key operational aspects. Specifically, check that:\n\n- All critical components are identified, such as databases, network devices, and storage.\n- Thresholds are set appropriately.\n- Alerts are specific and actionable.\n- The right people receive alerts.\n- There isn't a substantial amount of noise and false positives.\n- Adequate escalation procedures are in place.\n\nBefore an incident or outage, it's crucial to establish a well-defined notification process to ensure timely communication. Identifying the relevant personnel responsible for resolution is vital. A dedicated remediation team can include operations personnel, application owners, and DevOps experts who possess the expertise that's needed to resolve issues quickly. The operations team must be aware of the appropriate individuals to involve in triaging each problem.\n\nAn incident response team can effectively coordinate responses by maintaining a comprehensive distribution list. This list should include key stakeholders from business-critical departments and designated escalation contacts. Business stakeholders must be informed of any potential impact on operations that result from an incident. The assigned escalation contacts should be individuals who are capable of making decisions or escalating issues to higher levels for guidance.\n\nRegularly reviewing the distribution list is essential to ensure its accuracy and alignment with current roles and responsibilities. Reviews ensure that key stakeholders are promptly informed about significant events that occur in Azure VMware Solution.\n\nAn IT service management (ITSM) solution can map events to tasks. For example, an Azure native ITSM might use Azure DevOps to manage tasks. It might use Azure Automation for automating IT processes and Azure Logic Apps for building workflows. The result is a customized solution for problem management in Azure VMware Solution.",
+      "lineStart": 97,
+      "lineEnd": 116
+    },
+    {
+      "sectionOrder": 11,
+      "headingLevel": 5,
+      "headingText": "Recommendations",
+      "headingPath": [
+        "Operations considerations for Azure VMware Solution workloads",
+        "Establish incident response teams",
+        "Recommendations"
+      ],
+      "markdown": "- Define the appropriate recipients for Azure VMware Solution alerts and incidents.\n- Clearly define escalation contacts who should be reachable and authorized to make decisions or escalate issues.\n- Identify key business stakeholders or representatives to ensure visibility into any potential impact and to provide guidance.\n- Have a remediation team in place that consists of administrators, infrastructure engineers, and personnel who have the expertise that's needed to address and resolve issues.\n- Integrate alerts with an ITSM like Azure DevOps, JIRA, or ServiceNow.",
+      "lineStart": 118,
+      "lineEnd": 124
+    },
+    {
+      "sectionOrder": 12,
+      "headingLevel": 2,
+      "headingText": "Document procedures",
+      "headingPath": [
+        "Operations considerations for Azure VMware Solution workloads",
+        "Document procedures"
+      ],
+      "markdown": "*Impact: Reliability*\n\nIt's important to have a clear understanding of the backup and recovery infrastructure that exists in your environment. To configure a backup solution, you first need to define backup targets for your infrastructure. You should back up your applications, databases, and assets in blob storage or an Azure backup vault. You should also designate owners who are responsible for backing up and restoring your application.",
+      "lineStart": 126,
+      "lineEnd": 130
+    },
+    {
+      "sectionOrder": 13,
+      "headingLevel": 5,
+      "headingText": "Recommendations",
+      "headingPath": [
+        "Operations considerations for Azure VMware Solution workloads",
+        "Document procedures",
+        "Recommendations"
+      ],
+      "markdown": "- Clearly document your backup and recovery infrastructure.\n- Clearly document your backup and recovery procedures.",
+      "lineStart": 132,
+      "lineEnd": 135
+    },
+    {
+      "sectionOrder": 14,
+      "headingLevel": 2,
+      "headingText": "Implement backup and restore solutions",
+      "headingPath": [
+        "Operations considerations for Azure VMware Solution workloads",
+        "Implement backup and restore solutions"
+      ],
+      "markdown": "*Impact: Reliability*\n\nThe private cloud should protect against data loss, minimize downtime, and maintain the continuity of operations when there are unexpected disruptions or disasters.\n\nFor business continuity, you need to implement robust data protection to help ensure the availability, integrity, and recoverability of your VMs and the critical data within the Azure VMware Solution environment. The backup tools need to be in place, and you must also confirm that they work. A key principle of Azure VMware Solution is to provide independent software vendor (ISV) technology support that's validated with Azure VMware Solution. Understanding the partners and options that are available to you is critical to your backup success.",
+      "lineStart": 137,
+      "lineEnd": 143
+    },
+    {
+      "sectionOrder": 15,
+      "headingLevel": 5,
+      "headingText": "Recommendations",
+      "headingPath": [
+        "Operations considerations for Azure VMware Solution workloads",
+        "Implement backup and restore solutions",
+        "Recommendations"
+      ],
+      "markdown": "- Use backup solutions that Microsoft supports, such as Microsoft Azure Backup Server, or approved third-party vendors.\n\n>[!Caution]\n>Make sure the VMs in your backup environment are running OSs that have supportability. [Learn about the supported OSs](/azure/virtual-machines/enable-nvme-interface).",
+      "lineStart": 145,
+      "lineEnd": 150
+    },
+    {
+      "sectionOrder": 16,
+      "headingLevel": 2,
+      "headingText": "Use Azure Site Recovery",
+      "headingPath": [
+        "Operations considerations for Azure VMware Solution workloads",
+        "Use Azure Site Recovery"
+      ],
+      "markdown": "*Impact: Reliability*\n\nAzure Site Recovery is a disaster recovery solution that's designed to minimize downtime of the VMs in an Azure VMware Solution environment when there's a disaster. Azure Site Recovery automates and orchestrates failover and failback. Built-in nondisruptive testing helps ensure your recovery time objectives (RTOs) are met. Azure Site Recovery simplifies management through automation and helps ensure fast and highly predictable recovery times.",
+      "lineStart": 152,
+      "lineEnd": 156
+    },
+    {
+      "sectionOrder": 17,
+      "headingLevel": 5,
+      "headingText": "Recommendations",
+      "headingPath": [
+        "Operations considerations for Azure VMware Solution workloads",
+        "Use Azure Site Recovery",
+        "Recommendations"
+      ],
+      "markdown": "- In a prolonged regional outage, protect your workloads by replicating them to an alternate Azure region.\n- Configure Azure Site Recovery to send backups to an alternate region.",
+      "lineStart": 158,
+      "lineEnd": 161
+    },
+    {
+      "sectionOrder": 18,
+      "headingLevel": 2,
+      "headingText": "Rotate secrets",
+      "headingPath": [
+        "Operations considerations for Azure VMware Solution workloads",
+        "Rotate secrets"
+      ],
+      "markdown": "*Impact: Security*\n\nIt's more challenging for attackers to access or misuse encrypted data if they don't have access to encryption keys. You should securely store keys, secrets, and certificates, and you should rotate them frequently. Comprehensive steps for securing and maintaining data integrity include:\n\n- Encrypting data.\n- Storing keys securely.\n- Encrypting data at the application level before you transmit data.",
+      "lineStart": 163,
+      "lineEnd": 171
+    },
+    {
+      "sectionOrder": 19,
+      "headingLevel": 5,
+      "headingText": "Recommendations",
+      "headingPath": [
+        "Operations considerations for Azure VMware Solution workloads",
+        "Rotate secrets",
+        "Recommendations"
+      ],
+      "markdown": "- Use Azure Key Vault to store encryption keys.",
+      "lineStart": 173,
+      "lineEnd": 175
+    },
+    {
+      "sectionOrder": 20,
+      "headingLevel": 2,
+      "headingText": "Next steps",
+      "headingPath": [
+        "Operations considerations for Azure VMware Solution workloads",
+        "Next steps"
+      ],
+      "markdown": "Now that you've looked at operational management procedures, see how to integrate an Azure VMware Solution workload with Azure landing zones.\n\n> [!div class=\"nextstepaction\"]\n> [Landing zone integration](./landing-zone-integration.md)\n\nUse the assessment tool to evaluate your design choices.\n\n> [!div class=\"nextstepaction\"]\n> [Assessment](./assessment.md)",
+      "lineStart": 177,
+      "lineEnd": 186
+    }
+  ],
+  "localLinks": [
+    "./assessment.md",
+    "./landing-zone-integration.md"
+  ],
+  "lastModified": "2026-03-17T16:22:13.451Z"
+}

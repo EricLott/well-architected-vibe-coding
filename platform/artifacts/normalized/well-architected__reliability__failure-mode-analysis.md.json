@@ -1,0 +1,265 @@
+{
+  "source": {
+    "absolutePath": "C:\\Users\\EricL\\source\\repos\\Well-Architected-Vibe-Coding\\well-architected-vibe-coding\\well-architected\\reliability\\failure-mode-analysis.md",
+    "repoRelativePath": "well-architected/reliability/failure-mode-analysis.md",
+    "docsRelativePath": "reliability/failure-mode-analysis.md"
+  },
+  "frontMatter": {
+    "title": "Architecture strategies for failure mode analysis",
+    "description": "Learn how to identify potential points of failure within your workload and the associated flows, and plan mitigation actions accordingly.",
+    "author": "claytonsiemens77",
+    "ms.author": "csiemens",
+    "ms.date": "10/08/2024",
+    "ms.topic": "concept-article"
+  },
+  "title": "Architecture strategies for failure mode analysis",
+  "rawBody": "# Architecture strategies for performing failure mode analysis\n\n**Applies to this Azure Well-Architected Framework Reliability checklist recommendation:**\n\n|**RE:03**| **Use failure mode analysis (FMA) to identify potential failures in your workload.** Identify dependencies and failure points, and develop mitigation strategies for those failures.  |\n|---|---|\n\nThis guide describes the best practices for performing failure mode analysis (FMA) for your workload. FMA is the practice of identifying potential points of failure within your workload and the associated flows and planning mitigation actions accordingly. At each step of the flow, you identify the blast radius of multiple failure types, which helps you design a new workload or refactor an existing workload to minimize the widespread effect of failures.\n\nA key tenet of FMA is that failures happen no matter how many layers of resiliency you apply. More complex environments are exposed to more types of failures. Given this reality, FMA allows you to design your workload to withstand most types of failures and recover gracefully within defined recovery objectives.\n\nIf you skip FMA altogether or perform an incomplete analysis, your workload is at risk of unpredicted behavior and potential outages caused by suboptimal design.\n\n**Definitions**\n\n| Term | Definition|\n|------|-----------|\n| Failure mode | A type of problem that can cause one or more workload components to be degraded or severely affected to the point of being unavailable. |\n| Mitigation | The activities that you have identified to address problems either proactively or reactively. |\n| Detection | Your infrastructure, data, and app monitoring and alerting processes and procedures. |\n\n> [!NOTE]\n> Distinguish failures from errors. A failure is an unexpected event within a system that prevents it from continuing to function normally. For example, a hardware malfunction that causes a network partition is a failure. Usually, failures require intervention or specific design for that class of failures. In contrast, errors are an expected part of normal operations, are dealt with immediately and the system will continue to operate at the same capacity following an error. For example, errors discovered during input validation can be handled through business logic.\n\nReview and implement the [recommendations for identifying flows](identify-flows.md). It’s assumed that you have identified and prioritized user and system flows based on criticality.\n\nThe data that you have gathered and the artifacts that you have created in your work provide you with a concrete description of your data paths involved throughout the flows. To be successful in your FMA work, accuracy and thoroughness in your artifacts is critical.\n\nAfter you determine the critical flows, you can plan their required components. Next, follow each flow step by step to identify dependencies, including third-party services and potential points of failure, and plan your mitigation strategies.\n\n## Decompose the workload\n\nAs you move from ideation to design, you need to identify the component types that are required to support your workload. Your workload determines the necessary components that you must plan for. Typically, you need to plan for ingress control, networking, compute, data, storage, supporting services (like authentication, messaging, and secret or key management), and egress control. At this stage in your design work, you might not know the specific technologies that you'll deploy, so your design might look like the following example.\n\n:::image type=\"content\" source=\"media/failure-mode-analysis/failure-mode-example.png\" alt-text=\"Diagram that shows the design example.\" border=\"false\" lightbox=\"media/failure-mode-analysis/failure-mode-example.png\":::\n\nAfter you create your initial architecture design, you can overlay your flows to identify the discrete components that are used in those flows and create lists or workflow diagrams that describe the flows and their components. To understand the criticality of the components, use the criticality definitions that you have assigned to the flows. Consider the effect of a component malfunction on your flows.\n\n## Identify dependencies\n\nIdentify your workload dependencies to perform your single point-of-failure analysis. Decomposing your workload and overlaying flows provides insight into dependencies that are internal and external to the workload.\n\nInternal dependencies are components in the workload scope that are required for the workload to function. Typical internal dependencies include APIs or secret/key management solutions like Azure Key Vault. For these dependencies, capture the reliability data, like availability SLAs and scaling limits. External dependencies are required components outside the scope of the workload, such as another application or third-party service. Typical external dependencies include authentication solutions, like Microsoft Entra ID, and cloud connectivity solutions, like Azure ExpressRoute.\n\nIdentify and document the dependencies in your workload, and include them in your flow documentation artifacts.\n\n## Evaluate failure points\n\nIn your workload's critical flows, consider each component and determine how that component, and its dependencies, might be affected by a failure mode. Remember that there are many failure modes to consider when planning for resiliency and recovery. Any one component can be affected by more than one failure mode at any given time. Consider read failures and write failures separately because the impact and possible mitigation steps vary. Failure modes include:\n\n- Regional outage. An entire Azure region is unavailable.\n\n- Availability zone outage. An Azure availability zone is unavailable.\n\n- Service outage. One or more Azure services are unavailable.\n\n- Distributed denial-of-service (DDoS) or other malicious attack.\n\n- App or component misconfiguration.\n\n- Operator error.\n\n- Planned maintenance outage.\n\n- Component overload.\n\nThe analysis should always be in the context of the flow you're attempting to analyze, so be sure to document the effect on the user and expected result of that flow. For example, if you have an e-commerce application and you’re analyzing your customer flow, the effect of a particular failure mode on one or more components might be that all customers are unable to complete the checkout.\n\nConsider the likelihood of each type of failure mode. Some are very unlikely, like multi-zone or multi-region outages, and adding mitigation planning beyond redundancy isn't a good use of resources and time.\n\n### Mitigation\n\nMitigation strategies fall into two broad categories: building more resiliency and designing for degraded performance.\n\nBuilding more resiliency includes adding redundancy to your components, like infrastructure, data, and networking, and ensuring that your application design follows best practices for durability, for example breaking up monolithic applications into isolated apps and microservices. For more information, see [Recommendations for redundancy](redundancy.md) and [Recommendations for self-preservation](self-preservation.md).\n\nTo design for degraded performance, identify potential failure points that might disable one or more components of your flow but don't fully disable that flow. To maintain the functionality of the end-to-end flow, you might need to reroute one or more steps to other components or accept that a failed component runs a function, so the function is no longer available in the user experience. To return to the e-commerce application example, a failed component like a microservice might cause your recommendation engine to be unavailable, but the customers can still search for products and complete their transaction.\n\nYou also need to plan mitigation around dependencies. Strong dependencies play a critical role in application function and availability. If they're absent or experiencing a malfunction, there might be significant effect. The absence of weak dependencies might only affect specific features and not affect overall availability. This distinction reflects the cost to maintain the high availability relationship between the service and its dependencies. Classify dependencies as either strong or weak to help you identify which components are essential to the application.\n\nIf the application has strong dependencies that it can't operate without, the availability and recovery targets of these dependencies should align with the targets of the application itself. Minimize dependencies to achieve control over application reliability. For more information, see [Minimize coordination between application services to achieve scalability](/azure/architecture/guide/design-principles/minimize-coordination).\n\nIf the application lifecycle is closely coupled with the lifecycle of its dependencies, the operational agility of the application might be limited, particularly for new releases.\n\n### Detection\n\nFailure detection is essential to ensure that you have correctly identified failure points in your analysis and properly planned your mitigation strategies. Detection in this context means the monitoring of your infrastructure, data and application, and alerting when issues arise. Automate detection as much as possible, and build redundancy into your operations processes to ensure that alerts are always caught and are responded to quickly enough to meet your business requirements. For more information, see the [Recommendations for monitoring](monitoring-alerting-strategy.md).\n\n### Outcome\n\nFor the outcome of your analysis, create a set of documents that effectively communicate your findings, the decisions that you have made relative to the flow components and mitigation, and the effect of the failure on your workload.\n\nIn your analysis, prioritize the failure modes and mitigation strategies that you have identified based on severity and likelihood. Use this prioritization to focus your documentation on those failure modes that are common and severe enough to warrant spending the time, effort, and resources on designing mitigation strategies around. For example, there might be some failure modes that are very rare in occurrence or detection. Designing mitigation strategies around them isn't worth the cost.\n\nRefer to the following [example table](#example) for a documentation starting point.\n\nDuring your initial FMA exercise, the documents you produce will be mostly theoretical planning. The FMA documents should be reviewed and updated regularly to ensure that they stay up-to-date with your workload. Chaos testing and real-world experiences will help you refine your analyses over time.\n\n## Azure facilitation\n\nUse [Azure Monitor](/azure/azure-monitor/overview) and [Log Analytics](/azure/azure-monitor/logs/log-analytics-overview) to detect issues in your workload. For further insight into issues related to your infrastructure, apps, and databases, use tools like [Application Insights](/azure/azure-monitor/app/app-insights-overview), [Container Insights](/azure/azure-monitor/containers/container-insights-overview), [Network Insights](/azure/network-watcher/network-insights-overview), [VM Insights](/azure/azure-monitor/vm/vminsights-overview), and [SQL Insights](/azure/azure-sql/database/sql-insights-overview).\n\n[Azure Chaos Studio](https://azure.microsoft.com/services/chaos-studio) is a managed service that uses chaos engineering to help you measure, understand, and improve your cloud application and service resilience.\n\nUse [connection monitor](/azure/network-watcher/connection-monitor-overview) and [connection troubleshoot](/azure/network-watcher/connection-troubleshoot-overview) in Azure Network Watcher to model and validate network connectivity scenarios before deployment. By simulating synthetic tests and troubleshooting potential routing paths, these tools help you anticipate and document possible failure modes in your network architecture. Also, by analyzing historical virtual network flow logs with [traffic analytics](/azure/network-watcher/traffic-analytics), you can identify patterns of blocked or anomalous traffic that might inform your FMA documentation across the Azure infrastructure.\n\n## Example\n\nThe following table shows an FMA example for an e-commerce website that's hosted on Azure App Service instances with Azure SQL databases and is fronted by Azure Front Door.\n\n**User flow**: User sign in, product search, and shopping cart interaction\n\n| Component | Risk | Likelihood | Effect/Mitigation/Note | Outage |\n|-----------|------|------------|------------------------|--------|\n| Microsoft Entra ID | Service outage | Low | Full workload outage. Dependent on Microsoft to remediate. | Full |\n| Microsoft Entra ID | Misconfiguration | Medium | Users unable to sign in. No downstream effect. Code catches authentication exceptions. Help desk reports configuration issue to development team. | External only |\n| Azure Front Door | Service outage | Low | Full outage for external users. Dependent on Microsoft to remediate. | External only |\n| Azure Front Door | Regional outage | Very low | Minimal effect. Azure Front Door is a global service, so global traffic routing directs traffic through non-effected Azure regions. | None |\n| Azure Front Door | Misconfiguration | Medium | Misconfigurations should be caught during deployment. If these happen during a configuration update, administrators must roll back changes. Configuration update causes a brief external outage. | External only |\n| Azure Front Door | DDoS attack | Medium | Potential for disruption. Microsoft manages DDoS (L3 and L4) protection and Azure Web Application Firewall blocks most threats. Potential risk of effect from L7 attacks. | Potential for partial outage |\n| Azure SQL | Service outage | Low | Full workload outage. Dependent on Microsoft to remediate. | Full |\n| Azure SQL | Regional outage | Very low | Auto-failover group fails over to secondary region. Potential outage during failover. Recovery time objectives (RTOs) and recovery point objectives (RPOs) to be determined during reliability testing. | Potential full |\n| Azure SQL | Availability zone outage | Low | No effect | None |\n| Azure SQL | Malicious attack (injection) | Medium | Minimal risk. All Azure SQL instances are virtual network-bound through private endpoints and network security groups (NSGs) add further intra-virtual network protection. | Low risk, potential for partial outage |\n| App Service | Service outage | Low | Full workload outage. Dependent on Microsoft to remediate. | Full |\n| App Service | Regional outage | Very low | Minimal effect. Latency for users in effected regions. Azure Front Door automatically routes traffic to non-effected regions. | None |\n| App Service | Availability zone outage | Low | No effect. App services have been deployed as zone redundant. Without zone redundancy, there's a potential for effect. | None |\n| App Service | DDoS attack | Medium | Minimal effect. Ingress traffic is protected by Azure Front Door and Azure Web Application Firewall. | None |\n\n## Related link\n\n- [Resiliency and dependencies](../resiliency/design-resiliency.md)\n\n## Reliability checklist  \n\nRefer to the complete set of recommendations.\n\n> [!div class=\"nextstepaction\"]\n> [Reliability checklist](checklist.md)",
+  "headings": [
+    {
+      "level": 1,
+      "text": "Architecture strategies for performing failure mode analysis",
+      "line": 1,
+      "path": [
+        "Architecture strategies for performing failure mode analysis"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Decompose the workload",
+      "line": 31,
+      "path": [
+        "Architecture strategies for performing failure mode analysis",
+        "Decompose the workload"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Identify dependencies",
+      "line": 39,
+      "path": [
+        "Architecture strategies for performing failure mode analysis",
+        "Identify dependencies"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Evaluate failure points",
+      "line": 47,
+      "path": [
+        "Architecture strategies for performing failure mode analysis",
+        "Evaluate failure points"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Mitigation",
+      "line": 71,
+      "path": [
+        "Architecture strategies for performing failure mode analysis",
+        "Evaluate failure points",
+        "Mitigation"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Detection",
+      "line": 85,
+      "path": [
+        "Architecture strategies for performing failure mode analysis",
+        "Evaluate failure points",
+        "Detection"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Outcome",
+      "line": 89,
+      "path": [
+        "Architecture strategies for performing failure mode analysis",
+        "Evaluate failure points",
+        "Outcome"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Azure facilitation",
+      "line": 99,
+      "path": [
+        "Architecture strategies for performing failure mode analysis",
+        "Azure facilitation"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Example",
+      "line": 107,
+      "path": [
+        "Architecture strategies for performing failure mode analysis",
+        "Example"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Related link",
+      "line": 130,
+      "path": [
+        "Architecture strategies for performing failure mode analysis",
+        "Related link"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Reliability checklist",
+      "line": 134,
+      "path": [
+        "Architecture strategies for performing failure mode analysis",
+        "Reliability checklist"
+      ]
+    }
+  ],
+  "sections": [
+    {
+      "sectionOrder": 1,
+      "headingLevel": 1,
+      "headingText": "Architecture strategies for performing failure mode analysis",
+      "headingPath": [
+        "Architecture strategies for performing failure mode analysis"
+      ],
+      "markdown": "**Applies to this Azure Well-Architected Framework Reliability checklist recommendation:**\n\n|**RE:03**| **Use failure mode analysis (FMA) to identify potential failures in your workload.** Identify dependencies and failure points, and develop mitigation strategies for those failures.  |\n|---|---|\n\nThis guide describes the best practices for performing failure mode analysis (FMA) for your workload. FMA is the practice of identifying potential points of failure within your workload and the associated flows and planning mitigation actions accordingly. At each step of the flow, you identify the blast radius of multiple failure types, which helps you design a new workload or refactor an existing workload to minimize the widespread effect of failures.\n\nA key tenet of FMA is that failures happen no matter how many layers of resiliency you apply. More complex environments are exposed to more types of failures. Given this reality, FMA allows you to design your workload to withstand most types of failures and recover gracefully within defined recovery objectives.\n\nIf you skip FMA altogether or perform an incomplete analysis, your workload is at risk of unpredicted behavior and potential outages caused by suboptimal design.\n\n**Definitions**\n\n| Term | Definition|\n|------|-----------|\n| Failure mode | A type of problem that can cause one or more workload components to be degraded or severely affected to the point of being unavailable. |\n| Mitigation | The activities that you have identified to address problems either proactively or reactively. |\n| Detection | Your infrastructure, data, and app monitoring and alerting processes and procedures. |\n\n> [!NOTE]\n> Distinguish failures from errors. A failure is an unexpected event within a system that prevents it from continuing to function normally. For example, a hardware malfunction that causes a network partition is a failure. Usually, failures require intervention or specific design for that class of failures. In contrast, errors are an expected part of normal operations, are dealt with immediately and the system will continue to operate at the same capacity following an error. For example, errors discovered during input validation can be handled through business logic.\n\nReview and implement the [recommendations for identifying flows](identify-flows.md). It’s assumed that you have identified and prioritized user and system flows based on criticality.\n\nThe data that you have gathered and the artifacts that you have created in your work provide you with a concrete description of your data paths involved throughout the flows. To be successful in your FMA work, accuracy and thoroughness in your artifacts is critical.\n\nAfter you determine the critical flows, you can plan their required components. Next, follow each flow step by step to identify dependencies, including third-party services and potential points of failure, and plan your mitigation strategies.",
+      "lineStart": 2,
+      "lineEnd": 30
+    },
+    {
+      "sectionOrder": 2,
+      "headingLevel": 2,
+      "headingText": "Decompose the workload",
+      "headingPath": [
+        "Architecture strategies for performing failure mode analysis",
+        "Decompose the workload"
+      ],
+      "markdown": "As you move from ideation to design, you need to identify the component types that are required to support your workload. Your workload determines the necessary components that you must plan for. Typically, you need to plan for ingress control, networking, compute, data, storage, supporting services (like authentication, messaging, and secret or key management), and egress control. At this stage in your design work, you might not know the specific technologies that you'll deploy, so your design might look like the following example.\n\n:::image type=\"content\" source=\"media/failure-mode-analysis/failure-mode-example.png\" alt-text=\"Diagram that shows the design example.\" border=\"false\" lightbox=\"media/failure-mode-analysis/failure-mode-example.png\":::\n\nAfter you create your initial architecture design, you can overlay your flows to identify the discrete components that are used in those flows and create lists or workflow diagrams that describe the flows and their components. To understand the criticality of the components, use the criticality definitions that you have assigned to the flows. Consider the effect of a component malfunction on your flows.",
+      "lineStart": 32,
+      "lineEnd": 38
+    },
+    {
+      "sectionOrder": 3,
+      "headingLevel": 2,
+      "headingText": "Identify dependencies",
+      "headingPath": [
+        "Architecture strategies for performing failure mode analysis",
+        "Identify dependencies"
+      ],
+      "markdown": "Identify your workload dependencies to perform your single point-of-failure analysis. Decomposing your workload and overlaying flows provides insight into dependencies that are internal and external to the workload.\n\nInternal dependencies are components in the workload scope that are required for the workload to function. Typical internal dependencies include APIs or secret/key management solutions like Azure Key Vault. For these dependencies, capture the reliability data, like availability SLAs and scaling limits. External dependencies are required components outside the scope of the workload, such as another application or third-party service. Typical external dependencies include authentication solutions, like Microsoft Entra ID, and cloud connectivity solutions, like Azure ExpressRoute.\n\nIdentify and document the dependencies in your workload, and include them in your flow documentation artifacts.",
+      "lineStart": 40,
+      "lineEnd": 46
+    },
+    {
+      "sectionOrder": 4,
+      "headingLevel": 2,
+      "headingText": "Evaluate failure points",
+      "headingPath": [
+        "Architecture strategies for performing failure mode analysis",
+        "Evaluate failure points"
+      ],
+      "markdown": "In your workload's critical flows, consider each component and determine how that component, and its dependencies, might be affected by a failure mode. Remember that there are many failure modes to consider when planning for resiliency and recovery. Any one component can be affected by more than one failure mode at any given time. Consider read failures and write failures separately because the impact and possible mitigation steps vary. Failure modes include:\n\n- Regional outage. An entire Azure region is unavailable.\n\n- Availability zone outage. An Azure availability zone is unavailable.\n\n- Service outage. One or more Azure services are unavailable.\n\n- Distributed denial-of-service (DDoS) or other malicious attack.\n\n- App or component misconfiguration.\n\n- Operator error.\n\n- Planned maintenance outage.\n\n- Component overload.\n\nThe analysis should always be in the context of the flow you're attempting to analyze, so be sure to document the effect on the user and expected result of that flow. For example, if you have an e-commerce application and you’re analyzing your customer flow, the effect of a particular failure mode on one or more components might be that all customers are unable to complete the checkout.\n\nConsider the likelihood of each type of failure mode. Some are very unlikely, like multi-zone or multi-region outages, and adding mitigation planning beyond redundancy isn't a good use of resources and time.",
+      "lineStart": 48,
+      "lineEnd": 70
+    },
+    {
+      "sectionOrder": 5,
+      "headingLevel": 3,
+      "headingText": "Mitigation",
+      "headingPath": [
+        "Architecture strategies for performing failure mode analysis",
+        "Evaluate failure points",
+        "Mitigation"
+      ],
+      "markdown": "Mitigation strategies fall into two broad categories: building more resiliency and designing for degraded performance.\n\nBuilding more resiliency includes adding redundancy to your components, like infrastructure, data, and networking, and ensuring that your application design follows best practices for durability, for example breaking up monolithic applications into isolated apps and microservices. For more information, see [Recommendations for redundancy](redundancy.md) and [Recommendations for self-preservation](self-preservation.md).\n\nTo design for degraded performance, identify potential failure points that might disable one or more components of your flow but don't fully disable that flow. To maintain the functionality of the end-to-end flow, you might need to reroute one or more steps to other components or accept that a failed component runs a function, so the function is no longer available in the user experience. To return to the e-commerce application example, a failed component like a microservice might cause your recommendation engine to be unavailable, but the customers can still search for products and complete their transaction.\n\nYou also need to plan mitigation around dependencies. Strong dependencies play a critical role in application function and availability. If they're absent or experiencing a malfunction, there might be significant effect. The absence of weak dependencies might only affect specific features and not affect overall availability. This distinction reflects the cost to maintain the high availability relationship between the service and its dependencies. Classify dependencies as either strong or weak to help you identify which components are essential to the application.\n\nIf the application has strong dependencies that it can't operate without, the availability and recovery targets of these dependencies should align with the targets of the application itself. Minimize dependencies to achieve control over application reliability. For more information, see [Minimize coordination between application services to achieve scalability](/azure/architecture/guide/design-principles/minimize-coordination).\n\nIf the application lifecycle is closely coupled with the lifecycle of its dependencies, the operational agility of the application might be limited, particularly for new releases.",
+      "lineStart": 72,
+      "lineEnd": 84
+    },
+    {
+      "sectionOrder": 6,
+      "headingLevel": 3,
+      "headingText": "Detection",
+      "headingPath": [
+        "Architecture strategies for performing failure mode analysis",
+        "Evaluate failure points",
+        "Detection"
+      ],
+      "markdown": "Failure detection is essential to ensure that you have correctly identified failure points in your analysis and properly planned your mitigation strategies. Detection in this context means the monitoring of your infrastructure, data and application, and alerting when issues arise. Automate detection as much as possible, and build redundancy into your operations processes to ensure that alerts are always caught and are responded to quickly enough to meet your business requirements. For more information, see the [Recommendations for monitoring](monitoring-alerting-strategy.md).",
+      "lineStart": 86,
+      "lineEnd": 88
+    },
+    {
+      "sectionOrder": 7,
+      "headingLevel": 3,
+      "headingText": "Outcome",
+      "headingPath": [
+        "Architecture strategies for performing failure mode analysis",
+        "Evaluate failure points",
+        "Outcome"
+      ],
+      "markdown": "For the outcome of your analysis, create a set of documents that effectively communicate your findings, the decisions that you have made relative to the flow components and mitigation, and the effect of the failure on your workload.\n\nIn your analysis, prioritize the failure modes and mitigation strategies that you have identified based on severity and likelihood. Use this prioritization to focus your documentation on those failure modes that are common and severe enough to warrant spending the time, effort, and resources on designing mitigation strategies around. For example, there might be some failure modes that are very rare in occurrence or detection. Designing mitigation strategies around them isn't worth the cost.\n\nRefer to the following [example table](#example) for a documentation starting point.\n\nDuring your initial FMA exercise, the documents you produce will be mostly theoretical planning. The FMA documents should be reviewed and updated regularly to ensure that they stay up-to-date with your workload. Chaos testing and real-world experiences will help you refine your analyses over time.",
+      "lineStart": 90,
+      "lineEnd": 98
+    },
+    {
+      "sectionOrder": 8,
+      "headingLevel": 2,
+      "headingText": "Azure facilitation",
+      "headingPath": [
+        "Architecture strategies for performing failure mode analysis",
+        "Azure facilitation"
+      ],
+      "markdown": "Use [Azure Monitor](/azure/azure-monitor/overview) and [Log Analytics](/azure/azure-monitor/logs/log-analytics-overview) to detect issues in your workload. For further insight into issues related to your infrastructure, apps, and databases, use tools like [Application Insights](/azure/azure-monitor/app/app-insights-overview), [Container Insights](/azure/azure-monitor/containers/container-insights-overview), [Network Insights](/azure/network-watcher/network-insights-overview), [VM Insights](/azure/azure-monitor/vm/vminsights-overview), and [SQL Insights](/azure/azure-sql/database/sql-insights-overview).\n\n[Azure Chaos Studio](https://azure.microsoft.com/services/chaos-studio) is a managed service that uses chaos engineering to help you measure, understand, and improve your cloud application and service resilience.\n\nUse [connection monitor](/azure/network-watcher/connection-monitor-overview) and [connection troubleshoot](/azure/network-watcher/connection-troubleshoot-overview) in Azure Network Watcher to model and validate network connectivity scenarios before deployment. By simulating synthetic tests and troubleshooting potential routing paths, these tools help you anticipate and document possible failure modes in your network architecture. Also, by analyzing historical virtual network flow logs with [traffic analytics](/azure/network-watcher/traffic-analytics), you can identify patterns of blocked or anomalous traffic that might inform your FMA documentation across the Azure infrastructure.",
+      "lineStart": 100,
+      "lineEnd": 106
+    },
+    {
+      "sectionOrder": 9,
+      "headingLevel": 2,
+      "headingText": "Example",
+      "headingPath": [
+        "Architecture strategies for performing failure mode analysis",
+        "Example"
+      ],
+      "markdown": "The following table shows an FMA example for an e-commerce website that's hosted on Azure App Service instances with Azure SQL databases and is fronted by Azure Front Door.\n\n**User flow**: User sign in, product search, and shopping cart interaction\n\n| Component | Risk | Likelihood | Effect/Mitigation/Note | Outage |\n|-----------|------|------------|------------------------|--------|\n| Microsoft Entra ID | Service outage | Low | Full workload outage. Dependent on Microsoft to remediate. | Full |\n| Microsoft Entra ID | Misconfiguration | Medium | Users unable to sign in. No downstream effect. Code catches authentication exceptions. Help desk reports configuration issue to development team. | External only |\n| Azure Front Door | Service outage | Low | Full outage for external users. Dependent on Microsoft to remediate. | External only |\n| Azure Front Door | Regional outage | Very low | Minimal effect. Azure Front Door is a global service, so global traffic routing directs traffic through non-effected Azure regions. | None |\n| Azure Front Door | Misconfiguration | Medium | Misconfigurations should be caught during deployment. If these happen during a configuration update, administrators must roll back changes. Configuration update causes a brief external outage. | External only |\n| Azure Front Door | DDoS attack | Medium | Potential for disruption. Microsoft manages DDoS (L3 and L4) protection and Azure Web Application Firewall blocks most threats. Potential risk of effect from L7 attacks. | Potential for partial outage |\n| Azure SQL | Service outage | Low | Full workload outage. Dependent on Microsoft to remediate. | Full |\n| Azure SQL | Regional outage | Very low | Auto-failover group fails over to secondary region. Potential outage during failover. Recovery time objectives (RTOs) and recovery point objectives (RPOs) to be determined during reliability testing. | Potential full |\n| Azure SQL | Availability zone outage | Low | No effect | None |\n| Azure SQL | Malicious attack (injection) | Medium | Minimal risk. All Azure SQL instances are virtual network-bound through private endpoints and network security groups (NSGs) add further intra-virtual network protection. | Low risk, potential for partial outage |\n| App Service | Service outage | Low | Full workload outage. Dependent on Microsoft to remediate. | Full |\n| App Service | Regional outage | Very low | Minimal effect. Latency for users in effected regions. Azure Front Door automatically routes traffic to non-effected regions. | None |\n| App Service | Availability zone outage | Low | No effect. App services have been deployed as zone redundant. Without zone redundancy, there's a potential for effect. | None |\n| App Service | DDoS attack | Medium | Minimal effect. Ingress traffic is protected by Azure Front Door and Azure Web Application Firewall. | None |",
+      "lineStart": 108,
+      "lineEnd": 129
+    },
+    {
+      "sectionOrder": 10,
+      "headingLevel": 2,
+      "headingText": "Related link",
+      "headingPath": [
+        "Architecture strategies for performing failure mode analysis",
+        "Related link"
+      ],
+      "markdown": "- [Resiliency and dependencies](../resiliency/design-resiliency.md)",
+      "lineStart": 131,
+      "lineEnd": 133
+    },
+    {
+      "sectionOrder": 11,
+      "headingLevel": 2,
+      "headingText": "Reliability checklist",
+      "headingPath": [
+        "Architecture strategies for performing failure mode analysis",
+        "Reliability checklist"
+      ],
+      "markdown": "Refer to the complete set of recommendations.\n\n> [!div class=\"nextstepaction\"]\n> [Reliability checklist](checklist.md)",
+      "lineStart": 135,
+      "lineEnd": 139
+    }
+  ],
+  "localLinks": [
+    "../resiliency/design-resiliency.md",
+    "checklist.md",
+    "identify-flows.md",
+    "monitoring-alerting-strategy.md",
+    "redundancy.md",
+    "self-preservation.md"
+  ],
+  "lastModified": "2026-03-17T16:22:13.704Z"
+}

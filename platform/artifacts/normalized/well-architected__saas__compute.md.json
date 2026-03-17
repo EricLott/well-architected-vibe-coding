@@ -1,0 +1,358 @@
+{
+  "source": {
+    "absolutePath": "C:\\Users\\EricL\\source\\repos\\Well-Architected-Vibe-Coding\\well-architected-vibe-coding\\well-architected\\saas\\compute.md",
+    "repoRelativePath": "well-architected/saas/compute.md",
+    "docsRelativePath": "saas/compute.md"
+  },
+  "frontMatter": {
+    "title": "Compute for SaaS Workloads on Azure",
+    "description": "Learn about choosing a compute hosting model, its operational aspects, and how to optimize technology options to help you meet service-level agreements and objectives.",
+    "author": "PageWriter-MSFT",
+    "ms.author": "prwilk",
+    "ms.date": "11/05/2025",
+    "ms.topic": "concept-article",
+    "ms.collection": "learn-startups"
+  },
+  "title": "Compute for SaaS Workloads on Azure",
+  "rawBody": "# Compute for SaaS workloads on Azure\n\nYour software as a service (SaaS) application needs to run on a compute platform. Like other components in your architecture, it needs to meet the business requirements and be designed according to your business model. The choice of compute platform is a significant design decision. Your decision affects customer isolation, performance, and resiliency, and your compute platform influences how your entire SaaS solution can scale and grow.\n  \nThis article describes the considerations for choosing your hosting model, the operational aspects of that model, and how to optimize the technology options to help you meet your service-level agreements (SLAs) and service-level objectives (SLOs).\n\n## Select a compute platform\n\nChoosing the right compute platform for your SaaS workload is important, but the abundance of available options can make the choice feel overwhelming. The best platform depends on factors like application architecture, scale, performance needs, and the tenant isolation model. What's optimal for one application might not be for another.\n\n### Design considerations\n\n- **Hosting model**. Azure offers various hosting models, primarily infrastructure as a service (IaaS) and platform as a service (PaaS), each with its own benefits and tradeoffs. Evaluate your application's requirements and choose the most suitable model.\n    \n    - IaaS provides virtual machines (VMs) and extensive control over them, including networking and storage. However, it requires managing and patching, which can be operationally intensive. Examples include virtual machine scale sets and Azure Kubernetes Service (AKS) clusters.   \n\n    - PaaS allows you to deploy applications without managing the underlying infrastructure. It includes built-in features for autoscaling and load balancing. Examples are Azure App Service and Azure Container Apps.\n\n      PaaS services offer less control compared to IaaS, which can be problematic if your application needs specific configuration. For example, your application might run on an operating system that the PaaS service doesn't support.\n\n- **Workload type**. Some platforms are specialized for specific workloads, while others are versatile. For instance, App Service is designed for web applications, whereas AKS is more general-purpose. It can host web apps, AI workloads, and batch compute tasks.\n\n- **Develop team expertise**. Large changes can be challenging if the team lacks experience with the new platform. Assess your team's skills and match them to your platform requirements. Start with a simple platform and gradually evolve your architecture rather than jumping straight to a more advanced option.\n  \n  For example, if you're building a containerized application, start with Container Apps for easy management. As your needs grow more complex, you can transition to AKS when you gain a better understanding of the platform over time.\n\n- **Management overhead**. Compute platforms balance overhead and control. More management responsibility shifted away from your team means less control over the platform.\n\n    For example, IaaS offers high control over VMs but comes with significant overhead. If your application is deployed in a customer's environment, you might have limited access for management operations. Assess if these tradeoffs are acceptable and feasible.\n  \n- **Performance requirements**. Understand your application's performance requirements by modeling CPU, memory, network, including bandwidth and latency, GPU, and availability needs. You should also consider future growth. Use this information to choose the appropriate compute resources, like the series and size of VMs. You might also need to select specific regions that support particular VM series to meet specialized requirements.\n\n- **Reliability requirements**. Consider the reliability features of your compute platform and ensure that they meet your reliability targets. You might need to use specific service tiers to have multiple instances of your solution or deploy across availability zones for enhanced reliability.\n\n    > Refer to [RE:04 Recommendations for defining reliability targets](/azure/well-architected/reliability/metrics). \n\n- **Application security and compliance**. Evaluate the security features and [compliance certifications](/azure/compliance/) of each compute platform to ensure that they meet your needs. For example, if you need to monitor and filter outgoing traffic, you might need to choose specific compute services or tiers.\n\n### Design recommendations\n\n| Recommendation | Benefit |\n| --- | --- |\n|  Evaluate the compute performance requirements by estimating CPU, memory, network, and GPU scale dimensions. <br><br>Perform load testing to gather more accurate data to inform your modeling exercise. | These tasks help you select the appropriate sizing for your compute platform and scale appropriately when the load on the system increases.|\n| Evaluate your team's proficiency and start with the least complex platform that meets your needs or one that the team is already familiar with. | You ensure smoother operations and avoid overburdening your team by choosing a compute platform that they're familiar with. |\n| Be flexible in your design. Aim for a solution that you can iterate on over time to adapt to evolving business and technical requirements.| Flexibility allows you to more easily adapt to changes and improvements over time. You can respond effectively to evolving business and technical needs.|\n| Evaluate the total cost of ownership (TCO), including costs of operating the solution. | You have a clear understanding of costs, which is crucial in planning your pricing model and ensuring cost-effective operations. |\n| Assess whether you need to use specific compute platforms because of your technology stack. Some compute platforms are better suited for certain programming languages, tooling, and operating systems. Strive to use platforms that natively support your technology choices. | You avoid the cost of redesigning your architecture, which might include migrating to a new platform.|\n| Evaluate the reliability features of the platform and factor your cloud service provider's guarantees into your SLOs. | You reduce the risk of localized datacenter outages by planning for reliability features and using availability zones if they're available.|\n\n## Tenancy model and isolation\n\nYour SaaS business model determines whether you host resources for customers or manage them in the customer's environment. Most SaaS providers host resources on behalf of their customers, which allows for flexibility in compute platform design. Isolate customer workloads effectively to optimize cost efficiency without compromising customer experience or performance.\n\n### Design considerations\n\n- **Plan your tenancy model**. Your tenancy model determines resource sharing between customers and is influenced by your business and pricing models. Single-tenant models have higher costs per customer compared to fully multitenant models. Your pricing should reflect these differences.\n  \n- **Customer requirements**. Some customers might have specific needs for data residency, performance guarantees, or security compliance. If these requirements need higher isolation levels than usual, consider how to reflect the increased costs in your business model.\n  \n- **Noisy neighbor problem**. Be aware of the noisy neighbor problem when sharing resources among tenants. Compute resources are affected the most. For more information, see [Noisy neighbor antipattern](/azure/architecture/antipatterns/noisy-neighbor/noisy-neighbor).\n\n  When you choose a tenancy model, balance the cost savings of resource sharing with the need to guarantee customer performance. Over-sharing resources or allowing excessive consumption can degrade the customer experience. \n\n> :::image type=\"icon\" source=\"../_images/trade-off.svg\"::: **Tradeoff: Performance and cost.** Sharing resources among customers can be cost-efficient, but if some customers use more resources than expected, this approach can degrade performance for others. To prevent this, implement proper resource governance to ensure tenant usage stays within expected limits.\n\n### Design recommendations\n\n| Recommendation | Benefit |\n| --- | --- |\n| Evaluate the isolation features of the compute platform to ensure that it meets your tenancy model requirements. | You avoid reworking your platform by verifying critical configuration first. |\n| Enforce your isolation model. <br><br>Be cautious with shared resources like local disk caches, system memory, and external caches because they can unintentionally leak data between tenants if they're not managed properly. <br><br> For high isolation requirements, enforce isolation within the compute platform and in the application. | Strong isolation reduces the risk of cross-tenant data leakage, a serious security incident.|\n| Implement resource governance and monitoring, with visibility of customer-level metrics. <br><br> Proactively monitor each customer's resource consumption to detect and mitigate noisy neighbor problems. | You prevent problems from affecting other customers by monitoring resource consumption and mitigating problems early.|\n\n## Configure for scalability and cost efficiency\n\nYour customers can use your application with different performance profiles. They expect the application to handle increasing user demands, large-scale data, and complex workloads without compromising speed and performance. Your system architecture must ensure scalability and optimal performance, whether it manages hundreds or millions of users, while balancing performance needs and costs.\n\n> :::image type=\"icon\" source=\"../_images/trade-off.svg\"::: **Tradeoff: Performance and cost.** Improving performance typically involves adding resources, which increases costs. Review workloads holistically to identify which resources offer the most benefit for the extra cost. For instance, isolating your most important customer on dedicated infrastructure might be worth the additional expense to avoid performance problems from other workloads.\n\nFor more information about cost management, see [Billing and cost management for SaaS workloads on Azure](./billing-cost-management.md).\n\n### Design considerations\n\n- **Horizontal and vertical scaling strategies**. Horizontal and vertical scaling approaches are viable for handling increased load. The approach that you use depends on your application's ability to scale across multiple instances.\n    - Horizontal scaling involves adding more instances of compute nodes. Your architecture needs a load balancer to distribute incoming traffic across multiple servers or instances.\n    - Vertical scaling involves increasing resources, like CPU and memory, on a single server. Use this approach for stateful applications that don't need external state stores like caches. Scaling vertically might cause brief service interruptions and has a resource limit on a single server.\n  > Refer to [PE:05 Recommendations for scaling and partitioning](/azure/well-architected/performance-efficiency/scale-partition#choose-a-scaling-strategy). \n  \n- **Autoscaling**. Systems need to efficiently handle varying levels of demand. As user traffic increases, your application resources need to scale up to maintain performance. When demand decreases, resources scale down to control costs without affecting user experience. Factors like CPU utilization, time of day, or incoming requests guide these adjustments. Autoscaling helps balance performance and cost and mitigates the impact of high demand on other tenants.\n\n    > Refer to [RE:06 Recommendations for reliable scaling](/azure/well-architected/reliability/scaling).\n\n- **Capacity planning and compute allocation**. Onboarding new customers to your SaaS workload consumes resource capacity. Even if you scale vertically or horizontally, you eventually reach limits, such as networking or storage constraints, in your solution's scalability.\n\n  > [!NOTE]\n  > The [Deployment Stamps pattern](/azure/architecture/patterns/deployment-stamp) allows you to deploy multiple independent instances of your solution. It provides another scaling dimension. It's crucial to understand the capacity of each stamp to determine when to deploy more. This concept is also known as [*bin packing*](/azure/architecture/guide/multitenant/approaches/resource-organization#bin-packing).\n\n### Design recommendations\n\n| Recommendation | Benefit |\n|---|---|\n| Choose horizontal scaling over vertical scaling. Horizontal scaling is often less complex, more reliable, and more cost effective than vertical scaling. | Horizontal scaling is often simpler, more reliable, and cost-effective, which allows you to scale to a higher degree than vertical scaling.|\n| Perform load testing. | Simulating usage can help you identify bottlenecks and scaling thresholds before you deploy to production.|\n| Define the scaling threshold for deploying a new stamp instead of scaling horizontally or vertically. <br><br>For cost-effective scaling without performance loss, condense your tenants onto as few resources as possible.| You're better prepared to handle growth beyond your current infrastructure. |\n| Implement autoscaling, where possible. Set autoscale rules to reflect your application's load accurately.| You optimize performance and cost by increasing and decreasing resources as needed. |\n| Monitor and evaluate customer usage patterns. | You know when to adjust your infrastructure to boost performance or optimize costs.|\n| Implement caching mechanisms, where possible.| You reduce the potential processing load on the compute layer.|\n| Use [cost alerts](/azure/cost-management-billing/costs/cost-mgt-alerts-monitor-usage-spending).| Warnings help you detect high usage and control cost problems early.|\n| Use [Azure reservations](/azure/cost-management-billing/reservations/save-compute-costs-reservations) for customers that have long-term commitments and guaranteed compute utilization for that entire period.| You maximize cost efficiency on your reserved capacity.|\n\n## Design for resiliency\n\nResiliency of your compute layer plays a large part in your overall resiliency strategy. Your application should tolerate and recover from common failures automatically and seamlessly, without user impact.\n\n### Design considerations\n\n- **Reliability requirements**. Set clear reliability requirements. These requirements include internal targets, or SLOs, and customer commitments, or SLAs, that often specify uptime targets like 99.9% per month.\n  > Refer to [RE:04 Recommendations for defining reliability targets](/azure/well-architected/reliability/metrics).\n  \n- **Deployment strategy**. Cloud resources are deployed in specific geographic regions. In Azure, availability zones are isolated datacenter sets within a region. For resiliency, deploy applications across multiple availability zones. Deploying across regions or cloud providers enhances resiliency but adds cost and operational complexity.\n  > Refer to [RE:05 Recommendations for using availability zones and regions](/azure/well-architected/reliability/regions-availability-zones).\n  \n- **Stateless workloads**. To deploy resilient applications, you typically need to run redundant copies in different locations. This task can be challenging for stateful workloads, which need to maintain session state. Aim to build stateless workloads when possible.\n\n### Design recommendations\n\n| Recommendation | Benefit |\n|---|---|\n| Handle [transient faults](../reliability/handle-transient-faults.md) in your application. | You increase your availability by quickly recovering from minor issues. |\n| Choose stateless applications. If your application needs to be stateful, use an external state storage mechanism like a cache to store the state.| You prevent state loss that's caused by an instance being unavailable, such as during erroneous load balancing or during an outage.|\n| Use availability zones.| You increase your resiliency by mitigating localized datacenter outages. |\n| Design a multiregional architecture when there's business justification to do so. | You meet high uptime requirements and support users in different regions. |\n| Perform [chaos engineering](../reliability/testing-strategy.md). | You better understand where your points of failure are and can correct them before an outage occurs.|\n| Limit the use of components that multiple stamps share. | You eliminate single points of failure and reduce the potential area of impact for an outage.|\n\n## Additional resources\n\nMultitenancy is a core business methodology for designing SaaS workloads. These articles provide more information about compute platform considerations:\n- [Architectural approaches for compute in multitenant solutions](/azure/architecture/guide/multitenant/approaches/compute)\n- [Tenancy models](/azure/architecture/guide/multitenant/considerations/tenancy-models)\n\n## Next step\n\nLearn about the networking considerations for SaaS workloads.\n\n> [!div class=\"nextstepaction\"]\n> [Design area: Networking for SaaS workloads on Azure](./networking.md)",
+  "headings": [
+    {
+      "level": 1,
+      "text": "Compute for SaaS workloads on Azure",
+      "line": 1,
+      "path": [
+        "Compute for SaaS workloads on Azure"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Select a compute platform",
+      "line": 7,
+      "path": [
+        "Compute for SaaS workloads on Azure",
+        "Select a compute platform"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Design considerations",
+      "line": 11,
+      "path": [
+        "Compute for SaaS workloads on Azure",
+        "Select a compute platform",
+        "Design considerations"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Design recommendations",
+      "line": 39,
+      "path": [
+        "Compute for SaaS workloads on Azure",
+        "Select a compute platform",
+        "Design recommendations"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Tenancy model and isolation",
+      "line": 50,
+      "path": [
+        "Compute for SaaS workloads on Azure",
+        "Tenancy model and isolation"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Design considerations",
+      "line": 54,
+      "path": [
+        "Compute for SaaS workloads on Azure",
+        "Tenancy model and isolation",
+        "Design considerations"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Design recommendations",
+      "line": 66,
+      "path": [
+        "Compute for SaaS workloads on Azure",
+        "Tenancy model and isolation",
+        "Design recommendations"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Configure for scalability and cost efficiency",
+      "line": 74,
+      "path": [
+        "Compute for SaaS workloads on Azure",
+        "Configure for scalability and cost efficiency"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Design considerations",
+      "line": 82,
+      "path": [
+        "Compute for SaaS workloads on Azure",
+        "Configure for scalability and cost efficiency",
+        "Design considerations"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Design recommendations",
+      "line": 98,
+      "path": [
+        "Compute for SaaS workloads on Azure",
+        "Configure for scalability and cost efficiency",
+        "Design recommendations"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Design for resiliency",
+      "line": 111,
+      "path": [
+        "Compute for SaaS workloads on Azure",
+        "Design for resiliency"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Design considerations",
+      "line": 115,
+      "path": [
+        "Compute for SaaS workloads on Azure",
+        "Design for resiliency",
+        "Design considerations"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Design recommendations",
+      "line": 125,
+      "path": [
+        "Compute for SaaS workloads on Azure",
+        "Design for resiliency",
+        "Design recommendations"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Additional resources",
+      "line": 136,
+      "path": [
+        "Compute for SaaS workloads on Azure",
+        "Additional resources"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Next step",
+      "line": 142,
+      "path": [
+        "Compute for SaaS workloads on Azure",
+        "Next step"
+      ]
+    }
+  ],
+  "sections": [
+    {
+      "sectionOrder": 1,
+      "headingLevel": 1,
+      "headingText": "Compute for SaaS workloads on Azure",
+      "headingPath": [
+        "Compute for SaaS workloads on Azure"
+      ],
+      "markdown": "Your software as a service (SaaS) application needs to run on a compute platform. Like other components in your architecture, it needs to meet the business requirements and be designed according to your business model. The choice of compute platform is a significant design decision. Your decision affects customer isolation, performance, and resiliency, and your compute platform influences how your entire SaaS solution can scale and grow.\n  \nThis article describes the considerations for choosing your hosting model, the operational aspects of that model, and how to optimize the technology options to help you meet your service-level agreements (SLAs) and service-level objectives (SLOs).",
+      "lineStart": 2,
+      "lineEnd": 6
+    },
+    {
+      "sectionOrder": 2,
+      "headingLevel": 2,
+      "headingText": "Select a compute platform",
+      "headingPath": [
+        "Compute for SaaS workloads on Azure",
+        "Select a compute platform"
+      ],
+      "markdown": "Choosing the right compute platform for your SaaS workload is important, but the abundance of available options can make the choice feel overwhelming. The best platform depends on factors like application architecture, scale, performance needs, and the tenant isolation model. What's optimal for one application might not be for another.",
+      "lineStart": 8,
+      "lineEnd": 10
+    },
+    {
+      "sectionOrder": 3,
+      "headingLevel": 3,
+      "headingText": "Design considerations",
+      "headingPath": [
+        "Compute for SaaS workloads on Azure",
+        "Select a compute platform",
+        "Design considerations"
+      ],
+      "markdown": "- **Hosting model**. Azure offers various hosting models, primarily infrastructure as a service (IaaS) and platform as a service (PaaS), each with its own benefits and tradeoffs. Evaluate your application's requirements and choose the most suitable model.\n    \n    - IaaS provides virtual machines (VMs) and extensive control over them, including networking and storage. However, it requires managing and patching, which can be operationally intensive. Examples include virtual machine scale sets and Azure Kubernetes Service (AKS) clusters.   \n\n    - PaaS allows you to deploy applications without managing the underlying infrastructure. It includes built-in features for autoscaling and load balancing. Examples are Azure App Service and Azure Container Apps.\n\n      PaaS services offer less control compared to IaaS, which can be problematic if your application needs specific configuration. For example, your application might run on an operating system that the PaaS service doesn't support.\n\n- **Workload type**. Some platforms are specialized for specific workloads, while others are versatile. For instance, App Service is designed for web applications, whereas AKS is more general-purpose. It can host web apps, AI workloads, and batch compute tasks.\n\n- **Develop team expertise**. Large changes can be challenging if the team lacks experience with the new platform. Assess your team's skills and match them to your platform requirements. Start with a simple platform and gradually evolve your architecture rather than jumping straight to a more advanced option.\n  \n  For example, if you're building a containerized application, start with Container Apps for easy management. As your needs grow more complex, you can transition to AKS when you gain a better understanding of the platform over time.\n\n- **Management overhead**. Compute platforms balance overhead and control. More management responsibility shifted away from your team means less control over the platform.\n\n    For example, IaaS offers high control over VMs but comes with significant overhead. If your application is deployed in a customer's environment, you might have limited access for management operations. Assess if these tradeoffs are acceptable and feasible.\n  \n- **Performance requirements**. Understand your application's performance requirements by modeling CPU, memory, network, including bandwidth and latency, GPU, and availability needs. You should also consider future growth. Use this information to choose the appropriate compute resources, like the series and size of VMs. You might also need to select specific regions that support particular VM series to meet specialized requirements.\n\n- **Reliability requirements**. Consider the reliability features of your compute platform and ensure that they meet your reliability targets. You might need to use specific service tiers to have multiple instances of your solution or deploy across availability zones for enhanced reliability.\n\n    > Refer to [RE:04 Recommendations for defining reliability targets](/azure/well-architected/reliability/metrics). \n\n- **Application security and compliance**. Evaluate the security features and [compliance certifications](/azure/compliance/) of each compute platform to ensure that they meet your needs. For example, if you need to monitor and filter outgoing traffic, you might need to choose specific compute services or tiers.",
+      "lineStart": 12,
+      "lineEnd": 38
+    },
+    {
+      "sectionOrder": 4,
+      "headingLevel": 3,
+      "headingText": "Design recommendations",
+      "headingPath": [
+        "Compute for SaaS workloads on Azure",
+        "Select a compute platform",
+        "Design recommendations"
+      ],
+      "markdown": "| Recommendation | Benefit |\n| --- | --- |\n|  Evaluate the compute performance requirements by estimating CPU, memory, network, and GPU scale dimensions. <br><br>Perform load testing to gather more accurate data to inform your modeling exercise. | These tasks help you select the appropriate sizing for your compute platform and scale appropriately when the load on the system increases.|\n| Evaluate your team's proficiency and start with the least complex platform that meets your needs or one that the team is already familiar with. | You ensure smoother operations and avoid overburdening your team by choosing a compute platform that they're familiar with. |\n| Be flexible in your design. Aim for a solution that you can iterate on over time to adapt to evolving business and technical requirements.| Flexibility allows you to more easily adapt to changes and improvements over time. You can respond effectively to evolving business and technical needs.|\n| Evaluate the total cost of ownership (TCO), including costs of operating the solution. | You have a clear understanding of costs, which is crucial in planning your pricing model and ensuring cost-effective operations. |\n| Assess whether you need to use specific compute platforms because of your technology stack. Some compute platforms are better suited for certain programming languages, tooling, and operating systems. Strive to use platforms that natively support your technology choices. | You avoid the cost of redesigning your architecture, which might include migrating to a new platform.|\n| Evaluate the reliability features of the platform and factor your cloud service provider's guarantees into your SLOs. | You reduce the risk of localized datacenter outages by planning for reliability features and using availability zones if they're available.|",
+      "lineStart": 40,
+      "lineEnd": 49
+    },
+    {
+      "sectionOrder": 5,
+      "headingLevel": 2,
+      "headingText": "Tenancy model and isolation",
+      "headingPath": [
+        "Compute for SaaS workloads on Azure",
+        "Tenancy model and isolation"
+      ],
+      "markdown": "Your SaaS business model determines whether you host resources for customers or manage them in the customer's environment. Most SaaS providers host resources on behalf of their customers, which allows for flexibility in compute platform design. Isolate customer workloads effectively to optimize cost efficiency without compromising customer experience or performance.",
+      "lineStart": 51,
+      "lineEnd": 53
+    },
+    {
+      "sectionOrder": 6,
+      "headingLevel": 3,
+      "headingText": "Design considerations",
+      "headingPath": [
+        "Compute for SaaS workloads on Azure",
+        "Tenancy model and isolation",
+        "Design considerations"
+      ],
+      "markdown": "- **Plan your tenancy model**. Your tenancy model determines resource sharing between customers and is influenced by your business and pricing models. Single-tenant models have higher costs per customer compared to fully multitenant models. Your pricing should reflect these differences.\n  \n- **Customer requirements**. Some customers might have specific needs for data residency, performance guarantees, or security compliance. If these requirements need higher isolation levels than usual, consider how to reflect the increased costs in your business model.\n  \n- **Noisy neighbor problem**. Be aware of the noisy neighbor problem when sharing resources among tenants. Compute resources are affected the most. For more information, see [Noisy neighbor antipattern](/azure/architecture/antipatterns/noisy-neighbor/noisy-neighbor).\n\n  When you choose a tenancy model, balance the cost savings of resource sharing with the need to guarantee customer performance. Over-sharing resources or allowing excessive consumption can degrade the customer experience. \n\n> :::image type=\"icon\" source=\"../_images/trade-off.svg\"::: **Tradeoff: Performance and cost.** Sharing resources among customers can be cost-efficient, but if some customers use more resources than expected, this approach can degrade performance for others. To prevent this, implement proper resource governance to ensure tenant usage stays within expected limits.",
+      "lineStart": 55,
+      "lineEnd": 65
+    },
+    {
+      "sectionOrder": 7,
+      "headingLevel": 3,
+      "headingText": "Design recommendations",
+      "headingPath": [
+        "Compute for SaaS workloads on Azure",
+        "Tenancy model and isolation",
+        "Design recommendations"
+      ],
+      "markdown": "| Recommendation | Benefit |\n| --- | --- |\n| Evaluate the isolation features of the compute platform to ensure that it meets your tenancy model requirements. | You avoid reworking your platform by verifying critical configuration first. |\n| Enforce your isolation model. <br><br>Be cautious with shared resources like local disk caches, system memory, and external caches because they can unintentionally leak data between tenants if they're not managed properly. <br><br> For high isolation requirements, enforce isolation within the compute platform and in the application. | Strong isolation reduces the risk of cross-tenant data leakage, a serious security incident.|\n| Implement resource governance and monitoring, with visibility of customer-level metrics. <br><br> Proactively monitor each customer's resource consumption to detect and mitigate noisy neighbor problems. | You prevent problems from affecting other customers by monitoring resource consumption and mitigating problems early.|",
+      "lineStart": 67,
+      "lineEnd": 73
+    },
+    {
+      "sectionOrder": 8,
+      "headingLevel": 2,
+      "headingText": "Configure for scalability and cost efficiency",
+      "headingPath": [
+        "Compute for SaaS workloads on Azure",
+        "Configure for scalability and cost efficiency"
+      ],
+      "markdown": "Your customers can use your application with different performance profiles. They expect the application to handle increasing user demands, large-scale data, and complex workloads without compromising speed and performance. Your system architecture must ensure scalability and optimal performance, whether it manages hundreds or millions of users, while balancing performance needs and costs.\n\n> :::image type=\"icon\" source=\"../_images/trade-off.svg\"::: **Tradeoff: Performance and cost.** Improving performance typically involves adding resources, which increases costs. Review workloads holistically to identify which resources offer the most benefit for the extra cost. For instance, isolating your most important customer on dedicated infrastructure might be worth the additional expense to avoid performance problems from other workloads.\n\nFor more information about cost management, see [Billing and cost management for SaaS workloads on Azure](./billing-cost-management.md).",
+      "lineStart": 75,
+      "lineEnd": 81
+    },
+    {
+      "sectionOrder": 9,
+      "headingLevel": 3,
+      "headingText": "Design considerations",
+      "headingPath": [
+        "Compute for SaaS workloads on Azure",
+        "Configure for scalability and cost efficiency",
+        "Design considerations"
+      ],
+      "markdown": "- **Horizontal and vertical scaling strategies**. Horizontal and vertical scaling approaches are viable for handling increased load. The approach that you use depends on your application's ability to scale across multiple instances.\n    - Horizontal scaling involves adding more instances of compute nodes. Your architecture needs a load balancer to distribute incoming traffic across multiple servers or instances.\n    - Vertical scaling involves increasing resources, like CPU and memory, on a single server. Use this approach for stateful applications that don't need external state stores like caches. Scaling vertically might cause brief service interruptions and has a resource limit on a single server.\n  > Refer to [PE:05 Recommendations for scaling and partitioning](/azure/well-architected/performance-efficiency/scale-partition#choose-a-scaling-strategy). \n  \n- **Autoscaling**. Systems need to efficiently handle varying levels of demand. As user traffic increases, your application resources need to scale up to maintain performance. When demand decreases, resources scale down to control costs without affecting user experience. Factors like CPU utilization, time of day, or incoming requests guide these adjustments. Autoscaling helps balance performance and cost and mitigates the impact of high demand on other tenants.\n\n    > Refer to [RE:06 Recommendations for reliable scaling](/azure/well-architected/reliability/scaling).\n\n- **Capacity planning and compute allocation**. Onboarding new customers to your SaaS workload consumes resource capacity. Even if you scale vertically or horizontally, you eventually reach limits, such as networking or storage constraints, in your solution's scalability.\n\n  > [!NOTE]\n  > The [Deployment Stamps pattern](/azure/architecture/patterns/deployment-stamp) allows you to deploy multiple independent instances of your solution. It provides another scaling dimension. It's crucial to understand the capacity of each stamp to determine when to deploy more. This concept is also known as [*bin packing*](/azure/architecture/guide/multitenant/approaches/resource-organization#bin-packing).",
+      "lineStart": 83,
+      "lineEnd": 97
+    },
+    {
+      "sectionOrder": 10,
+      "headingLevel": 3,
+      "headingText": "Design recommendations",
+      "headingPath": [
+        "Compute for SaaS workloads on Azure",
+        "Configure for scalability and cost efficiency",
+        "Design recommendations"
+      ],
+      "markdown": "| Recommendation | Benefit |\n|---|---|\n| Choose horizontal scaling over vertical scaling. Horizontal scaling is often less complex, more reliable, and more cost effective than vertical scaling. | Horizontal scaling is often simpler, more reliable, and cost-effective, which allows you to scale to a higher degree than vertical scaling.|\n| Perform load testing. | Simulating usage can help you identify bottlenecks and scaling thresholds before you deploy to production.|\n| Define the scaling threshold for deploying a new stamp instead of scaling horizontally or vertically. <br><br>For cost-effective scaling without performance loss, condense your tenants onto as few resources as possible.| You're better prepared to handle growth beyond your current infrastructure. |\n| Implement autoscaling, where possible. Set autoscale rules to reflect your application's load accurately.| You optimize performance and cost by increasing and decreasing resources as needed. |\n| Monitor and evaluate customer usage patterns. | You know when to adjust your infrastructure to boost performance or optimize costs.|\n| Implement caching mechanisms, where possible.| You reduce the potential processing load on the compute layer.|\n| Use [cost alerts](/azure/cost-management-billing/costs/cost-mgt-alerts-monitor-usage-spending).| Warnings help you detect high usage and control cost problems early.|\n| Use [Azure reservations](/azure/cost-management-billing/reservations/save-compute-costs-reservations) for customers that have long-term commitments and guaranteed compute utilization for that entire period.| You maximize cost efficiency on your reserved capacity.|",
+      "lineStart": 99,
+      "lineEnd": 110
+    },
+    {
+      "sectionOrder": 11,
+      "headingLevel": 2,
+      "headingText": "Design for resiliency",
+      "headingPath": [
+        "Compute for SaaS workloads on Azure",
+        "Design for resiliency"
+      ],
+      "markdown": "Resiliency of your compute layer plays a large part in your overall resiliency strategy. Your application should tolerate and recover from common failures automatically and seamlessly, without user impact.",
+      "lineStart": 112,
+      "lineEnd": 114
+    },
+    {
+      "sectionOrder": 12,
+      "headingLevel": 3,
+      "headingText": "Design considerations",
+      "headingPath": [
+        "Compute for SaaS workloads on Azure",
+        "Design for resiliency",
+        "Design considerations"
+      ],
+      "markdown": "- **Reliability requirements**. Set clear reliability requirements. These requirements include internal targets, or SLOs, and customer commitments, or SLAs, that often specify uptime targets like 99.9% per month.\n  > Refer to [RE:04 Recommendations for defining reliability targets](/azure/well-architected/reliability/metrics).\n  \n- **Deployment strategy**. Cloud resources are deployed in specific geographic regions. In Azure, availability zones are isolated datacenter sets within a region. For resiliency, deploy applications across multiple availability zones. Deploying across regions or cloud providers enhances resiliency but adds cost and operational complexity.\n  > Refer to [RE:05 Recommendations for using availability zones and regions](/azure/well-architected/reliability/regions-availability-zones).\n  \n- **Stateless workloads**. To deploy resilient applications, you typically need to run redundant copies in different locations. This task can be challenging for stateful workloads, which need to maintain session state. Aim to build stateless workloads when possible.",
+      "lineStart": 116,
+      "lineEnd": 124
+    },
+    {
+      "sectionOrder": 13,
+      "headingLevel": 3,
+      "headingText": "Design recommendations",
+      "headingPath": [
+        "Compute for SaaS workloads on Azure",
+        "Design for resiliency",
+        "Design recommendations"
+      ],
+      "markdown": "| Recommendation | Benefit |\n|---|---|\n| Handle [transient faults](../reliability/handle-transient-faults.md) in your application. | You increase your availability by quickly recovering from minor issues. |\n| Choose stateless applications. If your application needs to be stateful, use an external state storage mechanism like a cache to store the state.| You prevent state loss that's caused by an instance being unavailable, such as during erroneous load balancing or during an outage.|\n| Use availability zones.| You increase your resiliency by mitigating localized datacenter outages. |\n| Design a multiregional architecture when there's business justification to do so. | You meet high uptime requirements and support users in different regions. |\n| Perform [chaos engineering](../reliability/testing-strategy.md). | You better understand where your points of failure are and can correct them before an outage occurs.|\n| Limit the use of components that multiple stamps share. | You eliminate single points of failure and reduce the potential area of impact for an outage.|",
+      "lineStart": 126,
+      "lineEnd": 135
+    },
+    {
+      "sectionOrder": 14,
+      "headingLevel": 2,
+      "headingText": "Additional resources",
+      "headingPath": [
+        "Compute for SaaS workloads on Azure",
+        "Additional resources"
+      ],
+      "markdown": "Multitenancy is a core business methodology for designing SaaS workloads. These articles provide more information about compute platform considerations:\n- [Architectural approaches for compute in multitenant solutions](/azure/architecture/guide/multitenant/approaches/compute)\n- [Tenancy models](/azure/architecture/guide/multitenant/considerations/tenancy-models)",
+      "lineStart": 137,
+      "lineEnd": 141
+    },
+    {
+      "sectionOrder": 15,
+      "headingLevel": 2,
+      "headingText": "Next step",
+      "headingPath": [
+        "Compute for SaaS workloads on Azure",
+        "Next step"
+      ],
+      "markdown": "Learn about the networking considerations for SaaS workloads.\n\n> [!div class=\"nextstepaction\"]\n> [Design area: Networking for SaaS workloads on Azure](./networking.md)",
+      "lineStart": 143,
+      "lineEnd": 147
+    }
+  ],
+  "localLinks": [
+    "../reliability/handle-transient-faults.md",
+    "../reliability/testing-strategy.md",
+    "./billing-cost-management.md",
+    "./networking.md"
+  ],
+  "lastModified": "2026-03-17T16:22:13.717Z"
+}

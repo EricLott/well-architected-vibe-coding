@@ -1,0 +1,132 @@
+{
+  "source": {
+    "absolutePath": "C:\\Users\\EricL\\source\\repos\\Well-Architected-Vibe-Coding\\well-architected-vibe-coding\\well-architected\\sap\\design-areas\\operational-procedures.md",
+    "repoRelativePath": "well-architected/sap/design-areas/operational-procedures.md",
+    "docsRelativePath": "sap/design-areas/operational-procedures.md"
+  },
+  "frontMatter": {
+    "title": "SAP workload operational procedures",
+    "description": "SAP workload best practices for operational excellence",
+    "author": "stephen-sumner",
+    "ms.author": "ssumner",
+    "ms.date": "12/19/2022",
+    "ms.topic": "concept-article"
+  },
+  "title": "SAP workload operational procedures",
+  "rawBody": "# SAP workload operational procedures\n\nStandard operating procedures (SOPs) are documented processes for managing a workload. Each SAP workload should have SOPs to govern operations. Without SOPs, teams drift from management best practices, so we recommend a continuous cycle of assessment and health checks for your SAP workload.\n\n## Use health checks and assessments\n\n*Impact: Operational excellence*\n\n**Run health checks.** We have four Azure SAP (AzSAP) health checks: (1) deployment checklist, (2) inventory checklist, (3) quality checks, and (4) Linux VM OS analyzer. The image below shows how they share a cycle with our Azure SAP assessments. For more information on the health checks, see [SAP quality checks](/azure/center-sap-solutions/get-quality-checks-insights).\n\n:::image type=\"content\" source=\"../images/azsap-health-check.png\" alt-text=\"Diagram showing the Azure SAP assessments and health checks aligned to the customer journey.\" lightbox=\"../images/azsap-health-check.png\" border=\"false\":::\n*Figure 1: The cycle of SAP health checks and assessments throughout the journey.*\n\n**Conduct assessments.** We have three SAP assessments: (1) landing zone accelerator (LZA), (2) Azure SAP (AzSAP) deployment management assessment, and (3) the AzSAP Well-architected framework assessment. These assessments are designed for different stages in the SAP workload lifecycle.\n\nThe AzSAP Well-architected framework assessment is for operations. It compares your SAP operations against SAP workload best practices. The assessment encourages continuous improvement by building on each previous assessment.\n\n:::image type=\"content\" source=\"../images/laz-for-sap-platform-workload.png\" alt-text=\"Diagram showing how the Well-Architected assessment builds a baseline and each iteration of the assessment builds on the previous one.\" lightbox=\"../images/laz-for-sap-platform-workload.png\" border=\"false\":::\n*Figure 2: How the Well-architected assessment creates milestones and builds on these milestones over time.*\n\nThe initial assessment creates a baseline, and the next iteration of assessment uses the previous assessment as the starting point. It will maintain the selections from the last assessment to track and review the design principle. Because the assessment builds on itself, you can track improvements over time. The assessment is designed for an existing SAP workload in Azure and can assess one or more of the WAF pillars.\n\nWe recommend using this SAP assessment to develop and realign the SOPs for your SAP workload. The assessment identifies areas of strength and weakness that allow you to build better SOPs. For more information, see [Azure Well-Architected Review](/assessments/).\n\n## Monitor the workload\n\n*Impact: Operational excellence*\n\nMonitoring is the process of collecting, analyzing, and acting on data gathered from an SAP workload. Monitoring provides insights of the health of the workload to compare with an expected baseline. It allows you to know when, where, and why failures occur. A monitoring best practice is to use a common and consistent logging schema that lets you correlate events across systems. The monitoring and diagnostics process has several distinct phases.\n\n*Table 1 - Phases of monitoring and diagnostic process*\n\n| Phases | Process description|\n| --- | --- |\n| Instrumentation | Generating the raw data from application logs, web server logs, the diagnostics built into the Azure platform, and other sources. |\n| Collection and storage | Consolidating the data into one place. |\n| Analysis and diagnosis | Troubleshooting issues and seeing the overall health. |\n| Visualization and alerts | Using data to spot trends or alert your operations team.|\n\nWe recommend using Azure Monitor for SAP solutions to drive these processes. Azure Monitor for SAP is an Azure-native monitoring product for SAP landscapes that run on Azure. Azure Monitor for SAP solutions uses specific parts of the Azure Monitor infrastructure to provide insights into the monitoring of SAP Netweaver, SAP HANA, SQL Server & Pacemaker High-Availability deployments on Azure. For more information, see [Azure Monitor for SAP Solutions](/azure/virtual-machines/workloads/sap/monitor-sap-on-azure).\n\nAzure Inventory Checks for SAP Workbooks provide a flexible canvas for SAP specific Azure resource deployment and configuration checks with the help of rich visual reports within the Azure portal. It allows you to tap into multiple data sources from across Azure and combine them into unified interactive experiences. It aims at providing customers/partners with an immediate view of Azure Inventory with intelligence to highlight configuration drift to improve the quality of SAP On Azure deployment for operations. For more information, see [Azure Inventory Checks for SAP](https://github.com/Azure/SAP-on-Azure-Scripts-and-Utilities/tree/main/Tools%26Framework/InventoryChecksForSAP).\n\n## Automate workload infrastructure\n\n*Impact: Operational excellence*\n\nYou should use infrastructure as code (IaC) to automate SAP workload deployments with minimal human intervention and build a scalable and consistent SAP workload on Azure. The manual process of creating the required SAP workload resources is slow and allows for errors. Microsoft has a repository of SAP deployment templates that you should use. It’s called the SAP on Azure Deployment Automation Framework. The templates support SAP HANA and NetWeaver with any database on any SAP-supported operating systems.\n\nFor more information, see:\n\n- [SAP deployment automation framework](/azure/virtual-machines/workloads/sap/automation-deployment-framework)\n- [SAP automate repository](https://github.com/Azure/sap-automation)\n- [Azure Monitor for SAP solutions](/azure/virtual-machines/workloads/sap/monitor-sap-on-azure)\n\n*Table 2 - Benefits of automated deployments with IaC*\n\n| Benefit domain | Automate deployment benefits | Manual deployment disadvantages |\n| --- | --- | --- |\n| Knowledge | Works immediately after some initial preparation time. Requires little domain knowledge.| Requires specialized knowledge in many domains outside of SAP.|\n| Time | Consumes predictable time from 30 minutes to a couple of hours.| Can take much more time depending on the size of the SAP landscape, depending on the size of the SAP landscape.|\n| Cost | Makes automated deployments cheap due to less time spent.| Expensive due to more time spent.|\n| Testing | Provides templates that include test instrumentation during deployment and migration.| Allows for limited testing. Requires more work to inject tests in the process. |\n| Scaling | Allows you to easily scale up, down, and out. Provides new deployment templates.| Takes more time to scale and customize the environment.|\n| Standardization | Applies your defined standards with each deployment.| Sometimes leads to unwanted variations in design.|\n\n## Next steps\n\n> [!div class=\"nextstepaction\"]\n> [Application design](./application-design.md)\n\n> [!div class=\"nextstepaction\"]\n> [Application platform](./application-platform.md)\n\n> [!div class=\"nextstepaction\"]\n> [Data platform](./data-platform.md)\n\n> [!div class=\"nextstepaction\"]\n> [Networking and connectivity](./networking-and-connectivity.md)\n\n> [!div class=\"nextstepaction\"]\n> [Security](./security.md)",
+  "headings": [
+    {
+      "level": 1,
+      "text": "SAP workload operational procedures",
+      "line": 1,
+      "path": [
+        "SAP workload operational procedures"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Use health checks and assessments",
+      "line": 5,
+      "path": [
+        "SAP workload operational procedures",
+        "Use health checks and assessments"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Monitor the workload",
+      "line": 25,
+      "path": [
+        "SAP workload operational procedures",
+        "Monitor the workload"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Automate workload infrastructure",
+      "line": 44,
+      "path": [
+        "SAP workload operational procedures",
+        "Automate workload infrastructure"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Next steps",
+      "line": 67,
+      "path": [
+        "SAP workload operational procedures",
+        "Next steps"
+      ]
+    }
+  ],
+  "sections": [
+    {
+      "sectionOrder": 1,
+      "headingLevel": 1,
+      "headingText": "SAP workload operational procedures",
+      "headingPath": [
+        "SAP workload operational procedures"
+      ],
+      "markdown": "Standard operating procedures (SOPs) are documented processes for managing a workload. Each SAP workload should have SOPs to govern operations. Without SOPs, teams drift from management best practices, so we recommend a continuous cycle of assessment and health checks for your SAP workload.",
+      "lineStart": 2,
+      "lineEnd": 4
+    },
+    {
+      "sectionOrder": 2,
+      "headingLevel": 2,
+      "headingText": "Use health checks and assessments",
+      "headingPath": [
+        "SAP workload operational procedures",
+        "Use health checks and assessments"
+      ],
+      "markdown": "*Impact: Operational excellence*\n\n**Run health checks.** We have four Azure SAP (AzSAP) health checks: (1) deployment checklist, (2) inventory checklist, (3) quality checks, and (4) Linux VM OS analyzer. The image below shows how they share a cycle with our Azure SAP assessments. For more information on the health checks, see [SAP quality checks](/azure/center-sap-solutions/get-quality-checks-insights).\n\n:::image type=\"content\" source=\"../images/azsap-health-check.png\" alt-text=\"Diagram showing the Azure SAP assessments and health checks aligned to the customer journey.\" lightbox=\"../images/azsap-health-check.png\" border=\"false\":::\n*Figure 1: The cycle of SAP health checks and assessments throughout the journey.*\n\n**Conduct assessments.** We have three SAP assessments: (1) landing zone accelerator (LZA), (2) Azure SAP (AzSAP) deployment management assessment, and (3) the AzSAP Well-architected framework assessment. These assessments are designed for different stages in the SAP workload lifecycle.\n\nThe AzSAP Well-architected framework assessment is for operations. It compares your SAP operations against SAP workload best practices. The assessment encourages continuous improvement by building on each previous assessment.\n\n:::image type=\"content\" source=\"../images/laz-for-sap-platform-workload.png\" alt-text=\"Diagram showing how the Well-Architected assessment builds a baseline and each iteration of the assessment builds on the previous one.\" lightbox=\"../images/laz-for-sap-platform-workload.png\" border=\"false\":::\n*Figure 2: How the Well-architected assessment creates milestones and builds on these milestones over time.*\n\nThe initial assessment creates a baseline, and the next iteration of assessment uses the previous assessment as the starting point. It will maintain the selections from the last assessment to track and review the design principle. Because the assessment builds on itself, you can track improvements over time. The assessment is designed for an existing SAP workload in Azure and can assess one or more of the WAF pillars.\n\nWe recommend using this SAP assessment to develop and realign the SOPs for your SAP workload. The assessment identifies areas of strength and weakness that allow you to build better SOPs. For more information, see [Azure Well-Architected Review](/assessments/).",
+      "lineStart": 6,
+      "lineEnd": 24
+    },
+    {
+      "sectionOrder": 3,
+      "headingLevel": 2,
+      "headingText": "Monitor the workload",
+      "headingPath": [
+        "SAP workload operational procedures",
+        "Monitor the workload"
+      ],
+      "markdown": "*Impact: Operational excellence*\n\nMonitoring is the process of collecting, analyzing, and acting on data gathered from an SAP workload. Monitoring provides insights of the health of the workload to compare with an expected baseline. It allows you to know when, where, and why failures occur. A monitoring best practice is to use a common and consistent logging schema that lets you correlate events across systems. The monitoring and diagnostics process has several distinct phases.\n\n*Table 1 - Phases of monitoring and diagnostic process*\n\n| Phases | Process description|\n| --- | --- |\n| Instrumentation | Generating the raw data from application logs, web server logs, the diagnostics built into the Azure platform, and other sources. |\n| Collection and storage | Consolidating the data into one place. |\n| Analysis and diagnosis | Troubleshooting issues and seeing the overall health. |\n| Visualization and alerts | Using data to spot trends or alert your operations team.|\n\nWe recommend using Azure Monitor for SAP solutions to drive these processes. Azure Monitor for SAP is an Azure-native monitoring product for SAP landscapes that run on Azure. Azure Monitor for SAP solutions uses specific parts of the Azure Monitor infrastructure to provide insights into the monitoring of SAP Netweaver, SAP HANA, SQL Server & Pacemaker High-Availability deployments on Azure. For more information, see [Azure Monitor for SAP Solutions](/azure/virtual-machines/workloads/sap/monitor-sap-on-azure).\n\nAzure Inventory Checks for SAP Workbooks provide a flexible canvas for SAP specific Azure resource deployment and configuration checks with the help of rich visual reports within the Azure portal. It allows you to tap into multiple data sources from across Azure and combine them into unified interactive experiences. It aims at providing customers/partners with an immediate view of Azure Inventory with intelligence to highlight configuration drift to improve the quality of SAP On Azure deployment for operations. For more information, see [Azure Inventory Checks for SAP](https://github.com/Azure/SAP-on-Azure-Scripts-and-Utilities/tree/main/Tools%26Framework/InventoryChecksForSAP).",
+      "lineStart": 26,
+      "lineEnd": 43
+    },
+    {
+      "sectionOrder": 4,
+      "headingLevel": 2,
+      "headingText": "Automate workload infrastructure",
+      "headingPath": [
+        "SAP workload operational procedures",
+        "Automate workload infrastructure"
+      ],
+      "markdown": "*Impact: Operational excellence*\n\nYou should use infrastructure as code (IaC) to automate SAP workload deployments with minimal human intervention and build a scalable and consistent SAP workload on Azure. The manual process of creating the required SAP workload resources is slow and allows for errors. Microsoft has a repository of SAP deployment templates that you should use. It’s called the SAP on Azure Deployment Automation Framework. The templates support SAP HANA and NetWeaver with any database on any SAP-supported operating systems.\n\nFor more information, see:\n\n- [SAP deployment automation framework](/azure/virtual-machines/workloads/sap/automation-deployment-framework)\n- [SAP automate repository](https://github.com/Azure/sap-automation)\n- [Azure Monitor for SAP solutions](/azure/virtual-machines/workloads/sap/monitor-sap-on-azure)\n\n*Table 2 - Benefits of automated deployments with IaC*\n\n| Benefit domain | Automate deployment benefits | Manual deployment disadvantages |\n| --- | --- | --- |\n| Knowledge | Works immediately after some initial preparation time. Requires little domain knowledge.| Requires specialized knowledge in many domains outside of SAP.|\n| Time | Consumes predictable time from 30 minutes to a couple of hours.| Can take much more time depending on the size of the SAP landscape, depending on the size of the SAP landscape.|\n| Cost | Makes automated deployments cheap due to less time spent.| Expensive due to more time spent.|\n| Testing | Provides templates that include test instrumentation during deployment and migration.| Allows for limited testing. Requires more work to inject tests in the process. |\n| Scaling | Allows you to easily scale up, down, and out. Provides new deployment templates.| Takes more time to scale and customize the environment.|\n| Standardization | Applies your defined standards with each deployment.| Sometimes leads to unwanted variations in design.|",
+      "lineStart": 45,
+      "lineEnd": 66
+    },
+    {
+      "sectionOrder": 5,
+      "headingLevel": 2,
+      "headingText": "Next steps",
+      "headingPath": [
+        "SAP workload operational procedures",
+        "Next steps"
+      ],
+      "markdown": "> [!div class=\"nextstepaction\"]\n> [Application design](./application-design.md)\n\n> [!div class=\"nextstepaction\"]\n> [Application platform](./application-platform.md)\n\n> [!div class=\"nextstepaction\"]\n> [Data platform](./data-platform.md)\n\n> [!div class=\"nextstepaction\"]\n> [Networking and connectivity](./networking-and-connectivity.md)\n\n> [!div class=\"nextstepaction\"]\n> [Security](./security.md)",
+      "lineStart": 68,
+      "lineEnd": 82
+    }
+  ],
+  "localLinks": [
+    "./application-design.md",
+    "./application-platform.md",
+    "./data-platform.md",
+    "./networking-and-connectivity.md",
+    "./security.md"
+  ],
+  "lastModified": "2026-03-17T16:22:13.732Z"
+}

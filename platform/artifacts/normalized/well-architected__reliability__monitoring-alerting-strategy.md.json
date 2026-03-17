@@ -1,0 +1,244 @@
+{
+  "source": {
+    "absolutePath": "C:\\Users\\EricL\\source\\repos\\Well-Architected-Vibe-Coding\\well-architected-vibe-coding\\well-architected\\reliability\\monitoring-alerting-strategy.md",
+    "repoRelativePath": "well-architected/reliability/monitoring-alerting-strategy.md",
+    "docsRelativePath": "reliability/monitoring-alerting-strategy.md"
+  },
+  "frontMatter": {
+    "title": "Architecture strategies for designing a reliable monitoring and alerting strategy",
+    "description": "Learn how to design a reliable monitoring and alerting strategy to ensure that your workload operates reliably and operations teams are aware of changes.",
+    "author": "claytonsiemens77",
+    "ms.author": "csiemens",
+    "ms.date": "2/13/2024",
+    "ms.topic": "concept-article"
+  },
+  "title": "Architecture strategies for designing a reliable monitoring and alerting strategy",
+  "rawBody": "# Architecture strategies for designing a reliable monitoring and alerting strategy\n\n**Applies to this Azure Well-Architected Framework Reliability checklist recommendation:**\n\n|**RE:10**| Measure and model the solution's health indicators. Continuously capture uptime and other reliability data from across the workload and also from individual components and key flows.  |\n|---|---|\n\nThis guide describes the recommendations for designing a reliable monitoring and alerting strategy. Implement this strategy to keep your operations teams informed of your environment's health status and ensure that you meet the established reliability targets for your workload.\n\n**Definitions**\n\n| Term | Definition |\n|---------|---------|\n| Metrics | Numerical values that are collected at regular intervals. Metrics describe some aspects of a system at a particular time. |\n| Resource logs | Data that a system generates. It provides information about the state of the system. |\n| Traces | Data that provides information about the path that a request travels through services and components. |\n\n\nBefore you create a monitoring and alerting strategy, perform the following tasks for your workload as part of your reliability planning:\n\n- Identify [critical and noncritical flows](identify-flows.md).\n\n- Perform [failure mode analysis (FMA)](failure-mode-analysis.md) for your flows.\n\n- Identify [reliability targets](metrics.md).\n\n- Design for reliability by implementing [redundancy](redundancy.md), [scaling](scaling.md), [self-preservation, and self-healing](self-preservation.md).\n\n- Design a robust [testing strategy](testing-strategy.md).\n\n- [Model the health](../design-guides/health-modeling.md) of your workload and its components.\n\nCreate a monitoring and alerting strategy to ensure that your workload operates reliably. A monitoring and alerting strategy provides awareness to your operations teams so they're notified of changes in your workload's condition and can quickly address issues. Build a robust and reliable monitoring strategy by creating a [health model](../design-guides/health-modeling.md) for your critical flows and the components that these critical flows comprise. The health model defines healthy, degraded, and unhealthy states. Design your operational posture to immediately catch changes in these states. When health states change from healthy to degraded or unhealthy, alerting mechanisms trigger the [automatic corrective measures](testing-strategy.md) and notifies appropriate teams.\n\nImplement the following recommendations to design a monitoring and alerting strategy that meets the requirements of your business.\n\n## Implement an overall monitoring strategy\n\n- Understand the difference between [metrics](/azure/azure-monitor/essentials/data-platform-metrics), [logs](/azure/azure-monitor/logs/data-platform-logs), and [traces](/azure/azure-monitor/app/asp-net-trace-logs).\n\n- Enable [logging](/azure/azure-monitor/essentials/resource-logs) for all cloud resources. Use automation and governance in your deployments to enable diagnostic logging throughout your environment.\n\n- Forward all diagnostic logs to a centralized data sink and analytics platform, like a [Log Analytics workspace](/azure/azure-monitor/logs/log-analytics-workspace-overview). If you have regional data sovereignty requirements, you must use local data sinks in the regions that are subject to those requirements.\n\n> :::image type=\"icon\" source=\"../_images/trade-off.svg\"::: **Tradeoff**: There are cost implications for storing and querying logs. Notice how your log analysis and retention affects your budget, and determine the best balance of utilization to meet your requirements. For more information, see [Best practices for cost optimization](/azure/azure-monitor/best-practices-logs#cost-optimization).\n\n- If your workloads are subject to one or more compliance frameworks, some of the component logs that handle sensitive information are also subject to those frameworks. Send the relevant component logs to a security information and event management (SIEM) system, like [Microsoft Sentinel](/azure/sentinel/overview).\n\n- Create a [log retention policy](/azure/azure-monitor/logs/data-retention-archive) that incorporates long-term retention requirements that the compliance frameworks impose on your workload.\n\n- Use [structured logging](https://stackify.com/what-is-structured-logging-and-why-developers-need-it) for all log messages to optimize querying the log data.\n\n- Configure alerts to trigger when values pass critical thresholds that correlate to a health model state change, like green to yellow or red.\n\n  Threshold configuration is a practice of continuous improvement. As your workload evolves, the thresholds you define might change. In some cases, [dynamic thresholds](/azure/azure-monitor/alerts/alerts-dynamic-thresholds) are a good option for your monitoring strategy.\n\n- Consider using alerts when states improve, such as red to yellow or red to green, so that the operations teams can track these events for future reference.\n\n- Visualize the real-time health of your environment.\n\n- Use data that's gathered during incidents to continuously improve your health models and your monitoring and alerting strategy.\n\n- Incorporate cloud platform monitoring and alerting services, including:\n\n  - Platform-level health, like [Azure Service Health](/azure/service-health/service-health-overview).\n\n  - Resource-level health, like [Azure Resource Health](/azure/service-health/resource-health-overview).\n\n- Incorporate purpose-built advanced monitoring and analytics that your cloud provider offers, like Azure Monitor [insight tools](/azure/azure-monitor/overview#insights).\n\n- Implement backup and recovery monitoring to capture:\n\n  - The data replication status to ensure that your workload achieves recovery within the target recovery point objective (RPO).\n\n  - Successful and failed backups and recoveries.\n  \n  - The recovery duration to inform your [disaster recovery planning](disaster-recovery.md).\n\n## Monitor applications\n\n- Create health probes or [check functions](/azure/architecture/patterns/health-endpoint-monitoring) and run them regularly from outside the application. Ensure that you test from multiple locations that are geographically close to your customers.\n\n- Log data while the application runs in the production environment. You need sufficient information to diagnose the cause of issues in the production state.\n\n- Log events at service boundaries. Include a correlation ID that flows across service boundaries. If a transaction flows through multiple services and one of them fails, the correlation ID helps you track requests across your application and pinpoint why the transaction failed.\n\n- Use asynchronous logging. Synchronous logging operations sometimes block your application code, which causes requests to back up as logs are written. Use asynchronous logging to preserve availability during application logging.\n\n- Separate application logging from auditing. Audit records are commonly maintained for compliance or regulatory requirements and must be complete. To avoid dropped transactions, maintain audit logs separate from diagnostic logs.\n\n- Use [telemetry correlation](/azure/azure-monitor/app/distributed-tracing-telemetry-correlation) to ensure that you can map transactions through the end-to-end application and critical system flows. This process is vital for performing root cause analysis (RCA) for failures. Collect platform-level metrics and logs, such as CPU percentage, network in, network out, and disk operations per second, from the application to inform a health model and to detect and predict issues. This approach can help distinguish between transient and nontransient faults.\n\n- Use white box monitoring to instrument the application with semantic logs and metrics. Collect application-level metrics and logs, such as memory consumption or request latency, from the application to inform a health model and to detect and predict issues.\n\n- Use black box monitoring to measure platform services and the resulting customer experience. Black box monitoring tests externally visible application behavior without knowledge of the internals of the system. This approach is common for measuring customer-centric service-level indicators (SLIs), service-level objectives (SLOs), and service-level agreements (SLAs).\n\n> [!NOTE]\n> For more information about application monitoring, see [Health Endpoint Monitoring pattern](/azure/architecture/patterns/health-endpoint-monitoring#issues-and-considerations).\n\n## Monitor data and storage\n\n- Monitor the availability metrics of your storage containers. When this metric drops below 100 percent, it indicates failing writes. Transient drops in availability might happen when your cloud provider manages the load. Track the availability trends to determine if there's an issue with your workload.\n\n  In some cases, a drop in the availability metrics for a storage container indicates a bottleneck in the compute layer that's associated with the storage container.\n\n- There are many metrics to monitor for databases. In the context of reliability, the important metrics to monitor include:\n\n  - Query duration\n\n  - Timeouts\n\n  - Wait times\n\n  - Memory pressure\n\n  - Locks\n\n## Monitor network traffic\n\n- To maintain network reliability, it's important to have continuous monitoring and diagnostics in place. Regularly test network connectivity and performance by using synthetic tests and health checks across your critical network paths.\n  \n- Collect and analyze network logs and metrics, such as latency, packet loss, and bandwidth utilization. This approach helps you detect problems early and distinguish between temporary and ongoing faults. By correlating network events with platform-level metrics, you can quickly identify the underlying cause of problems and troubleshoot effectively.\n\n- Equip your network monitoring to deliver end-to-end visibility. This approach enables your team to respond rapidly to incidents and keep your network running smoothly.\n\n- Effective network monitoring also requires deep visibility into traffic patterns. Continuously collect, analyze and enrich network flow logs to identify anomalies, blocked or malicious traffic, and bandwidth hotspots.\n  \n- Monitoring traffic helps surface unexpected behaviors, such as unauthorized access or inefficient routing. It also supports proactive detection of potential failures or security threats. By understanding both the volume and type of network flows, teams can optimize resource allocation, maintain performance targets, and ensure that the network supports business needs.\n\n## Azure facilitation\n\n- [Azure Monitor](/azure/azure-monitor/overview) is a comprehensive monitoring solution that's used to collect, analyze, and respond to monitoring data from your cloud and on-premises environments.\n\n- [Log Analytics](/azure/azure-monitor/logs/log-analytics-overview) is a tool in the Azure portal that's used to edit and run log queries against data in the Log Analytics workspace.\n\n- [Application Insights](/azure/azure-monitor/app/app-insights-overview) is an extension of Azure Monitor. It provides application performance monitoring (APM) features.\n\n- [Azure Monitor insights](/azure/azure-monitor/insights/insights-overview) are advanced analytics tools that help monitor Azure services, like virtual machines, application services, and containers. Insights are built on top of Azure Monitor and Log Analytics.\n\n- [Azure Monitor for SAP solutions](/azure/sap/monitor/about-azure-monitor-sap-solutions) is an Azure-native monitoring product for SAP landscapes that run on Azure.\n\n- [Azure Policy](/azure/governance/policy/overview) helps to enforce organizational standards and to assess compliance at scale.\n\n- [Azure Business Continuity Center](/azure/business-continuity-center/business-continuity-center-overview) gives you insights into your business continuity estate. As you apply the approaches given for business continuity and disaster recovery (BCDR), use Azure Business Continuity Center to centralize management of business continuity protection across Azure and hybrid workloads. Azure Business Continuity Center pinpoints resources that lack proper protection (via backup or disaster recovery) and takes corrective actions. The tool facilitates unified monitoring and lets you establish governance and auditing compliance through Azure Policy, all conveniently accessible in one location.\n\n- [Connection monitor](/azure/network-watcher/connection-monitor-overview) is a tool for continuously tracking network connectivity and performance across Azure resources. It runs synthetic tests and provides real-time alerts and diagnostics to detect failures early. You can build custom workbooks to visualize connectivity health and aggregated performance metrics.\n\n- Virtual network flow logs can be enabled across workloads to monitor network traffic. [Traffic analytics](/azure/network-watcher/traffic-analytics) can be used to analyze and enrich these flow logs to surface insights such as blocked traffic, malicious flows, and active ports exposed to the internet. Creating workbooks allows teams to monitor live traffic behavior and receive alerts. Use timeline views and topology visualizations to easily monitor traffic patterns that might indicate performance degradation or security threats.\n\n- For multiple workspace best practices, see [Design a Log Analytics workspace architecture](/azure/azure-monitor/logs/workspace-design).\n\n## Example\n\nFor examples of real-world monitoring solutions, see [Web application monitoring on Azure](/azure/architecture/web-apps/guides/monitoring/app-monitoring) and [Baseline architecture for an Azure Kubernetes Service cluster](/azure/architecture/reference-architectures/containers/aks/baseline-aks#monitor-and-collect-metrics).\n\n## Related links\n\n- [Alerting for DevOps](../devops/alerts.md)\n- [Alerting for operations](../devops/monitor-alerts.md)\n- [Monitoring and diagnostics guidance](/azure/architecture/best-practices/monitoring)\n- [Web application monitoring on Azure](/azure/architecture/web-apps/guides/monitoring/app-monitoring)\n\n## Community links\n\n- [Azure Monitor Baseline Alerts (AMBA)](/azure/azure-monitor/alerts/alert-options#azure-monitor-baseline-alerts-amba) is a central repository of alert definitions that customers and partners can use to improve their observability experience through the adoption of Azure Monitor.\n\n## Reliability checklist  \n\nRefer to the complete set of recommendations. \n\n> [!div class=\"nextstepaction\"] \n> [Reliability checklist](checklist.md)",
+  "headings": [
+    {
+      "level": 1,
+      "text": "Architecture strategies for designing a reliable monitoring and alerting strategy",
+      "line": 1,
+      "path": [
+        "Architecture strategies for designing a reliable monitoring and alerting strategy"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Implement an overall monitoring strategy",
+      "line": 37,
+      "path": [
+        "Architecture strategies for designing a reliable monitoring and alerting strategy",
+        "Implement an overall monitoring strategy"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Monitor applications",
+      "line": 79,
+      "path": [
+        "Architecture strategies for designing a reliable monitoring and alerting strategy",
+        "Monitor applications"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Monitor data and storage",
+      "line": 100,
+      "path": [
+        "Architecture strategies for designing a reliable monitoring and alerting strategy",
+        "Monitor data and storage"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Monitor network traffic",
+      "line": 118,
+      "path": [
+        "Architecture strategies for designing a reliable monitoring and alerting strategy",
+        "Monitor network traffic"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Azure facilitation",
+      "line": 130,
+      "path": [
+        "Architecture strategies for designing a reliable monitoring and alerting strategy",
+        "Azure facilitation"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Example",
+      "line": 152,
+      "path": [
+        "Architecture strategies for designing a reliable monitoring and alerting strategy",
+        "Example"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Related links",
+      "line": 156,
+      "path": [
+        "Architecture strategies for designing a reliable monitoring and alerting strategy",
+        "Related links"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Community links",
+      "line": 163,
+      "path": [
+        "Architecture strategies for designing a reliable monitoring and alerting strategy",
+        "Community links"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Reliability checklist",
+      "line": 167,
+      "path": [
+        "Architecture strategies for designing a reliable monitoring and alerting strategy",
+        "Reliability checklist"
+      ]
+    }
+  ],
+  "sections": [
+    {
+      "sectionOrder": 1,
+      "headingLevel": 1,
+      "headingText": "Architecture strategies for designing a reliable monitoring and alerting strategy",
+      "headingPath": [
+        "Architecture strategies for designing a reliable monitoring and alerting strategy"
+      ],
+      "markdown": "**Applies to this Azure Well-Architected Framework Reliability checklist recommendation:**\n\n|**RE:10**| Measure and model the solution's health indicators. Continuously capture uptime and other reliability data from across the workload and also from individual components and key flows.  |\n|---|---|\n\nThis guide describes the recommendations for designing a reliable monitoring and alerting strategy. Implement this strategy to keep your operations teams informed of your environment's health status and ensure that you meet the established reliability targets for your workload.\n\n**Definitions**\n\n| Term | Definition |\n|---------|---------|\n| Metrics | Numerical values that are collected at regular intervals. Metrics describe some aspects of a system at a particular time. |\n| Resource logs | Data that a system generates. It provides information about the state of the system. |\n| Traces | Data that provides information about the path that a request travels through services and components. |\n\n\nBefore you create a monitoring and alerting strategy, perform the following tasks for your workload as part of your reliability planning:\n\n- Identify [critical and noncritical flows](identify-flows.md).\n\n- Perform [failure mode analysis (FMA)](failure-mode-analysis.md) for your flows.\n\n- Identify [reliability targets](metrics.md).\n\n- Design for reliability by implementing [redundancy](redundancy.md), [scaling](scaling.md), [self-preservation, and self-healing](self-preservation.md).\n\n- Design a robust [testing strategy](testing-strategy.md).\n\n- [Model the health](../design-guides/health-modeling.md) of your workload and its components.\n\nCreate a monitoring and alerting strategy to ensure that your workload operates reliably. A monitoring and alerting strategy provides awareness to your operations teams so they're notified of changes in your workload's condition and can quickly address issues. Build a robust and reliable monitoring strategy by creating a [health model](../design-guides/health-modeling.md) for your critical flows and the components that these critical flows comprise. The health model defines healthy, degraded, and unhealthy states. Design your operational posture to immediately catch changes in these states. When health states change from healthy to degraded or unhealthy, alerting mechanisms trigger the [automatic corrective measures](testing-strategy.md) and notifies appropriate teams.\n\nImplement the following recommendations to design a monitoring and alerting strategy that meets the requirements of your business.",
+      "lineStart": 2,
+      "lineEnd": 36
+    },
+    {
+      "sectionOrder": 2,
+      "headingLevel": 2,
+      "headingText": "Implement an overall monitoring strategy",
+      "headingPath": [
+        "Architecture strategies for designing a reliable monitoring and alerting strategy",
+        "Implement an overall monitoring strategy"
+      ],
+      "markdown": "- Understand the difference between [metrics](/azure/azure-monitor/essentials/data-platform-metrics), [logs](/azure/azure-monitor/logs/data-platform-logs), and [traces](/azure/azure-monitor/app/asp-net-trace-logs).\n\n- Enable [logging](/azure/azure-monitor/essentials/resource-logs) for all cloud resources. Use automation and governance in your deployments to enable diagnostic logging throughout your environment.\n\n- Forward all diagnostic logs to a centralized data sink and analytics platform, like a [Log Analytics workspace](/azure/azure-monitor/logs/log-analytics-workspace-overview). If you have regional data sovereignty requirements, you must use local data sinks in the regions that are subject to those requirements.\n\n> :::image type=\"icon\" source=\"../_images/trade-off.svg\"::: **Tradeoff**: There are cost implications for storing and querying logs. Notice how your log analysis and retention affects your budget, and determine the best balance of utilization to meet your requirements. For more information, see [Best practices for cost optimization](/azure/azure-monitor/best-practices-logs#cost-optimization).\n\n- If your workloads are subject to one or more compliance frameworks, some of the component logs that handle sensitive information are also subject to those frameworks. Send the relevant component logs to a security information and event management (SIEM) system, like [Microsoft Sentinel](/azure/sentinel/overview).\n\n- Create a [log retention policy](/azure/azure-monitor/logs/data-retention-archive) that incorporates long-term retention requirements that the compliance frameworks impose on your workload.\n\n- Use [structured logging](https://stackify.com/what-is-structured-logging-and-why-developers-need-it) for all log messages to optimize querying the log data.\n\n- Configure alerts to trigger when values pass critical thresholds that correlate to a health model state change, like green to yellow or red.\n\n  Threshold configuration is a practice of continuous improvement. As your workload evolves, the thresholds you define might change. In some cases, [dynamic thresholds](/azure/azure-monitor/alerts/alerts-dynamic-thresholds) are a good option for your monitoring strategy.\n\n- Consider using alerts when states improve, such as red to yellow or red to green, so that the operations teams can track these events for future reference.\n\n- Visualize the real-time health of your environment.\n\n- Use data that's gathered during incidents to continuously improve your health models and your monitoring and alerting strategy.\n\n- Incorporate cloud platform monitoring and alerting services, including:\n\n  - Platform-level health, like [Azure Service Health](/azure/service-health/service-health-overview).\n\n  - Resource-level health, like [Azure Resource Health](/azure/service-health/resource-health-overview).\n\n- Incorporate purpose-built advanced monitoring and analytics that your cloud provider offers, like Azure Monitor [insight tools](/azure/azure-monitor/overview#insights).\n\n- Implement backup and recovery monitoring to capture:\n\n  - The data replication status to ensure that your workload achieves recovery within the target recovery point objective (RPO).\n\n  - Successful and failed backups and recoveries.\n  \n  - The recovery duration to inform your [disaster recovery planning](disaster-recovery.md).",
+      "lineStart": 38,
+      "lineEnd": 78
+    },
+    {
+      "sectionOrder": 3,
+      "headingLevel": 2,
+      "headingText": "Monitor applications",
+      "headingPath": [
+        "Architecture strategies for designing a reliable monitoring and alerting strategy",
+        "Monitor applications"
+      ],
+      "markdown": "- Create health probes or [check functions](/azure/architecture/patterns/health-endpoint-monitoring) and run them regularly from outside the application. Ensure that you test from multiple locations that are geographically close to your customers.\n\n- Log data while the application runs in the production environment. You need sufficient information to diagnose the cause of issues in the production state.\n\n- Log events at service boundaries. Include a correlation ID that flows across service boundaries. If a transaction flows through multiple services and one of them fails, the correlation ID helps you track requests across your application and pinpoint why the transaction failed.\n\n- Use asynchronous logging. Synchronous logging operations sometimes block your application code, which causes requests to back up as logs are written. Use asynchronous logging to preserve availability during application logging.\n\n- Separate application logging from auditing. Audit records are commonly maintained for compliance or regulatory requirements and must be complete. To avoid dropped transactions, maintain audit logs separate from diagnostic logs.\n\n- Use [telemetry correlation](/azure/azure-monitor/app/distributed-tracing-telemetry-correlation) to ensure that you can map transactions through the end-to-end application and critical system flows. This process is vital for performing root cause analysis (RCA) for failures. Collect platform-level metrics and logs, such as CPU percentage, network in, network out, and disk operations per second, from the application to inform a health model and to detect and predict issues. This approach can help distinguish between transient and nontransient faults.\n\n- Use white box monitoring to instrument the application with semantic logs and metrics. Collect application-level metrics and logs, such as memory consumption or request latency, from the application to inform a health model and to detect and predict issues.\n\n- Use black box monitoring to measure platform services and the resulting customer experience. Black box monitoring tests externally visible application behavior without knowledge of the internals of the system. This approach is common for measuring customer-centric service-level indicators (SLIs), service-level objectives (SLOs), and service-level agreements (SLAs).\n\n> [!NOTE]\n> For more information about application monitoring, see [Health Endpoint Monitoring pattern](/azure/architecture/patterns/health-endpoint-monitoring#issues-and-considerations).",
+      "lineStart": 80,
+      "lineEnd": 99
+    },
+    {
+      "sectionOrder": 4,
+      "headingLevel": 2,
+      "headingText": "Monitor data and storage",
+      "headingPath": [
+        "Architecture strategies for designing a reliable monitoring and alerting strategy",
+        "Monitor data and storage"
+      ],
+      "markdown": "- Monitor the availability metrics of your storage containers. When this metric drops below 100 percent, it indicates failing writes. Transient drops in availability might happen when your cloud provider manages the load. Track the availability trends to determine if there's an issue with your workload.\n\n  In some cases, a drop in the availability metrics for a storage container indicates a bottleneck in the compute layer that's associated with the storage container.\n\n- There are many metrics to monitor for databases. In the context of reliability, the important metrics to monitor include:\n\n  - Query duration\n\n  - Timeouts\n\n  - Wait times\n\n  - Memory pressure\n\n  - Locks",
+      "lineStart": 101,
+      "lineEnd": 117
+    },
+    {
+      "sectionOrder": 5,
+      "headingLevel": 2,
+      "headingText": "Monitor network traffic",
+      "headingPath": [
+        "Architecture strategies for designing a reliable monitoring and alerting strategy",
+        "Monitor network traffic"
+      ],
+      "markdown": "- To maintain network reliability, it's important to have continuous monitoring and diagnostics in place. Regularly test network connectivity and performance by using synthetic tests and health checks across your critical network paths.\n  \n- Collect and analyze network logs and metrics, such as latency, packet loss, and bandwidth utilization. This approach helps you detect problems early and distinguish between temporary and ongoing faults. By correlating network events with platform-level metrics, you can quickly identify the underlying cause of problems and troubleshoot effectively.\n\n- Equip your network monitoring to deliver end-to-end visibility. This approach enables your team to respond rapidly to incidents and keep your network running smoothly.\n\n- Effective network monitoring also requires deep visibility into traffic patterns. Continuously collect, analyze and enrich network flow logs to identify anomalies, blocked or malicious traffic, and bandwidth hotspots.\n  \n- Monitoring traffic helps surface unexpected behaviors, such as unauthorized access or inefficient routing. It also supports proactive detection of potential failures or security threats. By understanding both the volume and type of network flows, teams can optimize resource allocation, maintain performance targets, and ensure that the network supports business needs.",
+      "lineStart": 119,
+      "lineEnd": 129
+    },
+    {
+      "sectionOrder": 6,
+      "headingLevel": 2,
+      "headingText": "Azure facilitation",
+      "headingPath": [
+        "Architecture strategies for designing a reliable monitoring and alerting strategy",
+        "Azure facilitation"
+      ],
+      "markdown": "- [Azure Monitor](/azure/azure-monitor/overview) is a comprehensive monitoring solution that's used to collect, analyze, and respond to monitoring data from your cloud and on-premises environments.\n\n- [Log Analytics](/azure/azure-monitor/logs/log-analytics-overview) is a tool in the Azure portal that's used to edit and run log queries against data in the Log Analytics workspace.\n\n- [Application Insights](/azure/azure-monitor/app/app-insights-overview) is an extension of Azure Monitor. It provides application performance monitoring (APM) features.\n\n- [Azure Monitor insights](/azure/azure-monitor/insights/insights-overview) are advanced analytics tools that help monitor Azure services, like virtual machines, application services, and containers. Insights are built on top of Azure Monitor and Log Analytics.\n\n- [Azure Monitor for SAP solutions](/azure/sap/monitor/about-azure-monitor-sap-solutions) is an Azure-native monitoring product for SAP landscapes that run on Azure.\n\n- [Azure Policy](/azure/governance/policy/overview) helps to enforce organizational standards and to assess compliance at scale.\n\n- [Azure Business Continuity Center](/azure/business-continuity-center/business-continuity-center-overview) gives you insights into your business continuity estate. As you apply the approaches given for business continuity and disaster recovery (BCDR), use Azure Business Continuity Center to centralize management of business continuity protection across Azure and hybrid workloads. Azure Business Continuity Center pinpoints resources that lack proper protection (via backup or disaster recovery) and takes corrective actions. The tool facilitates unified monitoring and lets you establish governance and auditing compliance through Azure Policy, all conveniently accessible in one location.\n\n- [Connection monitor](/azure/network-watcher/connection-monitor-overview) is a tool for continuously tracking network connectivity and performance across Azure resources. It runs synthetic tests and provides real-time alerts and diagnostics to detect failures early. You can build custom workbooks to visualize connectivity health and aggregated performance metrics.\n\n- Virtual network flow logs can be enabled across workloads to monitor network traffic. [Traffic analytics](/azure/network-watcher/traffic-analytics) can be used to analyze and enrich these flow logs to surface insights such as blocked traffic, malicious flows, and active ports exposed to the internet. Creating workbooks allows teams to monitor live traffic behavior and receive alerts. Use timeline views and topology visualizations to easily monitor traffic patterns that might indicate performance degradation or security threats.\n\n- For multiple workspace best practices, see [Design a Log Analytics workspace architecture](/azure/azure-monitor/logs/workspace-design).",
+      "lineStart": 131,
+      "lineEnd": 151
+    },
+    {
+      "sectionOrder": 7,
+      "headingLevel": 2,
+      "headingText": "Example",
+      "headingPath": [
+        "Architecture strategies for designing a reliable monitoring and alerting strategy",
+        "Example"
+      ],
+      "markdown": "For examples of real-world monitoring solutions, see [Web application monitoring on Azure](/azure/architecture/web-apps/guides/monitoring/app-monitoring) and [Baseline architecture for an Azure Kubernetes Service cluster](/azure/architecture/reference-architectures/containers/aks/baseline-aks#monitor-and-collect-metrics).",
+      "lineStart": 153,
+      "lineEnd": 155
+    },
+    {
+      "sectionOrder": 8,
+      "headingLevel": 2,
+      "headingText": "Related links",
+      "headingPath": [
+        "Architecture strategies for designing a reliable monitoring and alerting strategy",
+        "Related links"
+      ],
+      "markdown": "- [Alerting for DevOps](../devops/alerts.md)\n- [Alerting for operations](../devops/monitor-alerts.md)\n- [Monitoring and diagnostics guidance](/azure/architecture/best-practices/monitoring)\n- [Web application monitoring on Azure](/azure/architecture/web-apps/guides/monitoring/app-monitoring)",
+      "lineStart": 157,
+      "lineEnd": 162
+    },
+    {
+      "sectionOrder": 9,
+      "headingLevel": 2,
+      "headingText": "Community links",
+      "headingPath": [
+        "Architecture strategies for designing a reliable monitoring and alerting strategy",
+        "Community links"
+      ],
+      "markdown": "- [Azure Monitor Baseline Alerts (AMBA)](/azure/azure-monitor/alerts/alert-options#azure-monitor-baseline-alerts-amba) is a central repository of alert definitions that customers and partners can use to improve their observability experience through the adoption of Azure Monitor.",
+      "lineStart": 164,
+      "lineEnd": 166
+    },
+    {
+      "sectionOrder": 10,
+      "headingLevel": 2,
+      "headingText": "Reliability checklist",
+      "headingPath": [
+        "Architecture strategies for designing a reliable monitoring and alerting strategy",
+        "Reliability checklist"
+      ],
+      "markdown": "Refer to the complete set of recommendations. \n\n> [!div class=\"nextstepaction\"] \n> [Reliability checklist](checklist.md)",
+      "lineStart": 168,
+      "lineEnd": 172
+    }
+  ],
+  "localLinks": [
+    "../design-guides/health-modeling.md",
+    "../devops/alerts.md",
+    "../devops/monitor-alerts.md",
+    "checklist.md",
+    "disaster-recovery.md",
+    "failure-mode-analysis.md",
+    "identify-flows.md",
+    "metrics.md",
+    "redundancy.md",
+    "scaling.md",
+    "self-preservation.md",
+    "testing-strategy.md"
+  ],
+  "lastModified": "2026-03-17T16:22:13.711Z"
+}

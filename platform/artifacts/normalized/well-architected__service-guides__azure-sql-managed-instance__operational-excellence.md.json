@@ -1,0 +1,134 @@
+{
+  "source": {
+    "absolutePath": "C:\\Users\\EricL\\source\\repos\\Well-Architected-Vibe-Coding\\well-architected-vibe-coding\\well-architected\\service-guides\\azure-sql-managed-instance\\operational-excellence.md",
+    "repoRelativePath": "well-architected/service-guides/azure-sql-managed-instance/operational-excellence.md",
+    "docsRelativePath": "service-guides/azure-sql-managed-instance/operational-excellence.md"
+  },
+  "frontMatter": {
+    "title": "Azure SQL Managed Instance and operational excellence",
+    "description": "Focuses on the Azure SQL Managed Instance service used in the Data solution to provide best-practice, configuration recommendations, and design considerations related to Operational Excellence.",
+    "author": "PageWriter-MSFT",
+    "ms.author": "prwilk",
+    "ms.date": "08/17/2025",
+    "ms.topic": "concept-article",
+    "products": [
+      "azure-sql-managed-instance"
+    ],
+    "azure.category": [
+      "databases"
+    ]
+  },
+  "title": "Azure SQL Managed Instance and operational excellence",
+  "rawBody": "# Azure SQL Managed Instance and operational excellence\n\n[Azure SQL Managed Instance](/azure/azure-sql/managed-instance/sql-managed-instance-paas-overview) is the intelligent, scalable cloud database service that combines the broadest SQL Server database engine compatibility with all the benefits of a fully managed and evergreen platform as a service.\n\nThe goal of the high availability architecture in SQL Managed Instance is to guarantee that your database is up and running without worrying about the impact of maintenance operations and outages. This solution is designed to:\n\n- Ensure that committed data is never lost because of failures.\n- Ensure that maintenance failures don't affect your workload.\n- Ensure that the database won't be a single point of failure in your software architecture.\n\nFor more information about how Azure SQL Managed Instance supports operational excellence for your application workloads, reference the following articles:\n\n- [Overview of Azure SQL Managed Instance management operations](/azure/azure-sql/managed-instance/management-operations-overview?branch=master#what-are-management-operations)\n- [Monitoring Azure SQL Managed Instance management operations](/azure/azure-sql/managed-instance/management-operations-monitor?branch=master&tabs=azure-portal)\n\nThe following sections include design considerations, a configuration checklist, and recommended configuration options specific to Azure SQL Managed Instance, and operational excellence.\n\n## Design considerations\n\nAzure SQL Managed Instance includes the following design considerations:\n\n- Define an application performance SLA and monitor it with alerts. Detecting quickly when your application performance inadvertently degrades below an acceptable level is important to maintain high resiliency. Use a monitoring solution to set alerts on key query performance metrics so you can take action when the performance breaks the SLA.\n- Use point-in-time restore to recover from human error. Point-in-time restore returns your database to an earlier point in time to recover data from changes done inadvertently. For more information, read the [Point-in-time-restore (PITR)](/azure/azure-sql/database/recovery-using-backups#point-in-time-restore) documentation for managed instance.\n- Use geo-restore to recover from a service outage. Geo-restore restores a database from a geo-redundant backup into a managed instance in a different region. For more information, reference [Recover a database using Geo-restore documentation](/azure/azure-sql/database/auto-failover-group-overview?tabs=azure-powershell).\n- Consider the time required for certain operations. Make sure you separate time to thoroughly test the amount of time required to scale up and down your existing managed instance, and to create a new managed instance. This timing practice ensures that you understand completely how time consuming operations will affect your RTO and RPO.\n- Use Azure Backup to protect your SQL database on an Azure Virtual Machine, ensuring recovery during outages. It stores backups in a Recovery Services vault based on your configured policy. Set the vault to Geo-redundant for restoration in a secondary region or subscription. Learn [how to restore the database using Azure Backup](/azure/backup/restore-sql-database-azure-vm).\n\n## Checklist\n\n**Have you configured Azure SQL Managed Instance with operational excellence in mind?**\n\n> [!div class=\"checklist\"]\n> - Use the Business Critical Tier.\n> - Configure a secondary instance and an Autofailover group to enable failover to another region.\n> - Implement Retry Logic.\n> - Monitor your SQL MI instance in near-real time to detect reliability incidents.\n> - Restore the SQL database using  the Azure Backup service.\n\n## Configuration recommendations\n\nExplore the following table of recommendations to optimize your Azure SQL Managed Instance configuration for operational excellence:\n\n|Recommendation|Description|\n|--------------|-----------|\n|Use the Business Critical Tier.|This tier provides higher resiliency to failures and faster failover times because of the underlying HA architecture, among other benefits. For more information, reference [SQL Managed Instance High availability](/azure/azure-sql/database/high-availability-sla).|\n|Take advantage of faster [management operations](/azure/azure-sql/managed-instance/management-operations-overview) at no additional cost or configuration and is available across all service tiers.|Management operations can complete quickly for all configurations, significantly reducing deployment and scaling times.|\n|Configure a secondary instance and an Autofailover group to enable failover to another region.|If an outage impacts one or more of the databases in the managed instance, you can manually or automatically failover all the databases inside the instance to a secondary region. For more information, read the [Autofailover groups documentation for managed instance](/azure/azure-sql/database/auto-failover-group-overview?tabs=azure-powershell).|\n|Implement Retry Logic.|Although Azure SQL MI is resilient to transitive infrastructure failures, these failures might affect your connectivity. When a transient error occurs while working with SQL MI, make sure your code can retry the call. For more information, reference how to [implement retry logic](/azure/azure-sql/database/troubleshoot-common-connectivity-issues).|\n|Monitor your SQL MI instance in near-real time to detect reliability incidents.|Use one of the available solutions to monitor your SQL MI to detect potential reliability incidents early and make your databases more reliable. Choose a near real-time monitoring solution to quickly react to incidents. For more information, check out the [Azure SQL Managed Instance monitoring options](https://techcommunity.microsoft.com/t5/azure-sql/monitoring-options-available-for-azure-sql-managed-instance/ba-p/1065416).\n| Restore the SQL database using  the Azure Backup service. | Use Azure Backup to detect SQL databases, configure backups in the Recovery Services vault, and [restore the database fully](/azure/backup/restore-sql-database-azure-vm#restore-a-database) or to a [specific point in time](/azure/backup/restore-sql-database-azure-vm#restore-to-a-time-or-a-recovery-point). It also supports disaster recovery drills, [monitoring, and other management tasks](/azure/backup/manage-monitor-sql-database-backup#monitor-backup-jobs-in-the-portal). |\n\n## Next step\n\n> [!div class=\"nextstepaction\"]\n> [Azure Cosmos DB for NoSQL](../cosmos-db.md)\n\n<!-- Updated: August 17, 2025 for Azure Update 496292 -->",
+  "headings": [
+    {
+      "level": 1,
+      "text": "Azure SQL Managed Instance and operational excellence",
+      "line": 1,
+      "path": [
+        "Azure SQL Managed Instance and operational excellence"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Design considerations",
+      "line": 18,
+      "path": [
+        "Azure SQL Managed Instance and operational excellence",
+        "Design considerations"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Checklist",
+      "line": 28,
+      "path": [
+        "Azure SQL Managed Instance and operational excellence",
+        "Checklist"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Configuration recommendations",
+      "line": 39,
+      "path": [
+        "Azure SQL Managed Instance and operational excellence",
+        "Configuration recommendations"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Next step",
+      "line": 52,
+      "path": [
+        "Azure SQL Managed Instance and operational excellence",
+        "Next step"
+      ]
+    }
+  ],
+  "sections": [
+    {
+      "sectionOrder": 1,
+      "headingLevel": 1,
+      "headingText": "Azure SQL Managed Instance and operational excellence",
+      "headingPath": [
+        "Azure SQL Managed Instance and operational excellence"
+      ],
+      "markdown": "[Azure SQL Managed Instance](/azure/azure-sql/managed-instance/sql-managed-instance-paas-overview) is the intelligent, scalable cloud database service that combines the broadest SQL Server database engine compatibility with all the benefits of a fully managed and evergreen platform as a service.\n\nThe goal of the high availability architecture in SQL Managed Instance is to guarantee that your database is up and running without worrying about the impact of maintenance operations and outages. This solution is designed to:\n\n- Ensure that committed data is never lost because of failures.\n- Ensure that maintenance failures don't affect your workload.\n- Ensure that the database won't be a single point of failure in your software architecture.\n\nFor more information about how Azure SQL Managed Instance supports operational excellence for your application workloads, reference the following articles:\n\n- [Overview of Azure SQL Managed Instance management operations](/azure/azure-sql/managed-instance/management-operations-overview?branch=master#what-are-management-operations)\n- [Monitoring Azure SQL Managed Instance management operations](/azure/azure-sql/managed-instance/management-operations-monitor?branch=master&tabs=azure-portal)\n\nThe following sections include design considerations, a configuration checklist, and recommended configuration options specific to Azure SQL Managed Instance, and operational excellence.",
+      "lineStart": 2,
+      "lineEnd": 17
+    },
+    {
+      "sectionOrder": 2,
+      "headingLevel": 2,
+      "headingText": "Design considerations",
+      "headingPath": [
+        "Azure SQL Managed Instance and operational excellence",
+        "Design considerations"
+      ],
+      "markdown": "Azure SQL Managed Instance includes the following design considerations:\n\n- Define an application performance SLA and monitor it with alerts. Detecting quickly when your application performance inadvertently degrades below an acceptable level is important to maintain high resiliency. Use a monitoring solution to set alerts on key query performance metrics so you can take action when the performance breaks the SLA.\n- Use point-in-time restore to recover from human error. Point-in-time restore returns your database to an earlier point in time to recover data from changes done inadvertently. For more information, read the [Point-in-time-restore (PITR)](/azure/azure-sql/database/recovery-using-backups#point-in-time-restore) documentation for managed instance.\n- Use geo-restore to recover from a service outage. Geo-restore restores a database from a geo-redundant backup into a managed instance in a different region. For more information, reference [Recover a database using Geo-restore documentation](/azure/azure-sql/database/auto-failover-group-overview?tabs=azure-powershell).\n- Consider the time required for certain operations. Make sure you separate time to thoroughly test the amount of time required to scale up and down your existing managed instance, and to create a new managed instance. This timing practice ensures that you understand completely how time consuming operations will affect your RTO and RPO.\n- Use Azure Backup to protect your SQL database on an Azure Virtual Machine, ensuring recovery during outages. It stores backups in a Recovery Services vault based on your configured policy. Set the vault to Geo-redundant for restoration in a secondary region or subscription. Learn [how to restore the database using Azure Backup](/azure/backup/restore-sql-database-azure-vm).",
+      "lineStart": 19,
+      "lineEnd": 27
+    },
+    {
+      "sectionOrder": 3,
+      "headingLevel": 2,
+      "headingText": "Checklist",
+      "headingPath": [
+        "Azure SQL Managed Instance and operational excellence",
+        "Checklist"
+      ],
+      "markdown": "**Have you configured Azure SQL Managed Instance with operational excellence in mind?**\n\n> [!div class=\"checklist\"]\n> - Use the Business Critical Tier.\n> - Configure a secondary instance and an Autofailover group to enable failover to another region.\n> - Implement Retry Logic.\n> - Monitor your SQL MI instance in near-real time to detect reliability incidents.\n> - Restore the SQL database using  the Azure Backup service.",
+      "lineStart": 29,
+      "lineEnd": 38
+    },
+    {
+      "sectionOrder": 4,
+      "headingLevel": 2,
+      "headingText": "Configuration recommendations",
+      "headingPath": [
+        "Azure SQL Managed Instance and operational excellence",
+        "Configuration recommendations"
+      ],
+      "markdown": "Explore the following table of recommendations to optimize your Azure SQL Managed Instance configuration for operational excellence:\n\n|Recommendation|Description|\n|--------------|-----------|\n|Use the Business Critical Tier.|This tier provides higher resiliency to failures and faster failover times because of the underlying HA architecture, among other benefits. For more information, reference [SQL Managed Instance High availability](/azure/azure-sql/database/high-availability-sla).|\n|Take advantage of faster [management operations](/azure/azure-sql/managed-instance/management-operations-overview) at no additional cost or configuration and is available across all service tiers.|Management operations can complete quickly for all configurations, significantly reducing deployment and scaling times.|\n|Configure a secondary instance and an Autofailover group to enable failover to another region.|If an outage impacts one or more of the databases in the managed instance, you can manually or automatically failover all the databases inside the instance to a secondary region. For more information, read the [Autofailover groups documentation for managed instance](/azure/azure-sql/database/auto-failover-group-overview?tabs=azure-powershell).|\n|Implement Retry Logic.|Although Azure SQL MI is resilient to transitive infrastructure failures, these failures might affect your connectivity. When a transient error occurs while working with SQL MI, make sure your code can retry the call. For more information, reference how to [implement retry logic](/azure/azure-sql/database/troubleshoot-common-connectivity-issues).|\n|Monitor your SQL MI instance in near-real time to detect reliability incidents.|Use one of the available solutions to monitor your SQL MI to detect potential reliability incidents early and make your databases more reliable. Choose a near real-time monitoring solution to quickly react to incidents. For more information, check out the [Azure SQL Managed Instance monitoring options](https://techcommunity.microsoft.com/t5/azure-sql/monitoring-options-available-for-azure-sql-managed-instance/ba-p/1065416).\n| Restore the SQL database using  the Azure Backup service. | Use Azure Backup to detect SQL databases, configure backups in the Recovery Services vault, and [restore the database fully](/azure/backup/restore-sql-database-azure-vm#restore-a-database) or to a [specific point in time](/azure/backup/restore-sql-database-azure-vm#restore-to-a-time-or-a-recovery-point). It also supports disaster recovery drills, [monitoring, and other management tasks](/azure/backup/manage-monitor-sql-database-backup#monitor-backup-jobs-in-the-portal). |",
+      "lineStart": 40,
+      "lineEnd": 51
+    },
+    {
+      "sectionOrder": 5,
+      "headingLevel": 2,
+      "headingText": "Next step",
+      "headingPath": [
+        "Azure SQL Managed Instance and operational excellence",
+        "Next step"
+      ],
+      "markdown": "> [!div class=\"nextstepaction\"]\n> [Azure Cosmos DB for NoSQL](../cosmos-db.md)\n\n<!-- Updated: August 17, 2025 for Azure Update 496292 -->",
+      "lineStart": 53,
+      "lineEnd": 57
+    }
+  ],
+  "localLinks": [
+    "../cosmos-db.md"
+  ],
+  "lastModified": "2026-03-17T16:22:13.815Z"
+}

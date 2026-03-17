@@ -1,0 +1,428 @@
+{
+  "source": {
+    "absolutePath": "C:\\Users\\EricL\\source\\repos\\Well-Architected-Vibe-Coding\\well-architected-vibe-coding\\well-architected\\azure-virtual-desktop\\landing-zone-integration.md",
+    "repoRelativePath": "well-architected/azure-virtual-desktop/landing-zone-integration.md",
+    "docsRelativePath": "azure-virtual-desktop/landing-zone-integration.md"
+  },
+  "frontMatter": {
+    "title": "Integrate an Azure Virtual Desktop workload with Azure landing zones",
+    "description": "Examine Azure landing zones and cloud operating models. See the responsibilities of platform teams and workload teams in Azure Virtual Desktop design areas.",
+    "author": "PageWriter-MSFT",
+    "ms.author": "prwilk",
+    "ms.date": "10/12/2023",
+    "ms.topic": "concept-article",
+    "ms.service": "azure-waf",
+    "ms.subservice": "waf-workload-azure-virtual-desktop"
+  },
+  "title": "Integrate an Azure Virtual Desktop workload with Azure landing zones",
+  "rawBody": "# Integrate an Azure Virtual Desktop workload with Azure landing zones\n\nMigrating an organization's end-user desktops to the cloud is a common scenario in cloud migrations. Doing so helps improve employee productivity and accelerate the migration of various workloads to support the organization's user experience. Each organization manages workloads and operates its cloud environment uniquely. The common cloud operating models are *decentralized*, *centralized*, *enterprise*, and *distributed*.\n\nThe most important difference between the various models is the level of ownership. In the decentralized model, workload owners have autonomy without any central IT oversight for governance. For example, they manage their own networking, monitoring, and identity requirements. At the other end of the spectrum is the centralized model, where the workload owners adhere to the governance requirements that central IT teams set.\n\nFor a detailed discussion of the models, see [Review and compare common cloud operating models](/azure/cloud-adoption-framework/operating-model/compare).\n\nAs a workload owner, you should understand the operating model that your organization uses. That choice influences the technical decisions that you're accountable for and the technical requirements that you enforce for your central teams.\n\nTo make the most of Azure Virtual Desktop features and capabilities, you should take advantage of best practices that apply to organizations. The platform provides adaptability and flexibility, which helps your Azure Virtual Desktop environment accommodate future growth.\n\n> [!IMPORTANT]\n> This article is part of the [Azure Well-Architected Framework Azure Virtual Desktop workload](./index.yml) series. If you aren't familiar with this series, we recommend that you start with [What is an Azure Virtual Desktop workload?](./overview.md#what-is-an-azure-virtual-desktop-workload).\n\n## Azure landing zones\n\nAn Azure landing zone is a conceptual architecture that depicts the overall cloud footprint for an organization. It has multiple subscriptions, each with a unique purpose. Central teams own some of the subscriptions, such as *Azure platform landing zones*.\n\nTo familiarize yourself with the concept of Azure landing zones, see [What is an Azure landing zone?](/azure/cloud-adoption-framework/ready/landing-zone/).\n\n> [!IMPORTANT]\n> Azure Virtual Desktop has specific considerations and requirements, especially ones that are related to integrations with Azure services. The Azure Virtual Desktop landing zone accelerator and the Azure Well-Architected Framework guidance for Azure Virtual Desktop aim to highlight these necessary customizations. These resources also incorporate Cloud Adoption Framework perspectives for a holistic approach to cloud readiness.\n\n:::image type=\"content\" source=\"./images/azure-virtual-desktop-accelerator-baseline-architecture.png\" alt-text=\"Architecture diagram that shows the flow of traffic in a virtual desktop workload.\" border=\"false\" lightbox=\"./images/azure-virtual-desktop-accelerator-baseline-architecture.png\":::\n\n*Download a [Visio file](https://github.com/Azure/avdaccelerator/blob/main/workload/docs/diagrams/avd-accelerator-baseline-architecture.vsdx) of this architecture.*\n\n### Platform landing zones\n\nAzure Virtual Desktop needs to interact with multiple external services. Central teams might own some of these services as part of platform landing zones. Examples of these services include identity services, network connectivity, and security services. Interaction with these external services is a foundational concern. To be fully functional, an Azure Virtual Desktop workload needs the platform team and the workload team to share the same responsibility mindset.\n\nFor a demonstration of the platform landing zones that you need for an Azure Virtual Desktop workload to run, see [Azure landing zone review for Microsoft Azure Virtual Desktop](/azure/cloud-adoption-framework/scenarios/azure-virtual-desktop/enterprise-scale-landing-zone). This article describes a solid platform foundation that accelerates migration from an on-premises environment to an Azure Virtual Desktop private cloud.\n\n### Application landing zones\n\nThere's a separate subscription, which is also known as an *Azure application landing zone*, that's intended for workload owners. This application landing zone is where you deploy your Azure Virtual Desktop workload. It has access to platform landing zones that provide the basic infrastructure that you need to run your workload. Examples include networking, identity access management, policy, and monitoring infrastructure.\n\nGuidance about application landing zones applies to Azure Virtual Desktop workloads. For more information, see [Platform landing zones vs. application landing zones](/azure/cloud-adoption-framework/ready/landing-zone/#platform-landing-zones-vs-application-landing-zones). This guidance includes recommendations for efficiently governing and managing your workload.\n\nFor a demonstration of an application landing zone for an Azure Virtual Desktop workload, see the baseline reference architecture in [Example architectures for Azure Virtual Desktop](/azure/architecture/example-scenario/azure-virtual-desktop/azure-virtual-desktop).\n\n## Design area integration\n\nThis section highlights the solid foundation that the platform provides. The discussion also covers the areas of shared responsibility between the platform team and the workload team.\n\n### Platform responsibilities\n\nThe Azure Virtual Desktop platform team ensures that the infrastructure is ready for workload teams to build. Some common tasks include:\n\n- **Managing capacity** by setting subscription and regional quotas that are sufficient for deployment.\n- **Securing and optimizing connectivity** to on-premises systems, Azure, and the internet. This task includes routing, setting up firewall entries, and managing centralized network appliances.\n- **Managing Azure integrations**, such as integrations with Azure Storage, Azure Monitor, Log Analytics, Microsoft Entra ID, and Azure Key Vault.\n\n### Shared responsibilities\n\nThe workload team and the platform team have distinct responsibilities. But both teams often work closely together to ensure workload availability and recoverability. The teams coordinate efforts for the overall success of the workloads that run in Azure Virtual Desktop. Effective collaboration between the platform and application teams is vital for successfully deploying Azure Virtual Desktop.\n\nThe design areas of the platform and application landing zones are tightly coupled.\n\n- For a description of changes in platform resources that are needed for a workload, see [Azure Virtual Desktop Azure landing zone review](/azure/cloud-adoption-framework/scenarios/azure-virtual-desktop/ready).\n- For a description of the technical specification of a workload, see [What are the key design areas?](./overview.md#what-are-the-key-design-areas).\n\n#### Design area – Enterprise enrollment\n\nThe cloud platform team must understand existing enterprise enrollment or Microsoft Entra tenant decisions.\n\n#### Design area – Identity and access management (IAM)\n\nIdentity is critical to Azure Virtual Desktop functionality, because users must be authenticated in order to use the service. The platform team is responsible for designing an identity solution, which might involve Microsoft Entra ID, Microsoft Entra Domain Services, or Active Directory Domain Services (AD DS). The platform team also ensures that the Azure Virtual Desktop environment maintains a line of sight to identity services.\n\n| Platform team responsibilities | Workload team responsibilities |\n| --- | --- |\n| - Designing identity services for Microsoft Entra ID, Domain Services, AD DS, and Microsoft Entra Connect<br>- Using role-based access control (RBAC) to implement separation of duties<br>- Configuring Microsoft Entra Conditional Access policies<br>- Managing Active Directory organizational units and group policies | - Using RBAC assignments to control access to Azure Virtual Desktop sessions and infrastructure for management purposes |\n\n#### Design area - Networking and connectivity\n\nPlatform services connectivity is a key networking concept. The platform team is responsible for ensuring that the Azure Virtual Desktop environment has proper connectivity to:\n\n- Identity services for authentication.\n- The Domain Name System (DNS) for proper resolution.\n- Other workloads in a hybrid environment.\n\nPlatform team responsibilities include:\n\n- Configuring private endpoints and private DNS zones.\n- Ensuring that bandwidth, latency, and quality of service considerations are addressed.\n- Implementing network security policies.\n- Ensuring access to required internet endpoints.\n- Planning for business continuity and disaster recovery.\n\n#### Design area – Resource organization\n\nThe platform team responsibilities include structuring management groups and resource groups to simplify access management. This responsibility includes defining naming and tagging standards. The workload team ensures compliance with these standards.\n\n#### Design area – Management\n\n| Platform team responsibilities | Workload team responsibilities |\n| --- | --- |\n| - Planning for and developing a monitoring strategy<br>- Using Azure Policy to enforce enterprise-scale compliance<br>- Developing a cost management strategy | - Configuring the Azure Virtual Desktop deployment for monitoring<br>- Managing user access<br>- Monitoring Azure Virtual Desktop and collaborating with the platform team on monitoring needs<br>- Setting budgets and alerts<br>- Managing the user experience and support<br>- Ensuring compliance with platform and monitoring guidelines |\n\n#### Design area – Business continuity and disaster recovery\n\n| Platform team responsibilities | Workload team responsibilities |\n| --- | --- |\n| - Designing a business continuity and disaster recovery strategy, including establishing recovery point objective (RPO) and recovery time objective (RTO) targets<br>- Coordinating with the workload team to ensure business continuity and disaster recovery alignment | - Configuring Azure Virtual Desktop infrastructure and components to align with the business continuity and disaster recovery strategy<br>- Implementing disaster recovery procedures<br>- Training users on the appropriate use of Azure Virtual Desktop |\n\n#### Design area – Security and governance\n\n| Platform team responsibilities | Workload team responsibilities |\n| --- | --- |\n| - Understanding what the organization needs to comply with regulatory requirements like the Health Insurance Portability and Accountability Act (HIPAA), National Institute of Standards and Technology (NIST) standards, and Payment Card Industry (PCI) standards, and using Microsoft Defender for Cloud to apply compliance standards<br>- Ensuring that management plane resources are deployed in geographies in a way that meets data residency requirements<br>- Using Microsoft Entra Conditional Access policies and multifactor authentication to help secure user access<br>- Ensuring that a security information and event management (SIEM) tool like Microsoft Sentinel is used to collect and monitor user and administrator activity data<br>- Enabling threat and vulnerability management assessments, for instance, by integrating with Defender for Cloud or a third-party vulnerability management solution<br>- Configuring a firewall and using service tags and application security groups to define network access rules<br>- Creating a dedicated organizational unit in Active Directory for Azure Virtual Desktop session hosts<br>- Using Azure Policy guest configurations to audit and harden session host operating systems<br>- Enabling disk encryption<br>- Monitoring network traffic and implementing distributed denial-of-service (DDoS) protection | - Using the least-privileged access principle and Azure RBAC to establish administrative, operations, and engineering roles<br>- Applying a dedicated group policy to Azure Virtual Desktop organizational units<br>- Managing the patches and hardening of session hosts<br>- Monitoring and managing user activity |\n\n#### Design area – Platform automation and DevOps considerations\n\n| Platform team responsibilities | Workload team responsibilities |\n| --- | --- |\n| - Developing infrastructure as code (IaC) and DevOps strategies | - Creating images<br>- Maintaining an image build pipeline<br>- Updating host pools<br>- Installing applications<br>- Managing language deployments |\n\n#### Design area – Operational procedures\n\nOperational procedures help ensure the security of applications that run in Azure Virtual Desktop. Operational procedures also help in the area of access control.\n\n| Platform team responsibilities | Workload team responsibilities |\n| --- | --- |\n| Controlling access to the platform by defining user roles and permissions in the Azure Virtual Desktop environment | - Analyzing the performance and latency of Azure Virtual Desktop deployments for insights about possible areas of improvement<br>- Updating the operating system, applications, and FSLogix<br>- Managing keys<br>- Managing FSLogix and analyzing data to determine when to make adjustments |\n\n## Next steps\n\nUse the assessment tool to evaluate your design choices.\n\n> [!div class=\"nextstepaction\"]\n> [Assessment](./assessment.md)",
+  "headings": [
+    {
+      "level": 1,
+      "text": "Integrate an Azure Virtual Desktop workload with Azure landing zones",
+      "line": 1,
+      "path": [
+        "Integrate an Azure Virtual Desktop workload with Azure landing zones"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Azure landing zones",
+      "line": 16,
+      "path": [
+        "Integrate an Azure Virtual Desktop workload with Azure landing zones",
+        "Azure landing zones"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Platform landing zones",
+      "line": 29,
+      "path": [
+        "Integrate an Azure Virtual Desktop workload with Azure landing zones",
+        "Azure landing zones",
+        "Platform landing zones"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Application landing zones",
+      "line": 35,
+      "path": [
+        "Integrate an Azure Virtual Desktop workload with Azure landing zones",
+        "Azure landing zones",
+        "Application landing zones"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Design area integration",
+      "line": 43,
+      "path": [
+        "Integrate an Azure Virtual Desktop workload with Azure landing zones",
+        "Design area integration"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Platform responsibilities",
+      "line": 47,
+      "path": [
+        "Integrate an Azure Virtual Desktop workload with Azure landing zones",
+        "Design area integration",
+        "Platform responsibilities"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Shared responsibilities",
+      "line": 55,
+      "path": [
+        "Integrate an Azure Virtual Desktop workload with Azure landing zones",
+        "Design area integration",
+        "Shared responsibilities"
+      ]
+    },
+    {
+      "level": 4,
+      "text": "Design area – Enterprise enrollment",
+      "line": 64,
+      "path": [
+        "Integrate an Azure Virtual Desktop workload with Azure landing zones",
+        "Design area integration",
+        "Shared responsibilities",
+        "Design area – Enterprise enrollment"
+      ]
+    },
+    {
+      "level": 4,
+      "text": "Design area – Identity and access management (IAM)",
+      "line": 68,
+      "path": [
+        "Integrate an Azure Virtual Desktop workload with Azure landing zones",
+        "Design area integration",
+        "Shared responsibilities",
+        "Design area – Identity and access management (IAM)"
+      ]
+    },
+    {
+      "level": 4,
+      "text": "Design area - Networking and connectivity",
+      "line": 76,
+      "path": [
+        "Integrate an Azure Virtual Desktop workload with Azure landing zones",
+        "Design area integration",
+        "Shared responsibilities",
+        "Design area - Networking and connectivity"
+      ]
+    },
+    {
+      "level": 4,
+      "text": "Design area – Resource organization",
+      "line": 92,
+      "path": [
+        "Integrate an Azure Virtual Desktop workload with Azure landing zones",
+        "Design area integration",
+        "Shared responsibilities",
+        "Design area – Resource organization"
+      ]
+    },
+    {
+      "level": 4,
+      "text": "Design area – Management",
+      "line": 96,
+      "path": [
+        "Integrate an Azure Virtual Desktop workload with Azure landing zones",
+        "Design area integration",
+        "Shared responsibilities",
+        "Design area – Management"
+      ]
+    },
+    {
+      "level": 4,
+      "text": "Design area – Business continuity and disaster recovery",
+      "line": 102,
+      "path": [
+        "Integrate an Azure Virtual Desktop workload with Azure landing zones",
+        "Design area integration",
+        "Shared responsibilities",
+        "Design area – Business continuity and disaster recovery"
+      ]
+    },
+    {
+      "level": 4,
+      "text": "Design area – Security and governance",
+      "line": 108,
+      "path": [
+        "Integrate an Azure Virtual Desktop workload with Azure landing zones",
+        "Design area integration",
+        "Shared responsibilities",
+        "Design area – Security and governance"
+      ]
+    },
+    {
+      "level": 4,
+      "text": "Design area – Platform automation and DevOps considerations",
+      "line": 114,
+      "path": [
+        "Integrate an Azure Virtual Desktop workload with Azure landing zones",
+        "Design area integration",
+        "Shared responsibilities",
+        "Design area – Platform automation and DevOps considerations"
+      ]
+    },
+    {
+      "level": 4,
+      "text": "Design area – Operational procedures",
+      "line": 120,
+      "path": [
+        "Integrate an Azure Virtual Desktop workload with Azure landing zones",
+        "Design area integration",
+        "Shared responsibilities",
+        "Design area – Operational procedures"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Next steps",
+      "line": 128,
+      "path": [
+        "Integrate an Azure Virtual Desktop workload with Azure landing zones",
+        "Next steps"
+      ]
+    }
+  ],
+  "sections": [
+    {
+      "sectionOrder": 1,
+      "headingLevel": 1,
+      "headingText": "Integrate an Azure Virtual Desktop workload with Azure landing zones",
+      "headingPath": [
+        "Integrate an Azure Virtual Desktop workload with Azure landing zones"
+      ],
+      "markdown": "Migrating an organization's end-user desktops to the cloud is a common scenario in cloud migrations. Doing so helps improve employee productivity and accelerate the migration of various workloads to support the organization's user experience. Each organization manages workloads and operates its cloud environment uniquely. The common cloud operating models are *decentralized*, *centralized*, *enterprise*, and *distributed*.\n\nThe most important difference between the various models is the level of ownership. In the decentralized model, workload owners have autonomy without any central IT oversight for governance. For example, they manage their own networking, monitoring, and identity requirements. At the other end of the spectrum is the centralized model, where the workload owners adhere to the governance requirements that central IT teams set.\n\nFor a detailed discussion of the models, see [Review and compare common cloud operating models](/azure/cloud-adoption-framework/operating-model/compare).\n\nAs a workload owner, you should understand the operating model that your organization uses. That choice influences the technical decisions that you're accountable for and the technical requirements that you enforce for your central teams.\n\nTo make the most of Azure Virtual Desktop features and capabilities, you should take advantage of best practices that apply to organizations. The platform provides adaptability and flexibility, which helps your Azure Virtual Desktop environment accommodate future growth.\n\n> [!IMPORTANT]\n> This article is part of the [Azure Well-Architected Framework Azure Virtual Desktop workload](./index.yml) series. If you aren't familiar with this series, we recommend that you start with [What is an Azure Virtual Desktop workload?](./overview.md#what-is-an-azure-virtual-desktop-workload).",
+      "lineStart": 2,
+      "lineEnd": 15
+    },
+    {
+      "sectionOrder": 2,
+      "headingLevel": 2,
+      "headingText": "Azure landing zones",
+      "headingPath": [
+        "Integrate an Azure Virtual Desktop workload with Azure landing zones",
+        "Azure landing zones"
+      ],
+      "markdown": "An Azure landing zone is a conceptual architecture that depicts the overall cloud footprint for an organization. It has multiple subscriptions, each with a unique purpose. Central teams own some of the subscriptions, such as *Azure platform landing zones*.\n\nTo familiarize yourself with the concept of Azure landing zones, see [What is an Azure landing zone?](/azure/cloud-adoption-framework/ready/landing-zone/).\n\n> [!IMPORTANT]\n> Azure Virtual Desktop has specific considerations and requirements, especially ones that are related to integrations with Azure services. The Azure Virtual Desktop landing zone accelerator and the Azure Well-Architected Framework guidance for Azure Virtual Desktop aim to highlight these necessary customizations. These resources also incorporate Cloud Adoption Framework perspectives for a holistic approach to cloud readiness.\n\n:::image type=\"content\" source=\"./images/azure-virtual-desktop-accelerator-baseline-architecture.png\" alt-text=\"Architecture diagram that shows the flow of traffic in a virtual desktop workload.\" border=\"false\" lightbox=\"./images/azure-virtual-desktop-accelerator-baseline-architecture.png\":::\n\n*Download a [Visio file](https://github.com/Azure/avdaccelerator/blob/main/workload/docs/diagrams/avd-accelerator-baseline-architecture.vsdx) of this architecture.*",
+      "lineStart": 17,
+      "lineEnd": 28
+    },
+    {
+      "sectionOrder": 3,
+      "headingLevel": 3,
+      "headingText": "Platform landing zones",
+      "headingPath": [
+        "Integrate an Azure Virtual Desktop workload with Azure landing zones",
+        "Azure landing zones",
+        "Platform landing zones"
+      ],
+      "markdown": "Azure Virtual Desktop needs to interact with multiple external services. Central teams might own some of these services as part of platform landing zones. Examples of these services include identity services, network connectivity, and security services. Interaction with these external services is a foundational concern. To be fully functional, an Azure Virtual Desktop workload needs the platform team and the workload team to share the same responsibility mindset.\n\nFor a demonstration of the platform landing zones that you need for an Azure Virtual Desktop workload to run, see [Azure landing zone review for Microsoft Azure Virtual Desktop](/azure/cloud-adoption-framework/scenarios/azure-virtual-desktop/enterprise-scale-landing-zone). This article describes a solid platform foundation that accelerates migration from an on-premises environment to an Azure Virtual Desktop private cloud.",
+      "lineStart": 30,
+      "lineEnd": 34
+    },
+    {
+      "sectionOrder": 4,
+      "headingLevel": 3,
+      "headingText": "Application landing zones",
+      "headingPath": [
+        "Integrate an Azure Virtual Desktop workload with Azure landing zones",
+        "Azure landing zones",
+        "Application landing zones"
+      ],
+      "markdown": "There's a separate subscription, which is also known as an *Azure application landing zone*, that's intended for workload owners. This application landing zone is where you deploy your Azure Virtual Desktop workload. It has access to platform landing zones that provide the basic infrastructure that you need to run your workload. Examples include networking, identity access management, policy, and monitoring infrastructure.\n\nGuidance about application landing zones applies to Azure Virtual Desktop workloads. For more information, see [Platform landing zones vs. application landing zones](/azure/cloud-adoption-framework/ready/landing-zone/#platform-landing-zones-vs-application-landing-zones). This guidance includes recommendations for efficiently governing and managing your workload.\n\nFor a demonstration of an application landing zone for an Azure Virtual Desktop workload, see the baseline reference architecture in [Example architectures for Azure Virtual Desktop](/azure/architecture/example-scenario/azure-virtual-desktop/azure-virtual-desktop).",
+      "lineStart": 36,
+      "lineEnd": 42
+    },
+    {
+      "sectionOrder": 5,
+      "headingLevel": 2,
+      "headingText": "Design area integration",
+      "headingPath": [
+        "Integrate an Azure Virtual Desktop workload with Azure landing zones",
+        "Design area integration"
+      ],
+      "markdown": "This section highlights the solid foundation that the platform provides. The discussion also covers the areas of shared responsibility between the platform team and the workload team.",
+      "lineStart": 44,
+      "lineEnd": 46
+    },
+    {
+      "sectionOrder": 6,
+      "headingLevel": 3,
+      "headingText": "Platform responsibilities",
+      "headingPath": [
+        "Integrate an Azure Virtual Desktop workload with Azure landing zones",
+        "Design area integration",
+        "Platform responsibilities"
+      ],
+      "markdown": "The Azure Virtual Desktop platform team ensures that the infrastructure is ready for workload teams to build. Some common tasks include:\n\n- **Managing capacity** by setting subscription and regional quotas that are sufficient for deployment.\n- **Securing and optimizing connectivity** to on-premises systems, Azure, and the internet. This task includes routing, setting up firewall entries, and managing centralized network appliances.\n- **Managing Azure integrations**, such as integrations with Azure Storage, Azure Monitor, Log Analytics, Microsoft Entra ID, and Azure Key Vault.",
+      "lineStart": 48,
+      "lineEnd": 54
+    },
+    {
+      "sectionOrder": 7,
+      "headingLevel": 3,
+      "headingText": "Shared responsibilities",
+      "headingPath": [
+        "Integrate an Azure Virtual Desktop workload with Azure landing zones",
+        "Design area integration",
+        "Shared responsibilities"
+      ],
+      "markdown": "The workload team and the platform team have distinct responsibilities. But both teams often work closely together to ensure workload availability and recoverability. The teams coordinate efforts for the overall success of the workloads that run in Azure Virtual Desktop. Effective collaboration between the platform and application teams is vital for successfully deploying Azure Virtual Desktop.\n\nThe design areas of the platform and application landing zones are tightly coupled.\n\n- For a description of changes in platform resources that are needed for a workload, see [Azure Virtual Desktop Azure landing zone review](/azure/cloud-adoption-framework/scenarios/azure-virtual-desktop/ready).\n- For a description of the technical specification of a workload, see [What are the key design areas?](./overview.md#what-are-the-key-design-areas).",
+      "lineStart": 56,
+      "lineEnd": 63
+    },
+    {
+      "sectionOrder": 8,
+      "headingLevel": 4,
+      "headingText": "Design area – Enterprise enrollment",
+      "headingPath": [
+        "Integrate an Azure Virtual Desktop workload with Azure landing zones",
+        "Design area integration",
+        "Shared responsibilities",
+        "Design area – Enterprise enrollment"
+      ],
+      "markdown": "The cloud platform team must understand existing enterprise enrollment or Microsoft Entra tenant decisions.",
+      "lineStart": 65,
+      "lineEnd": 67
+    },
+    {
+      "sectionOrder": 9,
+      "headingLevel": 4,
+      "headingText": "Design area – Identity and access management (IAM)",
+      "headingPath": [
+        "Integrate an Azure Virtual Desktop workload with Azure landing zones",
+        "Design area integration",
+        "Shared responsibilities",
+        "Design area – Identity and access management (IAM)"
+      ],
+      "markdown": "Identity is critical to Azure Virtual Desktop functionality, because users must be authenticated in order to use the service. The platform team is responsible for designing an identity solution, which might involve Microsoft Entra ID, Microsoft Entra Domain Services, or Active Directory Domain Services (AD DS). The platform team also ensures that the Azure Virtual Desktop environment maintains a line of sight to identity services.\n\n| Platform team responsibilities | Workload team responsibilities |\n| --- | --- |\n| - Designing identity services for Microsoft Entra ID, Domain Services, AD DS, and Microsoft Entra Connect<br>- Using role-based access control (RBAC) to implement separation of duties<br>- Configuring Microsoft Entra Conditional Access policies<br>- Managing Active Directory organizational units and group policies | - Using RBAC assignments to control access to Azure Virtual Desktop sessions and infrastructure for management purposes |",
+      "lineStart": 69,
+      "lineEnd": 75
+    },
+    {
+      "sectionOrder": 10,
+      "headingLevel": 4,
+      "headingText": "Design area - Networking and connectivity",
+      "headingPath": [
+        "Integrate an Azure Virtual Desktop workload with Azure landing zones",
+        "Design area integration",
+        "Shared responsibilities",
+        "Design area - Networking and connectivity"
+      ],
+      "markdown": "Platform services connectivity is a key networking concept. The platform team is responsible for ensuring that the Azure Virtual Desktop environment has proper connectivity to:\n\n- Identity services for authentication.\n- The Domain Name System (DNS) for proper resolution.\n- Other workloads in a hybrid environment.\n\nPlatform team responsibilities include:\n\n- Configuring private endpoints and private DNS zones.\n- Ensuring that bandwidth, latency, and quality of service considerations are addressed.\n- Implementing network security policies.\n- Ensuring access to required internet endpoints.\n- Planning for business continuity and disaster recovery.",
+      "lineStart": 77,
+      "lineEnd": 91
+    },
+    {
+      "sectionOrder": 11,
+      "headingLevel": 4,
+      "headingText": "Design area – Resource organization",
+      "headingPath": [
+        "Integrate an Azure Virtual Desktop workload with Azure landing zones",
+        "Design area integration",
+        "Shared responsibilities",
+        "Design area – Resource organization"
+      ],
+      "markdown": "The platform team responsibilities include structuring management groups and resource groups to simplify access management. This responsibility includes defining naming and tagging standards. The workload team ensures compliance with these standards.",
+      "lineStart": 93,
+      "lineEnd": 95
+    },
+    {
+      "sectionOrder": 12,
+      "headingLevel": 4,
+      "headingText": "Design area – Management",
+      "headingPath": [
+        "Integrate an Azure Virtual Desktop workload with Azure landing zones",
+        "Design area integration",
+        "Shared responsibilities",
+        "Design area – Management"
+      ],
+      "markdown": "| Platform team responsibilities | Workload team responsibilities |\n| --- | --- |\n| - Planning for and developing a monitoring strategy<br>- Using Azure Policy to enforce enterprise-scale compliance<br>- Developing a cost management strategy | - Configuring the Azure Virtual Desktop deployment for monitoring<br>- Managing user access<br>- Monitoring Azure Virtual Desktop and collaborating with the platform team on monitoring needs<br>- Setting budgets and alerts<br>- Managing the user experience and support<br>- Ensuring compliance with platform and monitoring guidelines |",
+      "lineStart": 97,
+      "lineEnd": 101
+    },
+    {
+      "sectionOrder": 13,
+      "headingLevel": 4,
+      "headingText": "Design area – Business continuity and disaster recovery",
+      "headingPath": [
+        "Integrate an Azure Virtual Desktop workload with Azure landing zones",
+        "Design area integration",
+        "Shared responsibilities",
+        "Design area – Business continuity and disaster recovery"
+      ],
+      "markdown": "| Platform team responsibilities | Workload team responsibilities |\n| --- | --- |\n| - Designing a business continuity and disaster recovery strategy, including establishing recovery point objective (RPO) and recovery time objective (RTO) targets<br>- Coordinating with the workload team to ensure business continuity and disaster recovery alignment | - Configuring Azure Virtual Desktop infrastructure and components to align with the business continuity and disaster recovery strategy<br>- Implementing disaster recovery procedures<br>- Training users on the appropriate use of Azure Virtual Desktop |",
+      "lineStart": 103,
+      "lineEnd": 107
+    },
+    {
+      "sectionOrder": 14,
+      "headingLevel": 4,
+      "headingText": "Design area – Security and governance",
+      "headingPath": [
+        "Integrate an Azure Virtual Desktop workload with Azure landing zones",
+        "Design area integration",
+        "Shared responsibilities",
+        "Design area – Security and governance"
+      ],
+      "markdown": "| Platform team responsibilities | Workload team responsibilities |\n| --- | --- |\n| - Understanding what the organization needs to comply with regulatory requirements like the Health Insurance Portability and Accountability Act (HIPAA), National Institute of Standards and Technology (NIST) standards, and Payment Card Industry (PCI) standards, and using Microsoft Defender for Cloud to apply compliance standards<br>- Ensuring that management plane resources are deployed in geographies in a way that meets data residency requirements<br>- Using Microsoft Entra Conditional Access policies and multifactor authentication to help secure user access<br>- Ensuring that a security information and event management (SIEM) tool like Microsoft Sentinel is used to collect and monitor user and administrator activity data<br>- Enabling threat and vulnerability management assessments, for instance, by integrating with Defender for Cloud or a third-party vulnerability management solution<br>- Configuring a firewall and using service tags and application security groups to define network access rules<br>- Creating a dedicated organizational unit in Active Directory for Azure Virtual Desktop session hosts<br>- Using Azure Policy guest configurations to audit and harden session host operating systems<br>- Enabling disk encryption<br>- Monitoring network traffic and implementing distributed denial-of-service (DDoS) protection | - Using the least-privileged access principle and Azure RBAC to establish administrative, operations, and engineering roles<br>- Applying a dedicated group policy to Azure Virtual Desktop organizational units<br>- Managing the patches and hardening of session hosts<br>- Monitoring and managing user activity |",
+      "lineStart": 109,
+      "lineEnd": 113
+    },
+    {
+      "sectionOrder": 15,
+      "headingLevel": 4,
+      "headingText": "Design area – Platform automation and DevOps considerations",
+      "headingPath": [
+        "Integrate an Azure Virtual Desktop workload with Azure landing zones",
+        "Design area integration",
+        "Shared responsibilities",
+        "Design area – Platform automation and DevOps considerations"
+      ],
+      "markdown": "| Platform team responsibilities | Workload team responsibilities |\n| --- | --- |\n| - Developing infrastructure as code (IaC) and DevOps strategies | - Creating images<br>- Maintaining an image build pipeline<br>- Updating host pools<br>- Installing applications<br>- Managing language deployments |",
+      "lineStart": 115,
+      "lineEnd": 119
+    },
+    {
+      "sectionOrder": 16,
+      "headingLevel": 4,
+      "headingText": "Design area – Operational procedures",
+      "headingPath": [
+        "Integrate an Azure Virtual Desktop workload with Azure landing zones",
+        "Design area integration",
+        "Shared responsibilities",
+        "Design area – Operational procedures"
+      ],
+      "markdown": "Operational procedures help ensure the security of applications that run in Azure Virtual Desktop. Operational procedures also help in the area of access control.\n\n| Platform team responsibilities | Workload team responsibilities |\n| --- | --- |\n| Controlling access to the platform by defining user roles and permissions in the Azure Virtual Desktop environment | - Analyzing the performance and latency of Azure Virtual Desktop deployments for insights about possible areas of improvement<br>- Updating the operating system, applications, and FSLogix<br>- Managing keys<br>- Managing FSLogix and analyzing data to determine when to make adjustments |",
+      "lineStart": 121,
+      "lineEnd": 127
+    },
+    {
+      "sectionOrder": 17,
+      "headingLevel": 2,
+      "headingText": "Next steps",
+      "headingPath": [
+        "Integrate an Azure Virtual Desktop workload with Azure landing zones",
+        "Next steps"
+      ],
+      "markdown": "Use the assessment tool to evaluate your design choices.\n\n> [!div class=\"nextstepaction\"]\n> [Assessment](./assessment.md)",
+      "lineStart": 129,
+      "lineEnd": 133
+    }
+  ],
+  "localLinks": [
+    "./assessment.md",
+    "./index.yml",
+    "./overview.md"
+  ],
+  "lastModified": "2026-03-17T16:22:13.426Z"
+}

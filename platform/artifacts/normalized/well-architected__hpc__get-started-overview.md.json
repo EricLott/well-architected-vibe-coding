@@ -1,0 +1,172 @@
+{
+  "source": {
+    "absolutePath": "C:\\Users\\EricL\\source\\repos\\Well-Architected-Vibe-Coding\\well-architected-vibe-coding\\well-architected\\hpc\\get-started-overview.md",
+    "repoRelativePath": "well-architected/hpc/get-started-overview.md",
+    "docsRelativePath": "hpc/get-started-overview.md"
+  },
+  "frontMatter": {
+    "title": "HPC workloads on Azure",
+    "description": "Learn about architectural considerations, including common challenges and key design areas, for building and operating HPC workloads on Azure.",
+    "author": "padmalathas",
+    "ms.author": "padmalathas",
+    "ms.date": "03/10/2026",
+    "ms.topic": "concept-article",
+    "ms.update-cycle": "180-days"
+  },
+  "title": "HPC workloads on Azure",
+  "rawBody": "# HPC workloads on Azure\n\nThis article addresses architectural challenges of designing high-performance computing (HPC) workloads. It focuses on design strategies for all the characteristics of HPC workloads. The recommendations are based on Azure Well-Architected Framework principles and include insights from successful Azure HPC implementations on Azure.\n\nHPC workloads involve specialized roles such as computational scientists, researchers, and performance engineers. This article is meant for workload owners like engineers, specialized roles, technical stakeholders like architects, HPC administrators, development leads, and IT leaders.\n\n> [!NOTE]\n> Specific Azure services and their capabilities are not covered here. We recommend that you refer to the respective product documentation for that information.\n\n## What is an HPC workload?\n\nAn HPC workload is a class of computational tasks that require significantly more processing power, memory, and I/O throughput than a typical system can provide. These workloads are designed to handle compute‑intensive operations such as large‑scale simulations, modeling, or data analysis by leveraging parallel processing across multiple CPUs, GPUs, or nodes. \n\nConsider a pharmaceutical company designing a new drug. Researchers need to simulate how millions of molecular compounds interact with a target protein. Running these simulations on a standard computer would take years. With HPC, the work is distributed across thousands of processors working in parallel, completing the analysis in days. The workload requires specialized GPUs for molecular modeling, high-speed networks so processors can share results quickly, and fast storage systems that can feed data to all processors simultaneously.\n\nThis example illustrates the core HPC characteristics: massive parallelism, specialized hardware, high-speed data movement, and time-sensitive results. Whether you're simulating weather patterns, crash-testing vehicle designs, processing seismic data, or rendering visual effects, HPC workloads share these same fundamental needs.\n\nHPC workloads are capable of handling:\n\n- **Massive computational scale**: Process complex problems in hours or days that would take months or years on standard systems, accelerating research and innovation timelines.\n\n- **Parallel efficiency**: Distribute work across hundreds or thousands of compute resources simultaneously, enabling breakthrough discoveries in science and engineering.\n\n- **Specialized performance**: Leverage purpose-built hardware like GPUs and high-speed interconnects to achieve performance levels impossible with general-purpose infrastructure.\n\n- **Flexible resource allocation**: Scale resources dynamically to match workload demands, paying only for capacity when needed rather than maintaining idle infrastructure.\n\n\n## Common challenges\n\nWhile HPC offers greater computing capability, adopting or scaling HPC workloads requires addressing common challenges such as:\n\n- **Higher infrastructure costs**: Specialized hardware like high-core-count CPUs, GPUs, and low-latency networking (InfiniBand, RoCE) significantly increase resource expenses compared to standard compute.\n\n- **Operational complexity**: High operational complexity requires sophisticated workload managers (Slurm, PBS, LSF), parallel file systems, and specialized scheduling policies that demand expert knowledge to configure and maintain.\n\n- **Application constraints**: Many applications require substantial refactoring or rewriting to take advantage of parallel processing capabilities, creating development overhead.\n\n- **Storage demands**: Massive data volumes and concurrent access patterns necessitate expensive parallel file systems and high-IOPS storage that standard solutions cannot provide.\n\n- **Steep learning curve**: Teams need specialized skills in parallel programming (MPI, multi-threading), performance tuning, and HPC-specific technologies that are scarce and expensive to acquire.\n\nWhen you design an HPC workload your design methodology should always solve for the preceding challenges, for more information see [Design methodology for HPC workloads](hpc-design-methodology.md).\n\n\n## Broad HPC workload categories\n\nTo get the most value from this guidance, start by familiarizing yourself with the common HPC workload categories and identifying the one that best aligns with the solution you’re building.\n\n| Workload Type | Description | Use Case | Recommended |\n|-------------- | ----------- | -------- | ----------- |\n| Tightly coupled (constant communication) | All computers must constantly talk to each other while solving a problem. | Simulating how air flows around an aircraft wing, predicting tomorrow's weather, testing how a car crumples in a crash, or modeling how molecules interact in drug development. | Extremely fast network connections between computers, keeping computers physically close together, and specialized high-performance hardware. |\n| Loosely coupled (work independently) | Work divides into separate pieces that don't need to coordinate. | Running thousands of \"what-if\" scenarios for investment portfolios, rendering frames for animated movies, analyzing DNA sequences, or testing different design variations for a product. | Standard network connections are usually fine, can use lower-cost computing that might occasionally get interrupted, and can easily add more computers when needed. |\n| GPU-accelerated | Uses graphics processors because they're exceptionally good at doing millions of simple calculations at once. | Training AI systems, processing seismic data to find oil deposits, running chemistry simulations, analyzing medical images, or creating engineering visualizations. | Computers with powerful graphics processors, specialized software that knows how to use these processors, and storage systems fast enough to keep up with the processing speed. |\n| Memory-intensive | Must hold massive amounts of information in active memory simultaneously. | Assembling complete Genome sequences from fragments, running city-scale simulations, analyzing entire datasets in memory for instant queries, or processing real-time data from thousands of sensors. | Computers with exceptionally large memory capacity (often 1-4 terabytes), configurations that provide lots of memory per processor, and sometimes special settings to manage very large memory allocations. |\n| I/O-intensive (data bottleneck) | Spends more time reading and writing data than actually computing results. | Processing satellite imagery covering entire continents, converting massive video libraries between formats, analyzing years of system logs to find patterns, or processing genetic data from large population studies. | Storage systems that can read and write data extremely fast, file systems designed to handle many computers accessing data simultaneously, and strategies to keep data close to where it's being processed. |\n\nOn-premises HPC can be cost-effective for predictable, continuous workloads with existing infrastructure. Cloud HPC offers advantages for burst capacity, variable workloads, rapid provisioning, and access to current hardware. Key factors include pay-as-you-go pricing, on-demand scalability, geographic distribution, and faster time-to-solution. Many organizations adopt a hybrid approach—using on-premises for steady-state workloads and cloud for bursting.\n\n## How to use this guidance\n\n✔ **Start with [Design methodology](hpc-design-methodology.md)**, which outlines the rationale and recurring themes across technical and operational areas. This systematic approach helps to define requirements and design strategies. Revisit this methodology when you face uncertain choices to stay aligned with the workload's overall goals.\n\n✔ **Proceed to [Design principles](hpc-design-principles.md)** to see how the design methodology aligns with the core Well-Architected Framework pillars. Consider your growth trajectory and scaling needs. Evaluate the underlying principles for all pillars collectively, including the tradeoffs between performance, cost, security, and operational complexity.\n\n\n> [!TIP]\n> Every architectural decision involves a range of considerations and a set of acknowledged compromises that balance different aspects of the framework. These tradeoffs are indicated throughout the guidance with specific examples like cost versus performance, security versus usability, or simplicity versus flexibility.\n\n\n## Next steps\n\n- Review the Design methodology for HPC workloads to understand the systematic approach to HPC architecture.\n- Explore Design principles for HPC workloads to see how Well-Architected Framework pillars apply to HPC scenarios.\n- Deep dive into specific design areas most relevant to your workload requirements.\n- Complete the HPC workload assessment to evaluate your architecture and identify improvement opportunities.\n\n\n## Related resources\n\n- [Azure HPC documentation](/azure/architecture/topics/high-performance-computing)\n- [Azure CycleCloud](/azure/cyclecloud/)\n- [Azure Batch](/azure/batch/)\n- [Azure HPC VM sizes](/azure/virtual-machines/sizes-hpc)\n- [Azure high-performance storage options](/azure/architecture/guide/storage/storage-start-here)",
+  "headings": [
+    {
+      "level": 1,
+      "text": "HPC workloads on Azure",
+      "line": 1,
+      "path": [
+        "HPC workloads on Azure"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "What is an HPC workload?",
+      "line": 10,
+      "path": [
+        "HPC workloads on Azure",
+        "What is an HPC workload?"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Common challenges",
+      "line": 29,
+      "path": [
+        "HPC workloads on Azure",
+        "Common challenges"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Broad HPC workload categories",
+      "line": 46,
+      "path": [
+        "HPC workloads on Azure",
+        "Broad HPC workload categories"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "How to use this guidance",
+      "line": 60,
+      "path": [
+        "HPC workloads on Azure",
+        "How to use this guidance"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Next steps",
+      "line": 71,
+      "path": [
+        "HPC workloads on Azure",
+        "Next steps"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Related resources",
+      "line": 79,
+      "path": [
+        "HPC workloads on Azure",
+        "Related resources"
+      ]
+    }
+  ],
+  "sections": [
+    {
+      "sectionOrder": 1,
+      "headingLevel": 1,
+      "headingText": "HPC workloads on Azure",
+      "headingPath": [
+        "HPC workloads on Azure"
+      ],
+      "markdown": "This article addresses architectural challenges of designing high-performance computing (HPC) workloads. It focuses on design strategies for all the characteristics of HPC workloads. The recommendations are based on Azure Well-Architected Framework principles and include insights from successful Azure HPC implementations on Azure.\n\nHPC workloads involve specialized roles such as computational scientists, researchers, and performance engineers. This article is meant for workload owners like engineers, specialized roles, technical stakeholders like architects, HPC administrators, development leads, and IT leaders.\n\n> [!NOTE]\n> Specific Azure services and their capabilities are not covered here. We recommend that you refer to the respective product documentation for that information.",
+      "lineStart": 2,
+      "lineEnd": 9
+    },
+    {
+      "sectionOrder": 2,
+      "headingLevel": 2,
+      "headingText": "What is an HPC workload?",
+      "headingPath": [
+        "HPC workloads on Azure",
+        "What is an HPC workload?"
+      ],
+      "markdown": "An HPC workload is a class of computational tasks that require significantly more processing power, memory, and I/O throughput than a typical system can provide. These workloads are designed to handle compute‑intensive operations such as large‑scale simulations, modeling, or data analysis by leveraging parallel processing across multiple CPUs, GPUs, or nodes. \n\nConsider a pharmaceutical company designing a new drug. Researchers need to simulate how millions of molecular compounds interact with a target protein. Running these simulations on a standard computer would take years. With HPC, the work is distributed across thousands of processors working in parallel, completing the analysis in days. The workload requires specialized GPUs for molecular modeling, high-speed networks so processors can share results quickly, and fast storage systems that can feed data to all processors simultaneously.\n\nThis example illustrates the core HPC characteristics: massive parallelism, specialized hardware, high-speed data movement, and time-sensitive results. Whether you're simulating weather patterns, crash-testing vehicle designs, processing seismic data, or rendering visual effects, HPC workloads share these same fundamental needs.\n\nHPC workloads are capable of handling:\n\n- **Massive computational scale**: Process complex problems in hours or days that would take months or years on standard systems, accelerating research and innovation timelines.\n\n- **Parallel efficiency**: Distribute work across hundreds or thousands of compute resources simultaneously, enabling breakthrough discoveries in science and engineering.\n\n- **Specialized performance**: Leverage purpose-built hardware like GPUs and high-speed interconnects to achieve performance levels impossible with general-purpose infrastructure.\n\n- **Flexible resource allocation**: Scale resources dynamically to match workload demands, paying only for capacity when needed rather than maintaining idle infrastructure.",
+      "lineStart": 11,
+      "lineEnd": 28
+    },
+    {
+      "sectionOrder": 3,
+      "headingLevel": 2,
+      "headingText": "Common challenges",
+      "headingPath": [
+        "HPC workloads on Azure",
+        "Common challenges"
+      ],
+      "markdown": "While HPC offers greater computing capability, adopting or scaling HPC workloads requires addressing common challenges such as:\n\n- **Higher infrastructure costs**: Specialized hardware like high-core-count CPUs, GPUs, and low-latency networking (InfiniBand, RoCE) significantly increase resource expenses compared to standard compute.\n\n- **Operational complexity**: High operational complexity requires sophisticated workload managers (Slurm, PBS, LSF), parallel file systems, and specialized scheduling policies that demand expert knowledge to configure and maintain.\n\n- **Application constraints**: Many applications require substantial refactoring or rewriting to take advantage of parallel processing capabilities, creating development overhead.\n\n- **Storage demands**: Massive data volumes and concurrent access patterns necessitate expensive parallel file systems and high-IOPS storage that standard solutions cannot provide.\n\n- **Steep learning curve**: Teams need specialized skills in parallel programming (MPI, multi-threading), performance tuning, and HPC-specific technologies that are scarce and expensive to acquire.\n\nWhen you design an HPC workload your design methodology should always solve for the preceding challenges, for more information see [Design methodology for HPC workloads](hpc-design-methodology.md).",
+      "lineStart": 30,
+      "lineEnd": 45
+    },
+    {
+      "sectionOrder": 4,
+      "headingLevel": 2,
+      "headingText": "Broad HPC workload categories",
+      "headingPath": [
+        "HPC workloads on Azure",
+        "Broad HPC workload categories"
+      ],
+      "markdown": "To get the most value from this guidance, start by familiarizing yourself with the common HPC workload categories and identifying the one that best aligns with the solution you’re building.\n\n| Workload Type | Description | Use Case | Recommended |\n|-------------- | ----------- | -------- | ----------- |\n| Tightly coupled (constant communication) | All computers must constantly talk to each other while solving a problem. | Simulating how air flows around an aircraft wing, predicting tomorrow's weather, testing how a car crumples in a crash, or modeling how molecules interact in drug development. | Extremely fast network connections between computers, keeping computers physically close together, and specialized high-performance hardware. |\n| Loosely coupled (work independently) | Work divides into separate pieces that don't need to coordinate. | Running thousands of \"what-if\" scenarios for investment portfolios, rendering frames for animated movies, analyzing DNA sequences, or testing different design variations for a product. | Standard network connections are usually fine, can use lower-cost computing that might occasionally get interrupted, and can easily add more computers when needed. |\n| GPU-accelerated | Uses graphics processors because they're exceptionally good at doing millions of simple calculations at once. | Training AI systems, processing seismic data to find oil deposits, running chemistry simulations, analyzing medical images, or creating engineering visualizations. | Computers with powerful graphics processors, specialized software that knows how to use these processors, and storage systems fast enough to keep up with the processing speed. |\n| Memory-intensive | Must hold massive amounts of information in active memory simultaneously. | Assembling complete Genome sequences from fragments, running city-scale simulations, analyzing entire datasets in memory for instant queries, or processing real-time data from thousands of sensors. | Computers with exceptionally large memory capacity (often 1-4 terabytes), configurations that provide lots of memory per processor, and sometimes special settings to manage very large memory allocations. |\n| I/O-intensive (data bottleneck) | Spends more time reading and writing data than actually computing results. | Processing satellite imagery covering entire continents, converting massive video libraries between formats, analyzing years of system logs to find patterns, or processing genetic data from large population studies. | Storage systems that can read and write data extremely fast, file systems designed to handle many computers accessing data simultaneously, and strategies to keep data close to where it's being processed. |\n\nOn-premises HPC can be cost-effective for predictable, continuous workloads with existing infrastructure. Cloud HPC offers advantages for burst capacity, variable workloads, rapid provisioning, and access to current hardware. Key factors include pay-as-you-go pricing, on-demand scalability, geographic distribution, and faster time-to-solution. Many organizations adopt a hybrid approach—using on-premises for steady-state workloads and cloud for bursting.",
+      "lineStart": 47,
+      "lineEnd": 59
+    },
+    {
+      "sectionOrder": 5,
+      "headingLevel": 2,
+      "headingText": "How to use this guidance",
+      "headingPath": [
+        "HPC workloads on Azure",
+        "How to use this guidance"
+      ],
+      "markdown": "✔ **Start with [Design methodology](hpc-design-methodology.md)**, which outlines the rationale and recurring themes across technical and operational areas. This systematic approach helps to define requirements and design strategies. Revisit this methodology when you face uncertain choices to stay aligned with the workload's overall goals.\n\n✔ **Proceed to [Design principles](hpc-design-principles.md)** to see how the design methodology aligns with the core Well-Architected Framework pillars. Consider your growth trajectory and scaling needs. Evaluate the underlying principles for all pillars collectively, including the tradeoffs between performance, cost, security, and operational complexity.\n\n\n> [!TIP]\n> Every architectural decision involves a range of considerations and a set of acknowledged compromises that balance different aspects of the framework. These tradeoffs are indicated throughout the guidance with specific examples like cost versus performance, security versus usability, or simplicity versus flexibility.",
+      "lineStart": 61,
+      "lineEnd": 70
+    },
+    {
+      "sectionOrder": 6,
+      "headingLevel": 2,
+      "headingText": "Next steps",
+      "headingPath": [
+        "HPC workloads on Azure",
+        "Next steps"
+      ],
+      "markdown": "- Review the Design methodology for HPC workloads to understand the systematic approach to HPC architecture.\n- Explore Design principles for HPC workloads to see how Well-Architected Framework pillars apply to HPC scenarios.\n- Deep dive into specific design areas most relevant to your workload requirements.\n- Complete the HPC workload assessment to evaluate your architecture and identify improvement opportunities.",
+      "lineStart": 72,
+      "lineEnd": 78
+    },
+    {
+      "sectionOrder": 7,
+      "headingLevel": 2,
+      "headingText": "Related resources",
+      "headingPath": [
+        "HPC workloads on Azure",
+        "Related resources"
+      ],
+      "markdown": "- [Azure HPC documentation](/azure/architecture/topics/high-performance-computing)\n- [Azure CycleCloud](/azure/cyclecloud/)\n- [Azure Batch](/azure/batch/)\n- [Azure HPC VM sizes](/azure/virtual-machines/sizes-hpc)\n- [Azure high-performance storage options](/azure/architecture/guide/storage/storage-start-here)",
+      "lineStart": 80,
+      "lineEnd": 85
+    }
+  ],
+  "localLinks": [
+    "hpc-design-methodology.md",
+    "hpc-design-principles.md"
+  ],
+  "lastModified": "2026-03-17T16:22:13.491Z"
+}

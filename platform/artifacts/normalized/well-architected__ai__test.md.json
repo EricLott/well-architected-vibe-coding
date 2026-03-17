@@ -1,0 +1,353 @@
+{
+  "source": {
+    "absolutePath": "C:\\Users\\EricL\\source\\repos\\Well-Architected-Vibe-Coding\\well-architected-vibe-coding\\well-architected\\ai\\test.md",
+    "repoRelativePath": "well-architected/ai/test.md",
+    "docsRelativePath": "ai/test.md"
+  },
+  "frontMatter": {
+    "title": "Test and Evaluate AI Workloads on Azure",
+    "description": "Learn about AI workload testing operations and metrics that help you maintain the quality of your workload on Azure.",
+    "author": "PageWriter-MSFT",
+    "ms.author": "prwilk",
+    "ms.date": "08/27/2025",
+    "ms.topic": "concept-article",
+    "ms.update-cycle": "180-days"
+  },
+  "title": "Test and Evaluate AI Workloads on Azure",
+  "rawBody": "# Test and evaluate AI workloads on Azure\nThis article focuses on two distinct aspects: evaluating the models and testing the entire system. Evaluation and testing are often used interchangeably, but they should be considered separate processes that use distinct datasets. \n\n_Evaluation_ is an iterative activity that you do during the development phase. It focuses on experimentation to find the best model with the right level of tuning. Then, evaluate the model based on various metrics.\n\n_Testing_ includes verifying the entire system when a change is introduced, including the tuned model and non-AI components. The goal is to validate whether the workload meets identified targets and fulfills user expectations. It's also a non‑negotiable change management strategy that prevents quality regressions.\n\nBoth practices are coupled in actual implementation. The entire process includes sending requests to the model, evaluating its responses, and making a go or no-go decision based on the test data. While the process is non‑negotiable before production, we recommend that you conduct the process in production using a mix of real and synthetic data.\n\nThe primary focus here is on solutions built using generative AI, particularly scenarios using foundation models. For guidance applicable to training and fine-tuning models, skip ahead to [Guidance for testing model training and fine-tuning](#guidance-for-testing-model-training-and-fine-tuning).\n\n## Use quality metrics for model evaluation\n\nEstablish a baseline and measure model quality by using metrics that align with your business goals. \n\nHave processes that evaluate and quantify results of the user experience against a set of metrics. For instance, *Groundedness* evaluates whether a generative model's response is supported by the provided context, rather than fabricated. Suppose a legal firm develops an AI assistant that cites statutes. Without proper validation, it could draw from outdated or misclassified documents, resulting in serious consequences. A high groundedness score helps ensure that the model's output remains aligned with trusted source material.\n\nSelect and prioritize metrics based on your specific use case, monitor them continuously, and use them as decision gates for model tuning and deployment. Avoid relying on a single metric, use a combination to capture different dimensions of quality. For example, even if a model demonstrates strong groundedness, it may still produce biased outputs. Incorporate fairness evaluations for more balanced and responsible outcomes.\n\nFor information about metrics, see [Monitoring evaluation metrics descriptions and use cases](/azure/machine-learning/prompt-flow/concept-model-monitoring-generative-ai-evaluation-metrics).\n\n\n## Use the right data for evaluation\n\nRefine your model through an iterative process using evaluation data. This dataset, often referred to as the _golden dataset_ consists of trusted input-output pairs, typically created or validated by humans. It serves as the objective benchmark to assess model performance against defined quality metrics.\n\nEnsure the dataset is representative of the domain or task, with diverse, high-quality examples and minimal noise. A limited sample size can lead to poor evaluation quality, so consider generating synthetic data when the sample data lacks sufficient diversity or coverage to improve balance and completeness.\n\n\n## Validate agentic workflows \n\nAs architectures are evolving to use AI, functionality that was once handled by deterministic code is now offloaded to *AI agents*. These agents make decisions often with dynamic behavior.\n\nConsider an agentic application where the *orchestrator* itself is implemented as an agent. Unlike traditional orchestration, agents can invoke tools, interpret prompts, collaborate with other agents, and adapt in real time, making them more flexible, but harder to validate.\n\nThis type of architecture introduces new challenges for testing and evaluation. Because agents operate non-deterministically, traditional static tests are insufficient. Testing strategy should validate the complete flow from user input to final response, including *grounding data* retrieval, tool invocation, and response generation. For example, \n\n- **Verify that agents are calling external tools, APIs, and other agents correctly.** Use mock dependencies to validate that data is passed correctly. Simulate tool or agent failures to test reliability in behavior.\n\n- **Design scenario-based tests using predefined prompts and expected outputs.** Because outputs may vary, evaluate results using automated scoring with another model. Also use human-based review, especially for sensitive or subjective tasks.\n\n- **Integrate content safety tools to detect harmful, biased, or inappropriate outputs.** Include red teaming exercises to identify unexpected behaviors or jailbreak vulnerabilities. Monitor for fairness, transparency, and compliance with ethical standards.\n\nFrom a tooling perspective, consider [Azure AI Evaluation SDK](/azure/ai-foundry/how-to/develop/agent-evaluate-sdk), which supports checks like:\n\n- Intent resolution: Does the agent/orchestrator correctly understand the user's request?\n- Tool call accuracy: Are the correct tools called, with the right parameters?\n- Task adherence: Does the final output align with the assigned task and prior reasoning steps?\n\nIn addition, conduct regular performance and load testing. Assess the agent's ability to scale under concurrent requests, handle long execution paths, and manage interactions across multiple agents. Continuously monitor for regressions in both logic and performance as the system evolves through iterative releases.\n\n### Test the security aspects\n\nSecure agentic workflows by controlling access, validating all inputs, and monitoring agent behavior to prevent misuse or unintended actions.\n\n- **Jailbreak testing.** Always test for jailbreak attempts. Attackers typically target the orchestration layer first, which parses and forwards requests to the model. If malicious inputs aren't filtered, they can compromise model behavior.\n\n- **Content safety.** In chat-based applications, run both user prompts and grounding context through a content safety service. \n\n- **Endpoint security.** For RESTful interfaces, enforce strong authentication and thoroughly test security controls to prevent unauthorized access.\n\nThere are other open source libraries available such as Scikit-learn, PyTorch's torch.testing module, FairML for bias and fairness testing, and TensorFlow Model Analysis for model evaluation.\n\n> :::image type=\"icon\" source=\"../_images/trade-off.svg\"::: **Tradeoff.** Testing this code has cost implications. For example, if you use Azure OpenAI to host your inference endpoint, stress testing is a common practice that can help you determine the system's limits. However, Azure OpenAI charges for every call, which can make extensive stress testing expensive. One way to optimize charges is to use unused PTUs of Azure OpenAI in a test environment. Alternatively, you can simulate the inference endpoint by using tools like [Dev Proxy](/microsoft-cloud/dev/dev-proxy/how-to/simulate-azure-openai).\n\n\n### Test the deterministic behavior\n\nIn some architectures, you might use deterministic logic to enable orchestration. For example, instead of a non-deterministic agent orchestrator, you can choose to have an orchestrator that uses static code to manage the execution flow, such as interpreting user intent, querying the index for grounding data, and calling the model *inference endpoint*. \n\nFrom a testing perspective, treat this code like any critical system component: run performance, reliability, and functional tests, especially on its routing logic. Apply unit testing to deterministic components, especially if you're using agent frameworks like [Microsoft's Semantic Kernel](/semantic-kernel/overview/) or LangChain. These tests validate prompt templates, tool selection logic, data formatting, and decision trees, isolated from runtime variability.\n\n\n## Test the inference endpoint \n\nInference endpoints expose your generative models through REST APIs and must be tested beyond just model accuracy. Whether you're using PaaS platforms or self-hosted servers, test the endpoint like any other endpoint to ensure reliability, scalability, and security.\n\n- **Functional and integration testing.** Validate request handling, response structure, and integration with other components.\n\n- **Performance and load testing.** Simulate realistic conditions to evaluate throughput, latency, and resource usage. For PaaS inference endpoints, focus on token-level metrics (tokens/sec or tokens/min), which are more meaningful than traditional request sizes of REST APIs.\n\n- **Scaling and GPU optimization.** Test under varying load to determine the right GPU SKU or autoscaling configuration. Avoid overprovisioning by monitoring actual GPU usage.\n\n   > :::image type=\"icon\" source=\"../_images/trade-off.svg\"::: **Trade-off.** GPU SKUs are expensive. It's important to continuously check whether GPU resources are underused and rightsize them, when possible. After you make adjustments, test resource usage to maintain the balance between cost efficiency and performance optimization. \n\n- **Failure handling.** Simulate throttling, like HTTP 429 errors, backend timeouts, and service unavailability. Validate that your client handles retries, backoff, and circuit breaking appropriately.\n\n- **Security and content safety.** For public or self-hosted endpoints, perform penetration tests and validate access controls. Use content moderation tools like Azure AI Content Safety to test and filter unsafe input/output.\n\n\n## Test the grounding data workflow\n\nThe relevance of a generative AI model depends on the quality and integrity of its *grounding data*. Grounding data can be seeded to the model by using data processing pipelines. This data is preprocessed, chunked, and indexed before reaching the model. The model queries the index in real time during user interaction, making indexing performance and accuracy critical to the user experience. Integrate testing early and maintain it throughout the system lifecycle.\n\nPoorly tested data pipelines can lead to inconsistent results and cross-cutting concerns like security breaches. To ensure a high-quality experience, test the entire data flow, including source documents, preprocessing, orchestration logic, and the index itself. Key testing considerations include:\n\n- **Functional and integration testing.** Validate that all data loads correctly and completely. Ensure the pipeline handles missing, empty, or synthetic data as expected.\n\n- **Index schema compatibility.** Test schema changes to ensure backward compatibility. Any field or document changes must preserve support for older data formats.\n\n- **Preprocessing and orchestration testing.** Grounding data preparation involves preprocessing, chunking, and embedding computation, often orchestrated by tools like Azure AI Search skill sets. Test the orchestration pipeline to ensure all steps execute correctly and the resulting data is accurate and relevant.\n\n- **Data freshness and quality checks.** Include tests for stale data, versioning mismatches, synthetic artifacts, and empty or partial tables. Update queries or index settings as needed to reflect the most current and clean data.\n\n- **Index load testing.** Indexes can behave differently under varying loads. Test query performance against realistic usage scenarios to inform decisions about scaling, compute SKUs, and storage requirements.\n\n- **Security testing.** If documents are partitioned with access controls, rigorously test those controls. Ensure that each user or role only accesses permitted content to maintain confidentiality and compliance.\n\n\n## Guidance for testing model training and fine-tuning\n\nSimilar to generative AI models, use various types of tests at different stages of the development life cycle and across different system components and flows. As much as practical, develop workload assets with testing in mind. For instance, when you perform data manipulation and reshape source data for feature engineering, adhere to good coding practices and ensure that you structure the code to support testing.\n\n### Evaluate the model\n\nApply a baselining strategy during model training to measure and compare model quality. Evaluate the performance of various combinations of models, parameters, and features by using well-defined metrics. These metrics provide objective, data-driven scores that you can iteratively compare across versions and configurations to identify the best-performing model. \n\nFor more information, see [Regression/forecasting metrics](/azure/machine-learning/how-to-understand-automated-ml#regressionforecasting-metrics). \n\n### Data to evaluate and test\n\nPartition source data into three distinct datasets: training, evaluation, and testing. Use the training dataset to build the model, the evaluation dataset to tune it, and the test dataset to validate final performance. \n\nEnsure each dataset contains high-quality data to reduce noise. Use test cases in data pipelines to enforce quality, and supplement with synthetic data when real samples are limited, in domains like fraud detection, where real fraud instances are rare and provide limited data for training reliable models.\n\nKeep all datasets separate and non-overlapping to maintain objectivity and prevent bias in predictions. Don't reuse training data for evaluation or evaluation data for testing. \n\n### Testing the training and fine-tuning workflow\n\n- **Data pipeline technologies.** Combine functional, load, and performance tests using synthetic data to assess scalability and make informed decisions about sizing or product suitability, required SKUs, and system integration.\n\n- **Ingestion workflow.** Test ETL/ELT pipelines end-to-end to make sure that they ingest data reliably and that the data is high quality.  Also, test integration with all connected systems and monitor external dependencies. Use synthetic data to validate end-to-end processing, particularly for complex or high-volume workloads.\n\n   Test scheduled jobs to validate that ingestion tasks complete on time and return expected volumes.\n\n- **Data quality on ingestion.** Verify that data cleansing and processing include tests to confirm that data manipulation functions as intended. Include checks for completeness, freshness, schema consistency, uniqueness, and relevance. Also verify that structured data is ingested without duplicates, missing values, or invalid entries.\n\n- **Feature and label integrity.** Validate that features are correctly calculated and labels accurately assigned, especially when using complex rules. Check for data leakage to prevent future or label-derived information from contaminating training data. Also, verify that data splits are appropriate to avoid biased or overlapping samples because even subtle leakage can harm model performance.\n\n- **Hyperparameter testing.** Hyperparameter testing is an iterative process where model parameters are tuned to meet accuracy goals based on your workload's use case. This involves repeatedly training on selected data and evaluating on test data to validate performance. Start with a smaller dataset to quickly assess model behavior, then scale testing to the full set. Be mindful of the trade-off between model accuracy and the computational cost and time required for repeated training and evaluation.\n\n- **Code quality.** When training models using custom code, like with PyTorch script, run load tests during the design phase to evaluate compute requirements and select appropriate SKUs. Use unit tests to catch regressions during development, and rely on manual testing when automation isn't feasible. Since these scripts run within workflows, add integration tests to verify that scripts are executed reliably within the pipeline.\n\n- **Inference endpoint.** This REST API provides access to the trained machine learning model for making predictions. The model is deployed to an environment with an endpoint that can receive real-time or batch input data, process it, and return predictions. Like any other API, make sure that the inference endpoint undergoes functional, performance, and security testing validate that it returns accurate results, handles expected load, and remains secure against misuse.\n\n- **Live-site testing.** Extend functional testing into the live system. Run scheduled tests to validate data volumes, detect missing or duplicate records, and confirm data freshness. Use synthetic data to safely validate end-to-end transformations and logic under production conditions. Incorporate A/B tests to evaluate new experiences and prevent quality regressions before full deployment. Configure alerting to trigger immediate investigation when tests fail.\n\nIntegrate data testing into CI/CD pipelines by automating unit and functional tests, especially during code changes or pipeline updates. Add quality checks before retraining, and use side-by-side deployments to safely test in production. Set up alerting for test failures or ingestion anomalies.\n\n> [!NOTE]\n> Testing and monitoring serve different purposes. Conduct tests to evaluate potential changes to the system, typically before you implement any changes. Conduct monitoring continuously to assess the overall health of the system.\n\n### Testing for model decay\n\nAll models degrade over time due to internal and external changes in the workload. This decline in model quality, known as model decay, can occur in two ways:\n\n- **Data drift** happens when input data changes, making the model outdated. For example, a model that predicts voting patterns becomes irrelevant because of demographic shifts after redistricting. \n\n- **Concept drift** occurs when external conditions change, causing the model's predictions to no longer reflect reality. For example, a model that predicts sales trends becomes irrelevant because there's a change in consumer behavior after a competitor launches a new product.\n\nTo detect decay, use automated testing to compare predictions against actual outcomes, and monitor for drift using statistical metrics. User feedback, for example using thumbs up/down, is also a valuable signal for identifying issues. When potential decay is detected, the operations team should alert data scientists to investigate and determine root causes and next steps.\n\n\n### Test tools\n\nConsider these Azure resources:\n\n- [Azure Machine Learning data collector](/azure/machine-learning/concept-data-collection) for real-time logging of input/output data for models deployed to managed or Kubernetes online endpoints.\n\n- [Azure Machine Learning Model Monitoring](/azure/machine-learning/concept-model-monitoring) for automated monitoring by comparing real-time inference data with reference datasets to track drift and other performance metrics. See the [best practices](/azure/machine-learning/concept-model-monitoring#best-practices-for-model-monitoring) for more recommendations.\n\n\n## Next steps\n\n> [!div class=\"nextstepaction\"]\n> [Design area: Responsible AI](./responsible-ai.md)",
+  "headings": [
+    {
+      "level": 1,
+      "text": "Test and evaluate AI workloads on Azure",
+      "line": 1,
+      "path": [
+        "Test and evaluate AI workloads on Azure"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Use quality metrics for model evaluation",
+      "line": 12,
+      "path": [
+        "Test and evaluate AI workloads on Azure",
+        "Use quality metrics for model evaluation"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Use the right data for evaluation",
+      "line": 23,
+      "path": [
+        "Test and evaluate AI workloads on Azure",
+        "Use the right data for evaluation"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Validate agentic workflows",
+      "line": 30,
+      "path": [
+        "Test and evaluate AI workloads on Azure",
+        "Validate agentic workflows"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Test the security aspects",
+      "line": 52,
+      "path": [
+        "Test and evaluate AI workloads on Azure",
+        "Validate agentic workflows",
+        "Test the security aspects"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Test the deterministic behavior",
+      "line": 67,
+      "path": [
+        "Test and evaluate AI workloads on Azure",
+        "Validate agentic workflows",
+        "Test the deterministic behavior"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Test the inference endpoint",
+      "line": 74,
+      "path": [
+        "Test and evaluate AI workloads on Azure",
+        "Test the inference endpoint"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Test the grounding data workflow",
+      "line": 91,
+      "path": [
+        "Test and evaluate AI workloads on Azure",
+        "Test the grounding data workflow"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Guidance for testing model training and fine-tuning",
+      "line": 110,
+      "path": [
+        "Test and evaluate AI workloads on Azure",
+        "Guidance for testing model training and fine-tuning"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Evaluate the model",
+      "line": 114,
+      "path": [
+        "Test and evaluate AI workloads on Azure",
+        "Guidance for testing model training and fine-tuning",
+        "Evaluate the model"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Data to evaluate and test",
+      "line": 120,
+      "path": [
+        "Test and evaluate AI workloads on Azure",
+        "Guidance for testing model training and fine-tuning",
+        "Data to evaluate and test"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Testing the training and fine-tuning workflow",
+      "line": 128,
+      "path": [
+        "Test and evaluate AI workloads on Azure",
+        "Guidance for testing model training and fine-tuning",
+        "Testing the training and fine-tuning workflow"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Testing for model decay",
+      "line": 153,
+      "path": [
+        "Test and evaluate AI workloads on Azure",
+        "Guidance for testing model training and fine-tuning",
+        "Testing for model decay"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Test tools",
+      "line": 164,
+      "path": [
+        "Test and evaluate AI workloads on Azure",
+        "Guidance for testing model training and fine-tuning",
+        "Test tools"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Next steps",
+      "line": 173,
+      "path": [
+        "Test and evaluate AI workloads on Azure",
+        "Next steps"
+      ]
+    }
+  ],
+  "sections": [
+    {
+      "sectionOrder": 1,
+      "headingLevel": 1,
+      "headingText": "Test and evaluate AI workloads on Azure",
+      "headingPath": [
+        "Test and evaluate AI workloads on Azure"
+      ],
+      "markdown": "This article focuses on two distinct aspects: evaluating the models and testing the entire system. Evaluation and testing are often used interchangeably, but they should be considered separate processes that use distinct datasets. \n\n_Evaluation_ is an iterative activity that you do during the development phase. It focuses on experimentation to find the best model with the right level of tuning. Then, evaluate the model based on various metrics.\n\n_Testing_ includes verifying the entire system when a change is introduced, including the tuned model and non-AI components. The goal is to validate whether the workload meets identified targets and fulfills user expectations. It's also a non‑negotiable change management strategy that prevents quality regressions.\n\nBoth practices are coupled in actual implementation. The entire process includes sending requests to the model, evaluating its responses, and making a go or no-go decision based on the test data. While the process is non‑negotiable before production, we recommend that you conduct the process in production using a mix of real and synthetic data.\n\nThe primary focus here is on solutions built using generative AI, particularly scenarios using foundation models. For guidance applicable to training and fine-tuning models, skip ahead to [Guidance for testing model training and fine-tuning](#guidance-for-testing-model-training-and-fine-tuning).",
+      "lineStart": 2,
+      "lineEnd": 11
+    },
+    {
+      "sectionOrder": 2,
+      "headingLevel": 2,
+      "headingText": "Use quality metrics for model evaluation",
+      "headingPath": [
+        "Test and evaluate AI workloads on Azure",
+        "Use quality metrics for model evaluation"
+      ],
+      "markdown": "Establish a baseline and measure model quality by using metrics that align with your business goals. \n\nHave processes that evaluate and quantify results of the user experience against a set of metrics. For instance, *Groundedness* evaluates whether a generative model's response is supported by the provided context, rather than fabricated. Suppose a legal firm develops an AI assistant that cites statutes. Without proper validation, it could draw from outdated or misclassified documents, resulting in serious consequences. A high groundedness score helps ensure that the model's output remains aligned with trusted source material.\n\nSelect and prioritize metrics based on your specific use case, monitor them continuously, and use them as decision gates for model tuning and deployment. Avoid relying on a single metric, use a combination to capture different dimensions of quality. For example, even if a model demonstrates strong groundedness, it may still produce biased outputs. Incorporate fairness evaluations for more balanced and responsible outcomes.\n\nFor information about metrics, see [Monitoring evaluation metrics descriptions and use cases](/azure/machine-learning/prompt-flow/concept-model-monitoring-generative-ai-evaluation-metrics).",
+      "lineStart": 13,
+      "lineEnd": 22
+    },
+    {
+      "sectionOrder": 3,
+      "headingLevel": 2,
+      "headingText": "Use the right data for evaluation",
+      "headingPath": [
+        "Test and evaluate AI workloads on Azure",
+        "Use the right data for evaluation"
+      ],
+      "markdown": "Refine your model through an iterative process using evaluation data. This dataset, often referred to as the _golden dataset_ consists of trusted input-output pairs, typically created or validated by humans. It serves as the objective benchmark to assess model performance against defined quality metrics.\n\nEnsure the dataset is representative of the domain or task, with diverse, high-quality examples and minimal noise. A limited sample size can lead to poor evaluation quality, so consider generating synthetic data when the sample data lacks sufficient diversity or coverage to improve balance and completeness.",
+      "lineStart": 24,
+      "lineEnd": 29
+    },
+    {
+      "sectionOrder": 4,
+      "headingLevel": 2,
+      "headingText": "Validate agentic workflows",
+      "headingPath": [
+        "Test and evaluate AI workloads on Azure",
+        "Validate agentic workflows"
+      ],
+      "markdown": "As architectures are evolving to use AI, functionality that was once handled by deterministic code is now offloaded to *AI agents*. These agents make decisions often with dynamic behavior.\n\nConsider an agentic application where the *orchestrator* itself is implemented as an agent. Unlike traditional orchestration, agents can invoke tools, interpret prompts, collaborate with other agents, and adapt in real time, making them more flexible, but harder to validate.\n\nThis type of architecture introduces new challenges for testing and evaluation. Because agents operate non-deterministically, traditional static tests are insufficient. Testing strategy should validate the complete flow from user input to final response, including *grounding data* retrieval, tool invocation, and response generation. For example, \n\n- **Verify that agents are calling external tools, APIs, and other agents correctly.** Use mock dependencies to validate that data is passed correctly. Simulate tool or agent failures to test reliability in behavior.\n\n- **Design scenario-based tests using predefined prompts and expected outputs.** Because outputs may vary, evaluate results using automated scoring with another model. Also use human-based review, especially for sensitive or subjective tasks.\n\n- **Integrate content safety tools to detect harmful, biased, or inappropriate outputs.** Include red teaming exercises to identify unexpected behaviors or jailbreak vulnerabilities. Monitor for fairness, transparency, and compliance with ethical standards.\n\nFrom a tooling perspective, consider [Azure AI Evaluation SDK](/azure/ai-foundry/how-to/develop/agent-evaluate-sdk), which supports checks like:\n\n- Intent resolution: Does the agent/orchestrator correctly understand the user's request?\n- Tool call accuracy: Are the correct tools called, with the right parameters?\n- Task adherence: Does the final output align with the assigned task and prior reasoning steps?\n\nIn addition, conduct regular performance and load testing. Assess the agent's ability to scale under concurrent requests, handle long execution paths, and manage interactions across multiple agents. Continuously monitor for regressions in both logic and performance as the system evolves through iterative releases.",
+      "lineStart": 31,
+      "lineEnd": 51
+    },
+    {
+      "sectionOrder": 5,
+      "headingLevel": 3,
+      "headingText": "Test the security aspects",
+      "headingPath": [
+        "Test and evaluate AI workloads on Azure",
+        "Validate agentic workflows",
+        "Test the security aspects"
+      ],
+      "markdown": "Secure agentic workflows by controlling access, validating all inputs, and monitoring agent behavior to prevent misuse or unintended actions.\n\n- **Jailbreak testing.** Always test for jailbreak attempts. Attackers typically target the orchestration layer first, which parses and forwards requests to the model. If malicious inputs aren't filtered, they can compromise model behavior.\n\n- **Content safety.** In chat-based applications, run both user prompts and grounding context through a content safety service. \n\n- **Endpoint security.** For RESTful interfaces, enforce strong authentication and thoroughly test security controls to prevent unauthorized access.\n\nThere are other open source libraries available such as Scikit-learn, PyTorch's torch.testing module, FairML for bias and fairness testing, and TensorFlow Model Analysis for model evaluation.\n\n> :::image type=\"icon\" source=\"../_images/trade-off.svg\"::: **Tradeoff.** Testing this code has cost implications. For example, if you use Azure OpenAI to host your inference endpoint, stress testing is a common practice that can help you determine the system's limits. However, Azure OpenAI charges for every call, which can make extensive stress testing expensive. One way to optimize charges is to use unused PTUs of Azure OpenAI in a test environment. Alternatively, you can simulate the inference endpoint by using tools like [Dev Proxy](/microsoft-cloud/dev/dev-proxy/how-to/simulate-azure-openai).",
+      "lineStart": 53,
+      "lineEnd": 66
+    },
+    {
+      "sectionOrder": 6,
+      "headingLevel": 3,
+      "headingText": "Test the deterministic behavior",
+      "headingPath": [
+        "Test and evaluate AI workloads on Azure",
+        "Validate agentic workflows",
+        "Test the deterministic behavior"
+      ],
+      "markdown": "In some architectures, you might use deterministic logic to enable orchestration. For example, instead of a non-deterministic agent orchestrator, you can choose to have an orchestrator that uses static code to manage the execution flow, such as interpreting user intent, querying the index for grounding data, and calling the model *inference endpoint*. \n\nFrom a testing perspective, treat this code like any critical system component: run performance, reliability, and functional tests, especially on its routing logic. Apply unit testing to deterministic components, especially if you're using agent frameworks like [Microsoft's Semantic Kernel](/semantic-kernel/overview/) or LangChain. These tests validate prompt templates, tool selection logic, data formatting, and decision trees, isolated from runtime variability.",
+      "lineStart": 68,
+      "lineEnd": 73
+    },
+    {
+      "sectionOrder": 7,
+      "headingLevel": 2,
+      "headingText": "Test the inference endpoint",
+      "headingPath": [
+        "Test and evaluate AI workloads on Azure",
+        "Test the inference endpoint"
+      ],
+      "markdown": "Inference endpoints expose your generative models through REST APIs and must be tested beyond just model accuracy. Whether you're using PaaS platforms or self-hosted servers, test the endpoint like any other endpoint to ensure reliability, scalability, and security.\n\n- **Functional and integration testing.** Validate request handling, response structure, and integration with other components.\n\n- **Performance and load testing.** Simulate realistic conditions to evaluate throughput, latency, and resource usage. For PaaS inference endpoints, focus on token-level metrics (tokens/sec or tokens/min), which are more meaningful than traditional request sizes of REST APIs.\n\n- **Scaling and GPU optimization.** Test under varying load to determine the right GPU SKU or autoscaling configuration. Avoid overprovisioning by monitoring actual GPU usage.\n\n   > :::image type=\"icon\" source=\"../_images/trade-off.svg\"::: **Trade-off.** GPU SKUs are expensive. It's important to continuously check whether GPU resources are underused and rightsize them, when possible. After you make adjustments, test resource usage to maintain the balance between cost efficiency and performance optimization. \n\n- **Failure handling.** Simulate throttling, like HTTP 429 errors, backend timeouts, and service unavailability. Validate that your client handles retries, backoff, and circuit breaking appropriately.\n\n- **Security and content safety.** For public or self-hosted endpoints, perform penetration tests and validate access controls. Use content moderation tools like Azure AI Content Safety to test and filter unsafe input/output.",
+      "lineStart": 75,
+      "lineEnd": 90
+    },
+    {
+      "sectionOrder": 8,
+      "headingLevel": 2,
+      "headingText": "Test the grounding data workflow",
+      "headingPath": [
+        "Test and evaluate AI workloads on Azure",
+        "Test the grounding data workflow"
+      ],
+      "markdown": "The relevance of a generative AI model depends on the quality and integrity of its *grounding data*. Grounding data can be seeded to the model by using data processing pipelines. This data is preprocessed, chunked, and indexed before reaching the model. The model queries the index in real time during user interaction, making indexing performance and accuracy critical to the user experience. Integrate testing early and maintain it throughout the system lifecycle.\n\nPoorly tested data pipelines can lead to inconsistent results and cross-cutting concerns like security breaches. To ensure a high-quality experience, test the entire data flow, including source documents, preprocessing, orchestration logic, and the index itself. Key testing considerations include:\n\n- **Functional and integration testing.** Validate that all data loads correctly and completely. Ensure the pipeline handles missing, empty, or synthetic data as expected.\n\n- **Index schema compatibility.** Test schema changes to ensure backward compatibility. Any field or document changes must preserve support for older data formats.\n\n- **Preprocessing and orchestration testing.** Grounding data preparation involves preprocessing, chunking, and embedding computation, often orchestrated by tools like Azure AI Search skill sets. Test the orchestration pipeline to ensure all steps execute correctly and the resulting data is accurate and relevant.\n\n- **Data freshness and quality checks.** Include tests for stale data, versioning mismatches, synthetic artifacts, and empty or partial tables. Update queries or index settings as needed to reflect the most current and clean data.\n\n- **Index load testing.** Indexes can behave differently under varying loads. Test query performance against realistic usage scenarios to inform decisions about scaling, compute SKUs, and storage requirements.\n\n- **Security testing.** If documents are partitioned with access controls, rigorously test those controls. Ensure that each user or role only accesses permitted content to maintain confidentiality and compliance.",
+      "lineStart": 92,
+      "lineEnd": 109
+    },
+    {
+      "sectionOrder": 9,
+      "headingLevel": 2,
+      "headingText": "Guidance for testing model training and fine-tuning",
+      "headingPath": [
+        "Test and evaluate AI workloads on Azure",
+        "Guidance for testing model training and fine-tuning"
+      ],
+      "markdown": "Similar to generative AI models, use various types of tests at different stages of the development life cycle and across different system components and flows. As much as practical, develop workload assets with testing in mind. For instance, when you perform data manipulation and reshape source data for feature engineering, adhere to good coding practices and ensure that you structure the code to support testing.",
+      "lineStart": 111,
+      "lineEnd": 113
+    },
+    {
+      "sectionOrder": 10,
+      "headingLevel": 3,
+      "headingText": "Evaluate the model",
+      "headingPath": [
+        "Test and evaluate AI workloads on Azure",
+        "Guidance for testing model training and fine-tuning",
+        "Evaluate the model"
+      ],
+      "markdown": "Apply a baselining strategy during model training to measure and compare model quality. Evaluate the performance of various combinations of models, parameters, and features by using well-defined metrics. These metrics provide objective, data-driven scores that you can iteratively compare across versions and configurations to identify the best-performing model. \n\nFor more information, see [Regression/forecasting metrics](/azure/machine-learning/how-to-understand-automated-ml#regressionforecasting-metrics).",
+      "lineStart": 115,
+      "lineEnd": 119
+    },
+    {
+      "sectionOrder": 11,
+      "headingLevel": 3,
+      "headingText": "Data to evaluate and test",
+      "headingPath": [
+        "Test and evaluate AI workloads on Azure",
+        "Guidance for testing model training and fine-tuning",
+        "Data to evaluate and test"
+      ],
+      "markdown": "Partition source data into three distinct datasets: training, evaluation, and testing. Use the training dataset to build the model, the evaluation dataset to tune it, and the test dataset to validate final performance. \n\nEnsure each dataset contains high-quality data to reduce noise. Use test cases in data pipelines to enforce quality, and supplement with synthetic data when real samples are limited, in domains like fraud detection, where real fraud instances are rare and provide limited data for training reliable models.\n\nKeep all datasets separate and non-overlapping to maintain objectivity and prevent bias in predictions. Don't reuse training data for evaluation or evaluation data for testing.",
+      "lineStart": 121,
+      "lineEnd": 127
+    },
+    {
+      "sectionOrder": 12,
+      "headingLevel": 3,
+      "headingText": "Testing the training and fine-tuning workflow",
+      "headingPath": [
+        "Test and evaluate AI workloads on Azure",
+        "Guidance for testing model training and fine-tuning",
+        "Testing the training and fine-tuning workflow"
+      ],
+      "markdown": "- **Data pipeline technologies.** Combine functional, load, and performance tests using synthetic data to assess scalability and make informed decisions about sizing or product suitability, required SKUs, and system integration.\n\n- **Ingestion workflow.** Test ETL/ELT pipelines end-to-end to make sure that they ingest data reliably and that the data is high quality.  Also, test integration with all connected systems and monitor external dependencies. Use synthetic data to validate end-to-end processing, particularly for complex or high-volume workloads.\n\n   Test scheduled jobs to validate that ingestion tasks complete on time and return expected volumes.\n\n- **Data quality on ingestion.** Verify that data cleansing and processing include tests to confirm that data manipulation functions as intended. Include checks for completeness, freshness, schema consistency, uniqueness, and relevance. Also verify that structured data is ingested without duplicates, missing values, or invalid entries.\n\n- **Feature and label integrity.** Validate that features are correctly calculated and labels accurately assigned, especially when using complex rules. Check for data leakage to prevent future or label-derived information from contaminating training data. Also, verify that data splits are appropriate to avoid biased or overlapping samples because even subtle leakage can harm model performance.\n\n- **Hyperparameter testing.** Hyperparameter testing is an iterative process where model parameters are tuned to meet accuracy goals based on your workload's use case. This involves repeatedly training on selected data and evaluating on test data to validate performance. Start with a smaller dataset to quickly assess model behavior, then scale testing to the full set. Be mindful of the trade-off between model accuracy and the computational cost and time required for repeated training and evaluation.\n\n- **Code quality.** When training models using custom code, like with PyTorch script, run load tests during the design phase to evaluate compute requirements and select appropriate SKUs. Use unit tests to catch regressions during development, and rely on manual testing when automation isn't feasible. Since these scripts run within workflows, add integration tests to verify that scripts are executed reliably within the pipeline.\n\n- **Inference endpoint.** This REST API provides access to the trained machine learning model for making predictions. The model is deployed to an environment with an endpoint that can receive real-time or batch input data, process it, and return predictions. Like any other API, make sure that the inference endpoint undergoes functional, performance, and security testing validate that it returns accurate results, handles expected load, and remains secure against misuse.\n\n- **Live-site testing.** Extend functional testing into the live system. Run scheduled tests to validate data volumes, detect missing or duplicate records, and confirm data freshness. Use synthetic data to safely validate end-to-end transformations and logic under production conditions. Incorporate A/B tests to evaluate new experiences and prevent quality regressions before full deployment. Configure alerting to trigger immediate investigation when tests fail.\n\nIntegrate data testing into CI/CD pipelines by automating unit and functional tests, especially during code changes or pipeline updates. Add quality checks before retraining, and use side-by-side deployments to safely test in production. Set up alerting for test failures or ingestion anomalies.\n\n> [!NOTE]\n> Testing and monitoring serve different purposes. Conduct tests to evaluate potential changes to the system, typically before you implement any changes. Conduct monitoring continuously to assess the overall health of the system.",
+      "lineStart": 129,
+      "lineEnd": 152
+    },
+    {
+      "sectionOrder": 13,
+      "headingLevel": 3,
+      "headingText": "Testing for model decay",
+      "headingPath": [
+        "Test and evaluate AI workloads on Azure",
+        "Guidance for testing model training and fine-tuning",
+        "Testing for model decay"
+      ],
+      "markdown": "All models degrade over time due to internal and external changes in the workload. This decline in model quality, known as model decay, can occur in two ways:\n\n- **Data drift** happens when input data changes, making the model outdated. For example, a model that predicts voting patterns becomes irrelevant because of demographic shifts after redistricting. \n\n- **Concept drift** occurs when external conditions change, causing the model's predictions to no longer reflect reality. For example, a model that predicts sales trends becomes irrelevant because there's a change in consumer behavior after a competitor launches a new product.\n\nTo detect decay, use automated testing to compare predictions against actual outcomes, and monitor for drift using statistical metrics. User feedback, for example using thumbs up/down, is also a valuable signal for identifying issues. When potential decay is detected, the operations team should alert data scientists to investigate and determine root causes and next steps.",
+      "lineStart": 154,
+      "lineEnd": 163
+    },
+    {
+      "sectionOrder": 14,
+      "headingLevel": 3,
+      "headingText": "Test tools",
+      "headingPath": [
+        "Test and evaluate AI workloads on Azure",
+        "Guidance for testing model training and fine-tuning",
+        "Test tools"
+      ],
+      "markdown": "Consider these Azure resources:\n\n- [Azure Machine Learning data collector](/azure/machine-learning/concept-data-collection) for real-time logging of input/output data for models deployed to managed or Kubernetes online endpoints.\n\n- [Azure Machine Learning Model Monitoring](/azure/machine-learning/concept-model-monitoring) for automated monitoring by comparing real-time inference data with reference datasets to track drift and other performance metrics. See the [best practices](/azure/machine-learning/concept-model-monitoring#best-practices-for-model-monitoring) for more recommendations.",
+      "lineStart": 165,
+      "lineEnd": 172
+    },
+    {
+      "sectionOrder": 15,
+      "headingLevel": 2,
+      "headingText": "Next steps",
+      "headingPath": [
+        "Test and evaluate AI workloads on Azure",
+        "Next steps"
+      ],
+      "markdown": "> [!div class=\"nextstepaction\"]\n> [Design area: Responsible AI](./responsible-ai.md)",
+      "lineStart": 174,
+      "lineEnd": 176
+    }
+  ],
+  "localLinks": [
+    "./responsible-ai.md"
+  ],
+  "lastModified": "2026-03-17T16:22:13.411Z"
+}

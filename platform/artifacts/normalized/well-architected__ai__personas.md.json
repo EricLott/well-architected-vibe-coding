@@ -1,0 +1,267 @@
+{
+  "source": {
+    "absolutePath": "C:\\Users\\EricL\\source\\repos\\Well-Architected-Vibe-Coding\\well-architected-vibe-coding\\well-architected\\ai\\personas.md",
+    "repoRelativePath": "well-architected/ai/personas.md",
+    "docsRelativePath": "ai/personas.md"
+  },
+  "frontMatter": {
+    "title": "Workload team personas for AI workloads",
+    "description": "Different personas work on different aspects of the workload. This article highlights their roles and responsibilities and interactions with each other.",
+    "author": "jostrm",
+    "ms.author": "prwilk",
+    "ms.date": "08/06/2025",
+    "ms.topic": "concept-article",
+    "ms.update-cycle": "180-days"
+  },
+  "title": "Workload team personas for AI workloads",
+  "rawBody": "# Workload team personas for AI workloads\n\nIn the context of building AI workloads, in contrast to traditional code deployment, nondeterministic models require iterative experimentation and collaboration across multiple roles and teams. Early integration of operations, application development, and data teams is essential to foster mutual understanding. This collaboration demands diverse skills and continuous learning to keep pace with technological advancements.\n\nEffective collaboration hinges on *integrating tools, processes, and people* and is driven by workload needs and specific goals. The recommended strategies include:\n\n- Establishing clear roles and accountabilities.\n- Taking advantage of your team's skill set for appropriate tasks.\n- Standardizing processes and subprocesses, such as tracking work as part of a shared backlog.\n- Relying on automation to achieve consistency and reproducibility.\n\nPersonas can be an effective tool for materializing those strategies and standardizing responsibilities. This article describes the personas for AI workloads and their benefits in workload design. It also provides examples and tools for defining and using these team-level personas effectively.\n\n## What are personas?\n\nPersonas represent subsets of humans and processes that are involved in the creation and operation of a workload. Personas capture both the roles and the real behaviors and accountabilities of these individuals and processes. An individual can embody one or multiple personas, depending on context. A persona doesn't have to be a person. It can also be an unattended process, such as an agent process in the architecture.\n\nYour workload might have user personas that drive feature development. Those personas aren't in scope for this article.\n\nUnlike roles, which are relatively static functions or positions within an organization, personas are dynamic and goal oriented. They can be used to map skill requirements to processes and tools, like architectural components. Personas primarily help define the scope of responsibility and set context within a project. They provide several other benefits, such as:\n\n- **Identification of resource gaps.** Identifying gaps helps you decide whether to recruit or train resources or redesign the solution. If your workload team lacks individuals that fit a necessary persona, you might need to adjust the architecture, modify the process, or onboard new personnel. For example, if a senior data science persona is missing, you can redesign the architecture to rely more on general-purpose software as a service (SaaS) AI solutions or incorporate non-Microsoft AI solutions.\n- **Enhanced skills.** Mapping personas to specific architectural components also facilitates educational opportunities, like sessions and online courses to enhance skills.\n- **Ensuring appropriate levels of access.** You should use personas to define security and access needs by mapping personas to processes, architectures, and services. This mapping helps to ensure appropriate access levels.\n- **Facilitating project planning and communication.** In project planning, personas help identify key interactions to facilitate the setup of sync meetings and overall planning. Typically, personas are integrated into the hierarchy of tracking user stories, features, and requirements to streamline project management.\n\n## Agentic personas\n\nAgentic team roles need different persona management than traditional human-centered or traditional process-centered roles because they work fundamentally differently from deterministic systems. Unlike traditional systems where you know exactly which services will be called and in what order, agentic systems make decisions on their own at runtime. These decisions depend on the data they receive and how well the AI models perform. This creates complexity in managing authentication, authorization, and controlling what tools and agents can access.\n\nAgentic workloads require specialized persona management built on key areas:\n\n- **Multi-cloud and cross-system persona definition**. Set up persona governance that works across different cloud platforms, SaaS services, and Model Context Protocol (MCP) servers, and not just a single cloud environment. This means defining agent personas with the right access permissions, dynamic authentication methods like agent-to-agent (A2A), and clear rules for interactions across different platforms.\n\n- **Dynamic persona permissions**. Create persona models that support flexible, workflow-aware access control. This includes providing permissions just when they're needed, granting tool-specific access during different phases, and being able to increase or restrict agent capabilities based on the situation and risk level. Unlike traditional managed identities that follow predictable patterns, agent personas must handle unpredictable decision-making and runtime tool selection.\n\n- **Autonomous agent persona accountability**. Set up persona governance that keeps clear accountability chains for what agents do, since they make their own decisions at runtime. This includes audit trails that connect agent decisions back to responsible human personas, ways for humans to step in and override agent decisions, and clear escalation paths when agents go beyond their defined boundaries. Because agent behavior is non-deterministic, calling different tools and agents based on data and model performance, you need stronger monitoring and governance than traditional automation systems.\n\nConsider a CI/CD pipeline for an AI workload with agentic personas for code review, testing orchestration, and deployment validation. When a developer submits code changes, the Dev Router agent analyzes the code changes and routes the request dynamically to the right testing agent,  based on the type of changes. Unlike traditional pipelines with fixed routing rules, this approach allows agent personas to join or leave the system dynamically, creating non-deterministic behavior that needs specialized persona management for governance, security, and accountability.\n\nEach agent persona needs different permissions. For example, the unit testing agent needs access to the repo where the source is located, but a load testing agent may also need access to Azure AI Foundry, Azure Monitor and other resources. Because agent interactions are dynamic, you need just-in-time permission provisioning and audit trails that connect autonomous agent decisions back to responsible human personas. This ensures accountability even when agents make unexpected tool choices at runtime.\n\n## How to define personas\n\nIdentify your team members' specializations and align them with the appropriate roles in your AI operations or design. Create a template to document personas' skill expectations, team information, and the processes in which they'll be involved.\n\nHere's an example baseline template:\n\n|Persona template|\n|---|\n|&#128313;Persona name: [Name]<br>&#128313;Team: [Team responsible for the persona]<br>&#128313;Primary interaction: [Other teams or agents the persona interacts with]<br>&#128313;Component access: [Security and access requirements for processes and system components]<br>&#128313;Processes: [Processes the persona is responsible for or contributes to]<br>&#128313;Skills: [Skills required to complete the tasks, including domain and technology specifics like model training or search index optimization]\n\n### Tools\n\nYou can use a table to organize and visualize information for each persona. One advantage to this method is that you can create and link to other tables that provide more specific information. For example, you can link architecture components to another table where identity-based access control is specified for each service and environment (Dev, Stage, Production).\n\n> :::image type=\"icon\" source=\"../_images/trade-off.svg\"::: **Tradeoff.** Having too few personas can make it difficult to implement role-based access control with least privileged access and to distribute work responsibilities effectively. Conversely, having too many personas adds management overhead. Starting with between 5 and 10 personas is a good balance, and you should only add personas that are necessary for your operations.\n\nYou can also use cards to define personas. These cards contain the same information as the table, or a quick summary. You can use PowerPoint or make a set of Markdown files to create these cards.\n\nIn certain cases, you can use a combination of tools. For example, each architecture component in a persona card can open a Markdown file that includes a table that maps security and role-based access control for each service and environment. For an example, see [MLOps accelerator: Identity RBAC](/azure/architecture/ai-ml/guide/machine-learning-operations-v2#identity-rbac).\n\n### Example personas\n\nThe example personas represent the teams that participate in developing and operating AI workload solutions. These include both human personas and automated agent personas that help build and manage the solution, which are distinct from the agents that implement the actual business functionality. Even in non-agentic solutions, automated processes run under specific identities to support development and operations workflows.\n\nYou can use cards to define the services a persona needs to be able to access within a process and outline the skills required for each persona (whether it's a person or an agent).\n\n> [!IMPORTANT]\n> Although the personas defined here serve as baseline examples, we recommend that you create your own personas by using tools like tables, persona template cards, and graphs.\n>\n> It's important that these personas align with your processes, organization, and users.\n\n#### Development personas \n\n|GenAI Data Scientist (P006)| \n|---| \n| Team: AI Team<br>&#128313; Primary interaction: Data Ingestion Team, DevOps Team<br>&#128313; Component access: Azure AI Foundry, Azure OpenAI Service, Azure AI Search, Azure Storage, Azure Key Vault <br>&#128313; Processes: GenAIOps, inner loop development<br>&#128313; Skills: Azure AI Foundry, Azure OpenAI Service, Python, model knowledge (LLM, SLM), fine-tuning, RAG, agentic solutions \n\n|GenAI Chat Developer (P007)| \n|---| \n| Team: Engineering Team<br>&#128313; Primary interaction: AI Team<br>&#128313; Component access: Azure AI Foundry, Azure Web Apps, Azure API Management, Azure Cosmos DB, Azure Container Apps, Azure Functions <br>&#128313; Processes: DevOps, event-driven processing, microservices, inner loop development<br>&#128313; Skills: Web application architecture (front end/back end), React, Node.js, HTML, CSS,  agentic solutions \n\n|Dev Router Agent (P010)| \n|---| \n| Team: Engineering Team (automation)<br>&#128313; Primary interaction: Unit Test Agent, Load Test Agent<br>&#128313; Component access: Azure DevOps, GitHub, Azure AI Foundry, Azure Container Registry<br>&#128313; Processes: Automated agent routing, DevOps<br>&#128313; Skills: Python, Agent-2-Agent \n\n|Dev Unit Test Agent (P011)| \n|---| \n| Team: Engineering Team (automated)<br>&#128313; Primary interaction: Dev Router Agent, AI Team, Engineering Team<br>&#128313; Component access: Azure DevOps, GitHub, Azure AI Foundry, Azure Container Apps, MCP Server Tools<br>&#128313; DevOps<br>&#128313; Skills: Test automation, code coverage analysis, performance benchmarking, mcp-testing frameworks \n\n\n#### Operations personas\n\n|AI Data Engineer (P001)| \n|---| \n| Team: Data Ingestion Team<br>&#128313; Primary interaction: AI Development Team, Operations Team<br>&#128313; Component access: Azure Data Factory, Azure Databricks, Azure AI Foundry, Azure SQL Database, Azure Storage <br>&#128313; Processes: DataOps, ETL, ELT<br>&#128313; Skills: SQL, Python, PySpark \n\n|BI Analyst (P003)| \n|---| \n| Team: Analytics Team<br>&#128313; Primary interaction: Data Ingestion Team<br>&#128313; Component access: Power BI, Azure Data Explorer, Azure AI Foundry, Azure Storage <br>&#128313; Processes: Data analysis, data warehousing<br>&#128313; Skills: SQL, Python, PySpark | \n\n|Discriminative AI Data Scientist (P004)| \n|---| \n| Team: AI Team<br>&#128313; Primary interaction: Data Ingestion Team, DevOps Team, Operations Team<br>&#128313; Component access: Azure Machine Learning (for training scenarios), Azure AI Foundry, Azure Databricks, Azure Storage, Azure Key Vault <br>&#128313; Processes: MLOps, MLflow<br>&#128313; Skills: Azure AI Foundry, Azure Machine Learning, Python, model training, production model monitoring \n\n|Build Agent MLOps (P009)| \n|---| \n| Team: Engineering Team (automated)<br>&#128313; Primary interaction: AI Team, Operations Team<br>&#128313; Component access: Azure AI Foundry, Azure Machine Learning (for training scenarios), Azure DevOps, GitHub <br>&#128313; Processes: Processing and serving of Lambda, outer loop MLOps, automated deployment<br>&#128313; Skills: Python, PySpark, model versioning \n\n|Production Monitoring Agent (P012)| \n|---| \n|Team: Operations Team (automated)<br>&#128313; Primary interaction: AI Team, Engineering Team, Operations Team<br>&#128313; Component access: Azure Monitor, Azure Application Insights, Azure Log Analytics, Azure AI Foundry<br>&#128313; Processes: Continuous monitoring, anomaly detection, performance tracking, automated alerting<br>&#128313; Skills: Monitoring automation, log analysis, performance metrics, alerting workflows \n\n## Use case: Personas for AI processes\n\nThese main processes are used in AI workloads:\n\n- DataOps is the ingestion and preparation of data.\n- MLOps is the operationalization of machine learning models.\n- GenAIOps is the discovery and evaluation of existing models and the refinement of these models to the workload context.\n- Inner loop is the refinement of solutions in the development environment, either during research or as triggered by outer loop monitoring.\n- Outer loop is the movement of solutions from development to production. This loop uses continuous monitoring and evaluation to identify necessary improvements.\n\nMapping personas to those processes provides context for each persona. This step can help identify the processes where a persona might need upskilling.\n\n:::image type=\"content\" source=\"images/personas-to-processes.png\" alt-text=\"Diagram that shows DataOps, MLOps, and GenAIOps within a production environment.\" lightbox=\"images/personas-to-processes.png\":::\n\nThe image shows the workflow for DataOps, MLOps, and GenAIOps within a production environment. Data flows from ingestion to model deployment and evaluation. The workflow uses continuous integration and continuous delivery (CI/CD) practices. Key tasks include refining data models, evaluating batches, deploying endpoints, evaluating models in real-time, and fine-tuning models. The example personas participate in the entire workflow.\n\n## Use case: Personas for architecture design\n\nConnecting processes to the supporting architecture helps you identify the services that a persona needs to interact with and highlights areas for potential upskilling.\n\nTo visualize this connection, create a graphical image that shows how architecture components are connected. This visual aid can illustrate data flow and interactions between services and how flows are automated in deployment. It helps stakeholders understand the architecture and the roles of different personas within it.\n\nThe following image shows a Lambda architecture for modern analytics on Azure.\n\n:::image type=\"content\" source=\"images/personas-to-architectures.png\" alt-text=\"Diagram that shows a Lambda architecture for modern analytics in Azure.\" lightbox=\"./images/personas-to-architectures.png\":::\n\n## Next step\n\nNext, proceed to the assessment tool to evaluate your design.\n\n> [!div class=\"nextstepaction\"]\n> [AI workload assessment](./assessment.md)",
+  "headings": [
+    {
+      "level": 1,
+      "text": "Workload team personas for AI workloads",
+      "line": 1,
+      "path": [
+        "Workload team personas for AI workloads"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "What are personas?",
+      "line": 14,
+      "path": [
+        "Workload team personas for AI workloads",
+        "What are personas?"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Agentic personas",
+      "line": 27,
+      "path": [
+        "Workload team personas for AI workloads",
+        "Agentic personas"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "How to define personas",
+      "line": 43,
+      "path": [
+        "Workload team personas for AI workloads",
+        "How to define personas"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Tools",
+      "line": 53,
+      "path": [
+        "Workload team personas for AI workloads",
+        "How to define personas",
+        "Tools"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Example personas",
+      "line": 63,
+      "path": [
+        "Workload team personas for AI workloads",
+        "How to define personas",
+        "Example personas"
+      ]
+    },
+    {
+      "level": 4,
+      "text": "Development personas",
+      "line": 74,
+      "path": [
+        "Workload team personas for AI workloads",
+        "How to define personas",
+        "Example personas",
+        "Development personas"
+      ]
+    },
+    {
+      "level": 4,
+      "text": "Operations personas",
+      "line": 93,
+      "path": [
+        "Workload team personas for AI workloads",
+        "How to define personas",
+        "Example personas",
+        "Operations personas"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Use case: Personas for AI processes",
+      "line": 115,
+      "path": [
+        "Workload team personas for AI workloads",
+        "Use case: Personas for AI processes"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Use case: Personas for architecture design",
+      "line": 131,
+      "path": [
+        "Workload team personas for AI workloads",
+        "Use case: Personas for architecture design"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Next step",
+      "line": 141,
+      "path": [
+        "Workload team personas for AI workloads",
+        "Next step"
+      ]
+    }
+  ],
+  "sections": [
+    {
+      "sectionOrder": 1,
+      "headingLevel": 1,
+      "headingText": "Workload team personas for AI workloads",
+      "headingPath": [
+        "Workload team personas for AI workloads"
+      ],
+      "markdown": "In the context of building AI workloads, in contrast to traditional code deployment, nondeterministic models require iterative experimentation and collaboration across multiple roles and teams. Early integration of operations, application development, and data teams is essential to foster mutual understanding. This collaboration demands diverse skills and continuous learning to keep pace with technological advancements.\n\nEffective collaboration hinges on *integrating tools, processes, and people* and is driven by workload needs and specific goals. The recommended strategies include:\n\n- Establishing clear roles and accountabilities.\n- Taking advantage of your team's skill set for appropriate tasks.\n- Standardizing processes and subprocesses, such as tracking work as part of a shared backlog.\n- Relying on automation to achieve consistency and reproducibility.\n\nPersonas can be an effective tool for materializing those strategies and standardizing responsibilities. This article describes the personas for AI workloads and their benefits in workload design. It also provides examples and tools for defining and using these team-level personas effectively.",
+      "lineStart": 2,
+      "lineEnd": 13
+    },
+    {
+      "sectionOrder": 2,
+      "headingLevel": 2,
+      "headingText": "What are personas?",
+      "headingPath": [
+        "Workload team personas for AI workloads",
+        "What are personas?"
+      ],
+      "markdown": "Personas represent subsets of humans and processes that are involved in the creation and operation of a workload. Personas capture both the roles and the real behaviors and accountabilities of these individuals and processes. An individual can embody one or multiple personas, depending on context. A persona doesn't have to be a person. It can also be an unattended process, such as an agent process in the architecture.\n\nYour workload might have user personas that drive feature development. Those personas aren't in scope for this article.\n\nUnlike roles, which are relatively static functions or positions within an organization, personas are dynamic and goal oriented. They can be used to map skill requirements to processes and tools, like architectural components. Personas primarily help define the scope of responsibility and set context within a project. They provide several other benefits, such as:\n\n- **Identification of resource gaps.** Identifying gaps helps you decide whether to recruit or train resources or redesign the solution. If your workload team lacks individuals that fit a necessary persona, you might need to adjust the architecture, modify the process, or onboard new personnel. For example, if a senior data science persona is missing, you can redesign the architecture to rely more on general-purpose software as a service (SaaS) AI solutions or incorporate non-Microsoft AI solutions.\n- **Enhanced skills.** Mapping personas to specific architectural components also facilitates educational opportunities, like sessions and online courses to enhance skills.\n- **Ensuring appropriate levels of access.** You should use personas to define security and access needs by mapping personas to processes, architectures, and services. This mapping helps to ensure appropriate access levels.\n- **Facilitating project planning and communication.** In project planning, personas help identify key interactions to facilitate the setup of sync meetings and overall planning. Typically, personas are integrated into the hierarchy of tracking user stories, features, and requirements to streamline project management.",
+      "lineStart": 15,
+      "lineEnd": 26
+    },
+    {
+      "sectionOrder": 3,
+      "headingLevel": 2,
+      "headingText": "Agentic personas",
+      "headingPath": [
+        "Workload team personas for AI workloads",
+        "Agentic personas"
+      ],
+      "markdown": "Agentic team roles need different persona management than traditional human-centered or traditional process-centered roles because they work fundamentally differently from deterministic systems. Unlike traditional systems where you know exactly which services will be called and in what order, agentic systems make decisions on their own at runtime. These decisions depend on the data they receive and how well the AI models perform. This creates complexity in managing authentication, authorization, and controlling what tools and agents can access.\n\nAgentic workloads require specialized persona management built on key areas:\n\n- **Multi-cloud and cross-system persona definition**. Set up persona governance that works across different cloud platforms, SaaS services, and Model Context Protocol (MCP) servers, and not just a single cloud environment. This means defining agent personas with the right access permissions, dynamic authentication methods like agent-to-agent (A2A), and clear rules for interactions across different platforms.\n\n- **Dynamic persona permissions**. Create persona models that support flexible, workflow-aware access control. This includes providing permissions just when they're needed, granting tool-specific access during different phases, and being able to increase or restrict agent capabilities based on the situation and risk level. Unlike traditional managed identities that follow predictable patterns, agent personas must handle unpredictable decision-making and runtime tool selection.\n\n- **Autonomous agent persona accountability**. Set up persona governance that keeps clear accountability chains for what agents do, since they make their own decisions at runtime. This includes audit trails that connect agent decisions back to responsible human personas, ways for humans to step in and override agent decisions, and clear escalation paths when agents go beyond their defined boundaries. Because agent behavior is non-deterministic, calling different tools and agents based on data and model performance, you need stronger monitoring and governance than traditional automation systems.\n\nConsider a CI/CD pipeline for an AI workload with agentic personas for code review, testing orchestration, and deployment validation. When a developer submits code changes, the Dev Router agent analyzes the code changes and routes the request dynamically to the right testing agent,  based on the type of changes. Unlike traditional pipelines with fixed routing rules, this approach allows agent personas to join or leave the system dynamically, creating non-deterministic behavior that needs specialized persona management for governance, security, and accountability.\n\nEach agent persona needs different permissions. For example, the unit testing agent needs access to the repo where the source is located, but a load testing agent may also need access to Azure AI Foundry, Azure Monitor and other resources. Because agent interactions are dynamic, you need just-in-time permission provisioning and audit trails that connect autonomous agent decisions back to responsible human personas. This ensures accountability even when agents make unexpected tool choices at runtime.",
+      "lineStart": 28,
+      "lineEnd": 42
+    },
+    {
+      "sectionOrder": 4,
+      "headingLevel": 2,
+      "headingText": "How to define personas",
+      "headingPath": [
+        "Workload team personas for AI workloads",
+        "How to define personas"
+      ],
+      "markdown": "Identify your team members' specializations and align them with the appropriate roles in your AI operations or design. Create a template to document personas' skill expectations, team information, and the processes in which they'll be involved.\n\nHere's an example baseline template:\n\n|Persona template|\n|---|\n|&#128313;Persona name: [Name]<br>&#128313;Team: [Team responsible for the persona]<br>&#128313;Primary interaction: [Other teams or agents the persona interacts with]<br>&#128313;Component access: [Security and access requirements for processes and system components]<br>&#128313;Processes: [Processes the persona is responsible for or contributes to]<br>&#128313;Skills: [Skills required to complete the tasks, including domain and technology specifics like model training or search index optimization]",
+      "lineStart": 44,
+      "lineEnd": 52
+    },
+    {
+      "sectionOrder": 5,
+      "headingLevel": 3,
+      "headingText": "Tools",
+      "headingPath": [
+        "Workload team personas for AI workloads",
+        "How to define personas",
+        "Tools"
+      ],
+      "markdown": "You can use a table to organize and visualize information for each persona. One advantage to this method is that you can create and link to other tables that provide more specific information. For example, you can link architecture components to another table where identity-based access control is specified for each service and environment (Dev, Stage, Production).\n\n> :::image type=\"icon\" source=\"../_images/trade-off.svg\"::: **Tradeoff.** Having too few personas can make it difficult to implement role-based access control with least privileged access and to distribute work responsibilities effectively. Conversely, having too many personas adds management overhead. Starting with between 5 and 10 personas is a good balance, and you should only add personas that are necessary for your operations.\n\nYou can also use cards to define personas. These cards contain the same information as the table, or a quick summary. You can use PowerPoint or make a set of Markdown files to create these cards.\n\nIn certain cases, you can use a combination of tools. For example, each architecture component in a persona card can open a Markdown file that includes a table that maps security and role-based access control for each service and environment. For an example, see [MLOps accelerator: Identity RBAC](/azure/architecture/ai-ml/guide/machine-learning-operations-v2#identity-rbac).",
+      "lineStart": 54,
+      "lineEnd": 62
+    },
+    {
+      "sectionOrder": 6,
+      "headingLevel": 3,
+      "headingText": "Example personas",
+      "headingPath": [
+        "Workload team personas for AI workloads",
+        "How to define personas",
+        "Example personas"
+      ],
+      "markdown": "The example personas represent the teams that participate in developing and operating AI workload solutions. These include both human personas and automated agent personas that help build and manage the solution, which are distinct from the agents that implement the actual business functionality. Even in non-agentic solutions, automated processes run under specific identities to support development and operations workflows.\n\nYou can use cards to define the services a persona needs to be able to access within a process and outline the skills required for each persona (whether it's a person or an agent).\n\n> [!IMPORTANT]\n> Although the personas defined here serve as baseline examples, we recommend that you create your own personas by using tools like tables, persona template cards, and graphs.\n>\n> It's important that these personas align with your processes, organization, and users.",
+      "lineStart": 64,
+      "lineEnd": 73
+    },
+    {
+      "sectionOrder": 7,
+      "headingLevel": 4,
+      "headingText": "Development personas",
+      "headingPath": [
+        "Workload team personas for AI workloads",
+        "How to define personas",
+        "Example personas",
+        "Development personas"
+      ],
+      "markdown": "|GenAI Data Scientist (P006)| \n|---| \n| Team: AI Team<br>&#128313; Primary interaction: Data Ingestion Team, DevOps Team<br>&#128313; Component access: Azure AI Foundry, Azure OpenAI Service, Azure AI Search, Azure Storage, Azure Key Vault <br>&#128313; Processes: GenAIOps, inner loop development<br>&#128313; Skills: Azure AI Foundry, Azure OpenAI Service, Python, model knowledge (LLM, SLM), fine-tuning, RAG, agentic solutions \n\n|GenAI Chat Developer (P007)| \n|---| \n| Team: Engineering Team<br>&#128313; Primary interaction: AI Team<br>&#128313; Component access: Azure AI Foundry, Azure Web Apps, Azure API Management, Azure Cosmos DB, Azure Container Apps, Azure Functions <br>&#128313; Processes: DevOps, event-driven processing, microservices, inner loop development<br>&#128313; Skills: Web application architecture (front end/back end), React, Node.js, HTML, CSS,  agentic solutions \n\n|Dev Router Agent (P010)| \n|---| \n| Team: Engineering Team (automation)<br>&#128313; Primary interaction: Unit Test Agent, Load Test Agent<br>&#128313; Component access: Azure DevOps, GitHub, Azure AI Foundry, Azure Container Registry<br>&#128313; Processes: Automated agent routing, DevOps<br>&#128313; Skills: Python, Agent-2-Agent \n\n|Dev Unit Test Agent (P011)| \n|---| \n| Team: Engineering Team (automated)<br>&#128313; Primary interaction: Dev Router Agent, AI Team, Engineering Team<br>&#128313; Component access: Azure DevOps, GitHub, Azure AI Foundry, Azure Container Apps, MCP Server Tools<br>&#128313; DevOps<br>&#128313; Skills: Test automation, code coverage analysis, performance benchmarking, mcp-testing frameworks",
+      "lineStart": 75,
+      "lineEnd": 92
+    },
+    {
+      "sectionOrder": 8,
+      "headingLevel": 4,
+      "headingText": "Operations personas",
+      "headingPath": [
+        "Workload team personas for AI workloads",
+        "How to define personas",
+        "Example personas",
+        "Operations personas"
+      ],
+      "markdown": "|AI Data Engineer (P001)| \n|---| \n| Team: Data Ingestion Team<br>&#128313; Primary interaction: AI Development Team, Operations Team<br>&#128313; Component access: Azure Data Factory, Azure Databricks, Azure AI Foundry, Azure SQL Database, Azure Storage <br>&#128313; Processes: DataOps, ETL, ELT<br>&#128313; Skills: SQL, Python, PySpark \n\n|BI Analyst (P003)| \n|---| \n| Team: Analytics Team<br>&#128313; Primary interaction: Data Ingestion Team<br>&#128313; Component access: Power BI, Azure Data Explorer, Azure AI Foundry, Azure Storage <br>&#128313; Processes: Data analysis, data warehousing<br>&#128313; Skills: SQL, Python, PySpark | \n\n|Discriminative AI Data Scientist (P004)| \n|---| \n| Team: AI Team<br>&#128313; Primary interaction: Data Ingestion Team, DevOps Team, Operations Team<br>&#128313; Component access: Azure Machine Learning (for training scenarios), Azure AI Foundry, Azure Databricks, Azure Storage, Azure Key Vault <br>&#128313; Processes: MLOps, MLflow<br>&#128313; Skills: Azure AI Foundry, Azure Machine Learning, Python, model training, production model monitoring \n\n|Build Agent MLOps (P009)| \n|---| \n| Team: Engineering Team (automated)<br>&#128313; Primary interaction: AI Team, Operations Team<br>&#128313; Component access: Azure AI Foundry, Azure Machine Learning (for training scenarios), Azure DevOps, GitHub <br>&#128313; Processes: Processing and serving of Lambda, outer loop MLOps, automated deployment<br>&#128313; Skills: Python, PySpark, model versioning \n\n|Production Monitoring Agent (P012)| \n|---| \n|Team: Operations Team (automated)<br>&#128313; Primary interaction: AI Team, Engineering Team, Operations Team<br>&#128313; Component access: Azure Monitor, Azure Application Insights, Azure Log Analytics, Azure AI Foundry<br>&#128313; Processes: Continuous monitoring, anomaly detection, performance tracking, automated alerting<br>&#128313; Skills: Monitoring automation, log analysis, performance metrics, alerting workflows",
+      "lineStart": 94,
+      "lineEnd": 114
+    },
+    {
+      "sectionOrder": 9,
+      "headingLevel": 2,
+      "headingText": "Use case: Personas for AI processes",
+      "headingPath": [
+        "Workload team personas for AI workloads",
+        "Use case: Personas for AI processes"
+      ],
+      "markdown": "These main processes are used in AI workloads:\n\n- DataOps is the ingestion and preparation of data.\n- MLOps is the operationalization of machine learning models.\n- GenAIOps is the discovery and evaluation of existing models and the refinement of these models to the workload context.\n- Inner loop is the refinement of solutions in the development environment, either during research or as triggered by outer loop monitoring.\n- Outer loop is the movement of solutions from development to production. This loop uses continuous monitoring and evaluation to identify necessary improvements.\n\nMapping personas to those processes provides context for each persona. This step can help identify the processes where a persona might need upskilling.\n\n:::image type=\"content\" source=\"images/personas-to-processes.png\" alt-text=\"Diagram that shows DataOps, MLOps, and GenAIOps within a production environment.\" lightbox=\"images/personas-to-processes.png\":::\n\nThe image shows the workflow for DataOps, MLOps, and GenAIOps within a production environment. Data flows from ingestion to model deployment and evaluation. The workflow uses continuous integration and continuous delivery (CI/CD) practices. Key tasks include refining data models, evaluating batches, deploying endpoints, evaluating models in real-time, and fine-tuning models. The example personas participate in the entire workflow.",
+      "lineStart": 116,
+      "lineEnd": 130
+    },
+    {
+      "sectionOrder": 10,
+      "headingLevel": 2,
+      "headingText": "Use case: Personas for architecture design",
+      "headingPath": [
+        "Workload team personas for AI workloads",
+        "Use case: Personas for architecture design"
+      ],
+      "markdown": "Connecting processes to the supporting architecture helps you identify the services that a persona needs to interact with and highlights areas for potential upskilling.\n\nTo visualize this connection, create a graphical image that shows how architecture components are connected. This visual aid can illustrate data flow and interactions between services and how flows are automated in deployment. It helps stakeholders understand the architecture and the roles of different personas within it.\n\nThe following image shows a Lambda architecture for modern analytics on Azure.\n\n:::image type=\"content\" source=\"images/personas-to-architectures.png\" alt-text=\"Diagram that shows a Lambda architecture for modern analytics in Azure.\" lightbox=\"./images/personas-to-architectures.png\":::",
+      "lineStart": 132,
+      "lineEnd": 140
+    },
+    {
+      "sectionOrder": 11,
+      "headingLevel": 2,
+      "headingText": "Next step",
+      "headingPath": [
+        "Workload team personas for AI workloads",
+        "Next step"
+      ],
+      "markdown": "Next, proceed to the assessment tool to evaluate your design.\n\n> [!div class=\"nextstepaction\"]\n> [AI workload assessment](./assessment.md)",
+      "lineStart": 142,
+      "lineEnd": 146
+    }
+  ],
+  "localLinks": [
+    "./assessment.md"
+  ],
+  "lastModified": "2026-03-17T16:22:13.410Z"
+}

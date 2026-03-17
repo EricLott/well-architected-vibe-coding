@@ -1,0 +1,259 @@
+{
+  "source": {
+    "absolutePath": "C:\\Users\\EricL\\source\\repos\\Well-Architected-Vibe-Coding\\well-architected-vibe-coding\\well-architected\\sustainability\\sustainability-testing.md",
+    "repoRelativePath": "well-architected/sustainability/sustainability-testing.md",
+    "docsRelativePath": "sustainability/sustainability-testing.md"
+  },
+  "frontMatter": {
+    "title": "Testing Considerations for Sustainable Workloads on Azure",
+    "description": "Learn about CI/CD optimization, performance testing, and sustainable DevOps practices for Azure workloads to reduce carbon emissions and energy usage.",
+    "author": "lnyswonger",
+    "ms.author": "lnyswonger",
+    "ms.topic": "concept-article",
+    "ms.date": "10/12/2022"
+  },
+  "title": "Testing Considerations for Sustainable Workloads on Azure",
+  "rawBody": "# Testing considerations for sustainable workloads on Azure\n\nOrganizations that develop and deploy solutions to the cloud also need reliable testing. Learn about the considerations and recommendations for running workload tests and how to optimize for a more sustainable testing model.\n\n> [!IMPORTANT]\n> This article is part of the [Azure Well-Architected Framework sustainable workload](index.yml) series. If you aren't familiar with this series, we recommend that you start with [What is a sustainable workload?](sustainability-get-started.md#what-is-a-sustainable-workload)\n\n## Testing efficiency\n\n### Run intense testing during low-carbon periods\n\nRunning integration, performance, load, or other intensive testing capabilities might result in significant processing. A well-crafted testing design for deployed workloads can help ensure full utilization of available resources, which reduces carbon emissions.\n\n*Green Software Foundation alignment: [Carbon awareness](sustainability-design-principles.md#carbon-awareness)*\n\n**Recommendation:**\n\n- Where energy mix data is available, plan to run testing when the datacenter primarily uses renewable energy. For example, in some regions, it might be more beneficial to run tests at night when cleaner energy sources are more prevalent.\n\n### Automate CI/CD to scale worker agents as needed\n\nRunning underused or inactive continuous integration and continuous delivery (CI/CD) agents results in more emissions.\n\n*Green Software Foundation alignment: [Hardware efficiency](sustainability-design-principles.md#hardware-efficiency)*\n\n**Recommendations:**\n\n- Keep the compute utilization high, based on the current demand, which avoids unnecessary capacity allocation.\n\n- Scale out only when necessary and scale in when not testing. This approach ensures that there's no idle compute resources in test environments.\n\n- Consider optimized platform services like containers over testing in a virtual machine (VM), which uses the platform to reduce maintenance.\n\n### Consider caching when you use CI/CD agents\n\nUsing caching mechanisms during CI/CD can reduce compute time, which reduces carbon emissions.\n\n*Green Software Foundation alignment: [Energy efficiency](sustainability-design-principles.md#energy-efficiency)*\n\n**Recommendations:**\n\n- Store results from steps in a cache and reuse them between different CI/CD runs when possible. When a step requires CPU time to produce an artifact that doesn't often change between runs, save the artifact for future use. This optimization avoids wasting CPU time on every run that generates the same artifact repeatedly.\n\n- Use a cache that's local to the CI/CD agent when it's self-hosted to further reduce data transfers and emissions. This setup ensures that the cache isn't transferred over the network, which can be a significant source of emissions.\n\n### Split large code repositories\n\nSplitting large repositories can help the CI/CD phases where only the changed parts of the code are compiled. This strategy reduces compute time, which ultimately lowers carbon emissions.\n\n*Green Software Foundation alignment: [Energy efficiency](sustainability-design-principles.md#energy-efficiency)*\n\n**Recommendations:**\n\n- Split large code repositories into smaller repositories and separate the main code from libraries and dependencies.\n\n- Publish and reuse artifacts and libraries of code that are common across multiple repositories.\n\n## Profile and measure workloads\n\nMeasuring, profiling, and testing a workload is imperative to understanding how to best use allocated resources.\n\n### Assess where parallelization is possible\n\nWithout properly profiling and testing workloads, it's difficult to know whether they make the best use of the underlying platform and deployed resources.\n\n*Green Software Foundation alignment: [Measuring sustainability](sustainability-design-principles.md#measuring-sustainability)*\n\n**Recommendations:**\n\n- Test your applications to understand concurrent requests, simultaneous processing, and other factors.\n\n- Consider GPU-based machines for better efficiency gains if you run machine learning for tests.\n\n- Identify whether the workload is performance intensive and work toward optimization.\n\n- **Consider the following trade-off:** Running GPU-based machines for machine learning tests might increase costs.\n  \n### Assess by using chaos engineering\n\nRunning integration, performance, and load tests increases the reliability of a workload. However, the introduction of chaos engineering can significantly help improve reliability, resilience, and how the applications react to failures. You can optimize the workload to handle failures gracefully and waste fewer resources.\n\n*Green Software Foundation alignment: [Measuring sustainability](sustainability-design-principles.md#measuring-sustainability)*\n\n**Recommendations:**\n\n- Use load testing or [chaos engineering](/azure/well-architected/reliability/testing-strategy) to assess how the workload handles platform outages and traffic spikes or dips. This practice helps increase service resilience and the ability to react to failures, which allows for more optimized fault handling.\n\n- Use chaos engineering to test energy faults or moments that emit more carbon. Consider setting up tests that challenge your application to consume as little energy as possible. Define how the application should react to these conditions. Create a specific ecological version, also known as an *eco version*, that informs users they're emitting the minimum possible carbon by sacrificing some features and possibly some performance. This version can also serve as your benchmark application for scoring its sustainability.\n\n- **Consider the following trade-off:** Injecting faults during chaos engineering and increasing the load on any system also increases the emissions used for the testing resources. Evaluate how and when you can use chaos engineering to increase workload reliability while considering the climate effects of running unnecessary testing sessions.\n\n### Establish CPU and memory thresholds in testing\n\nHelp build tests for testing sustainability in your application. Consider having a baseline CPU utilization measurement so that you can detect abnormal changes to the CPU utilization baseline when tests run. When you have a baseline, you can discover suboptimal decisions made in recent code changes earlier.\n\nAdding tests and quality gates into the deployment and testing pipeline helps avoid deploying unsustainable solutions. This approach contributes to reduced emissions.\n\n*Green Software Foundation alignment: [Energy efficiency](sustainability-design-principles.md#energy-efficiency)*\n\n**Recommendations:**\n\n- Monitor CPU and memory allocations when you run integration tests or unit tests.\n\n- Find abnormally high resource consumption areas in the application code and focus on mitigating them first.\n\n- Configure alerts or test failures if your application surpasses established baseline values. This configuration helps avoid deploying unsustainable workloads.\n\n- **Consider the following trade-off:** As applications grow, the baseline might need to shift to avoid failing the tests when you introduce new features.\n\n## Related resource\n\n- [Operational procedure considerations for sustainable workloads](sustainability-operational-procedures.md)",
+  "headings": [
+    {
+      "level": 1,
+      "text": "Testing considerations for sustainable workloads on Azure",
+      "line": 1,
+      "path": [
+        "Testing considerations for sustainable workloads on Azure"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Testing efficiency",
+      "line": 8,
+      "path": [
+        "Testing considerations for sustainable workloads on Azure",
+        "Testing efficiency"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Run intense testing during low-carbon periods",
+      "line": 10,
+      "path": [
+        "Testing considerations for sustainable workloads on Azure",
+        "Testing efficiency",
+        "Run intense testing during low-carbon periods"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Automate CI/CD to scale worker agents as needed",
+      "line": 20,
+      "path": [
+        "Testing considerations for sustainable workloads on Azure",
+        "Testing efficiency",
+        "Automate CI/CD to scale worker agents as needed"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Consider caching when you use CI/CD agents",
+      "line": 34,
+      "path": [
+        "Testing considerations for sustainable workloads on Azure",
+        "Testing efficiency",
+        "Consider caching when you use CI/CD agents"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Split large code repositories",
+      "line": 46,
+      "path": [
+        "Testing considerations for sustainable workloads on Azure",
+        "Testing efficiency",
+        "Split large code repositories"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Profile and measure workloads",
+      "line": 58,
+      "path": [
+        "Testing considerations for sustainable workloads on Azure",
+        "Profile and measure workloads"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Assess where parallelization is possible",
+      "line": 62,
+      "path": [
+        "Testing considerations for sustainable workloads on Azure",
+        "Profile and measure workloads",
+        "Assess where parallelization is possible"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Assess by using chaos engineering",
+      "line": 78,
+      "path": [
+        "Testing considerations for sustainable workloads on Azure",
+        "Profile and measure workloads",
+        "Assess by using chaos engineering"
+      ]
+    },
+    {
+      "level": 3,
+      "text": "Establish CPU and memory thresholds in testing",
+      "line": 92,
+      "path": [
+        "Testing considerations for sustainable workloads on Azure",
+        "Profile and measure workloads",
+        "Establish CPU and memory thresholds in testing"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Related resource",
+      "line": 110,
+      "path": [
+        "Testing considerations for sustainable workloads on Azure",
+        "Related resource"
+      ]
+    }
+  ],
+  "sections": [
+    {
+      "sectionOrder": 1,
+      "headingLevel": 1,
+      "headingText": "Testing considerations for sustainable workloads on Azure",
+      "headingPath": [
+        "Testing considerations for sustainable workloads on Azure"
+      ],
+      "markdown": "Organizations that develop and deploy solutions to the cloud also need reliable testing. Learn about the considerations and recommendations for running workload tests and how to optimize for a more sustainable testing model.\n\n> [!IMPORTANT]\n> This article is part of the [Azure Well-Architected Framework sustainable workload](index.yml) series. If you aren't familiar with this series, we recommend that you start with [What is a sustainable workload?](sustainability-get-started.md#what-is-a-sustainable-workload)",
+      "lineStart": 2,
+      "lineEnd": 7
+    },
+    {
+      "sectionOrder": 2,
+      "headingLevel": 3,
+      "headingText": "Run intense testing during low-carbon periods",
+      "headingPath": [
+        "Testing considerations for sustainable workloads on Azure",
+        "Testing efficiency",
+        "Run intense testing during low-carbon periods"
+      ],
+      "markdown": "Running integration, performance, load, or other intensive testing capabilities might result in significant processing. A well-crafted testing design for deployed workloads can help ensure full utilization of available resources, which reduces carbon emissions.\n\n*Green Software Foundation alignment: [Carbon awareness](sustainability-design-principles.md#carbon-awareness)*\n\n**Recommendation:**\n\n- Where energy mix data is available, plan to run testing when the datacenter primarily uses renewable energy. For example, in some regions, it might be more beneficial to run tests at night when cleaner energy sources are more prevalent.",
+      "lineStart": 11,
+      "lineEnd": 19
+    },
+    {
+      "sectionOrder": 3,
+      "headingLevel": 3,
+      "headingText": "Automate CI/CD to scale worker agents as needed",
+      "headingPath": [
+        "Testing considerations for sustainable workloads on Azure",
+        "Testing efficiency",
+        "Automate CI/CD to scale worker agents as needed"
+      ],
+      "markdown": "Running underused or inactive continuous integration and continuous delivery (CI/CD) agents results in more emissions.\n\n*Green Software Foundation alignment: [Hardware efficiency](sustainability-design-principles.md#hardware-efficiency)*\n\n**Recommendations:**\n\n- Keep the compute utilization high, based on the current demand, which avoids unnecessary capacity allocation.\n\n- Scale out only when necessary and scale in when not testing. This approach ensures that there's no idle compute resources in test environments.\n\n- Consider optimized platform services like containers over testing in a virtual machine (VM), which uses the platform to reduce maintenance.",
+      "lineStart": 21,
+      "lineEnd": 33
+    },
+    {
+      "sectionOrder": 4,
+      "headingLevel": 3,
+      "headingText": "Consider caching when you use CI/CD agents",
+      "headingPath": [
+        "Testing considerations for sustainable workloads on Azure",
+        "Testing efficiency",
+        "Consider caching when you use CI/CD agents"
+      ],
+      "markdown": "Using caching mechanisms during CI/CD can reduce compute time, which reduces carbon emissions.\n\n*Green Software Foundation alignment: [Energy efficiency](sustainability-design-principles.md#energy-efficiency)*\n\n**Recommendations:**\n\n- Store results from steps in a cache and reuse them between different CI/CD runs when possible. When a step requires CPU time to produce an artifact that doesn't often change between runs, save the artifact for future use. This optimization avoids wasting CPU time on every run that generates the same artifact repeatedly.\n\n- Use a cache that's local to the CI/CD agent when it's self-hosted to further reduce data transfers and emissions. This setup ensures that the cache isn't transferred over the network, which can be a significant source of emissions.",
+      "lineStart": 35,
+      "lineEnd": 45
+    },
+    {
+      "sectionOrder": 5,
+      "headingLevel": 3,
+      "headingText": "Split large code repositories",
+      "headingPath": [
+        "Testing considerations for sustainable workloads on Azure",
+        "Testing efficiency",
+        "Split large code repositories"
+      ],
+      "markdown": "Splitting large repositories can help the CI/CD phases where only the changed parts of the code are compiled. This strategy reduces compute time, which ultimately lowers carbon emissions.\n\n*Green Software Foundation alignment: [Energy efficiency](sustainability-design-principles.md#energy-efficiency)*\n\n**Recommendations:**\n\n- Split large code repositories into smaller repositories and separate the main code from libraries and dependencies.\n\n- Publish and reuse artifacts and libraries of code that are common across multiple repositories.",
+      "lineStart": 47,
+      "lineEnd": 57
+    },
+    {
+      "sectionOrder": 6,
+      "headingLevel": 2,
+      "headingText": "Profile and measure workloads",
+      "headingPath": [
+        "Testing considerations for sustainable workloads on Azure",
+        "Profile and measure workloads"
+      ],
+      "markdown": "Measuring, profiling, and testing a workload is imperative to understanding how to best use allocated resources.",
+      "lineStart": 59,
+      "lineEnd": 61
+    },
+    {
+      "sectionOrder": 7,
+      "headingLevel": 3,
+      "headingText": "Assess where parallelization is possible",
+      "headingPath": [
+        "Testing considerations for sustainable workloads on Azure",
+        "Profile and measure workloads",
+        "Assess where parallelization is possible"
+      ],
+      "markdown": "Without properly profiling and testing workloads, it's difficult to know whether they make the best use of the underlying platform and deployed resources.\n\n*Green Software Foundation alignment: [Measuring sustainability](sustainability-design-principles.md#measuring-sustainability)*\n\n**Recommendations:**\n\n- Test your applications to understand concurrent requests, simultaneous processing, and other factors.\n\n- Consider GPU-based machines for better efficiency gains if you run machine learning for tests.\n\n- Identify whether the workload is performance intensive and work toward optimization.\n\n- **Consider the following trade-off:** Running GPU-based machines for machine learning tests might increase costs.",
+      "lineStart": 63,
+      "lineEnd": 77
+    },
+    {
+      "sectionOrder": 8,
+      "headingLevel": 3,
+      "headingText": "Assess by using chaos engineering",
+      "headingPath": [
+        "Testing considerations for sustainable workloads on Azure",
+        "Profile and measure workloads",
+        "Assess by using chaos engineering"
+      ],
+      "markdown": "Running integration, performance, and load tests increases the reliability of a workload. However, the introduction of chaos engineering can significantly help improve reliability, resilience, and how the applications react to failures. You can optimize the workload to handle failures gracefully and waste fewer resources.\n\n*Green Software Foundation alignment: [Measuring sustainability](sustainability-design-principles.md#measuring-sustainability)*\n\n**Recommendations:**\n\n- Use load testing or [chaos engineering](/azure/well-architected/reliability/testing-strategy) to assess how the workload handles platform outages and traffic spikes or dips. This practice helps increase service resilience and the ability to react to failures, which allows for more optimized fault handling.\n\n- Use chaos engineering to test energy faults or moments that emit more carbon. Consider setting up tests that challenge your application to consume as little energy as possible. Define how the application should react to these conditions. Create a specific ecological version, also known as an *eco version*, that informs users they're emitting the minimum possible carbon by sacrificing some features and possibly some performance. This version can also serve as your benchmark application for scoring its sustainability.\n\n- **Consider the following trade-off:** Injecting faults during chaos engineering and increasing the load on any system also increases the emissions used for the testing resources. Evaluate how and when you can use chaos engineering to increase workload reliability while considering the climate effects of running unnecessary testing sessions.",
+      "lineStart": 79,
+      "lineEnd": 91
+    },
+    {
+      "sectionOrder": 9,
+      "headingLevel": 3,
+      "headingText": "Establish CPU and memory thresholds in testing",
+      "headingPath": [
+        "Testing considerations for sustainable workloads on Azure",
+        "Profile and measure workloads",
+        "Establish CPU and memory thresholds in testing"
+      ],
+      "markdown": "Help build tests for testing sustainability in your application. Consider having a baseline CPU utilization measurement so that you can detect abnormal changes to the CPU utilization baseline when tests run. When you have a baseline, you can discover suboptimal decisions made in recent code changes earlier.\n\nAdding tests and quality gates into the deployment and testing pipeline helps avoid deploying unsustainable solutions. This approach contributes to reduced emissions.\n\n*Green Software Foundation alignment: [Energy efficiency](sustainability-design-principles.md#energy-efficiency)*\n\n**Recommendations:**\n\n- Monitor CPU and memory allocations when you run integration tests or unit tests.\n\n- Find abnormally high resource consumption areas in the application code and focus on mitigating them first.\n\n- Configure alerts or test failures if your application surpasses established baseline values. This configuration helps avoid deploying unsustainable workloads.\n\n- **Consider the following trade-off:** As applications grow, the baseline might need to shift to avoid failing the tests when you introduce new features.",
+      "lineStart": 93,
+      "lineEnd": 109
+    },
+    {
+      "sectionOrder": 10,
+      "headingLevel": 2,
+      "headingText": "Related resource",
+      "headingPath": [
+        "Testing considerations for sustainable workloads on Azure",
+        "Related resource"
+      ],
+      "markdown": "- [Operational procedure considerations for sustainable workloads](sustainability-operational-procedures.md)",
+      "lineStart": 111,
+      "lineEnd": 112
+    }
+  ],
+  "localLinks": [
+    "index.yml",
+    "sustainability-design-principles.md",
+    "sustainability-get-started.md",
+    "sustainability-operational-procedures.md"
+  ],
+  "lastModified": "2026-03-17T16:22:13.826Z"
+}

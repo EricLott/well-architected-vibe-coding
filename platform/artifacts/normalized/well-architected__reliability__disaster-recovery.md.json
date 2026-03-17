@@ -1,0 +1,322 @@
+{
+  "source": {
+    "absolutePath": "C:\\Users\\EricL\\source\\repos\\Well-Architected-Vibe-Coding\\well-architected-vibe-coding\\well-architected\\reliability\\disaster-recovery.md",
+    "repoRelativePath": "well-architected/reliability/disaster-recovery.md",
+    "docsRelativePath": "reliability/disaster-recovery.md"
+  },
+  "frontMatter": {
+    "title": "Architecture strategies for disaster recovery",
+    "description": "Learn how to design a disaster recovery strategy for a workload.",
+    "author": "claytonsiemens77",
+    "ms.author": "csiemens",
+    "ms.date": "11/15/2023",
+    "ms.topic": "concept-article"
+  },
+  "title": "Architecture strategies for disaster recovery",
+  "rawBody": "# Architecture strategies for disaster recovery\n\n**Applies to this Azure Well-Architected Framework Reliability checklist recommendation:**\n\n|**RE:09**|Implement structured, tested, and documented disaster recovery (DR) plans that align with the recovery targets. Plans must cover all components and the system as a whole.   |\n|---|---|\n\nDisasters are significant incidents that require careful planning and proactive preparation by workloads and operations teams.\n\nThis article outlines the key strategies for disaster recovery, emphasizing resilient workload design, data integrity, and clearly defined objectives for failover and recovery. It focuses on the purpose and guiding principles of DR rather than step-by-step procedures. For detailed implementation guidance, including stepwise processes and playbooks, see the companion article: [Develop a disaster recovery plan for multi-region deployments](../design-guides/disaster-recovery.md).\n\n**Definitions**\n\n|Term  |Definition  |\n|---------|---------|\n|Active-passive cold standby | A DR deployment pattern where the secondary region has minimal or no infrastructure running until a disaster occurs, requiring full deployment during failover. |\n|Active-passive warm standby | A DR deployment pattern where the secondary region has some infrastructure pre-deployed and running at reduced capacity, enabling faster failover than cold standby. |\n|Backup | A copy of data stored separately from the primary system to enable data recovery if loss, corruption, or disaster occurs |\n|Business criticality | The classification of workloads or components based on their importance to business operations, influencing recovery priorities and investment levels. |\n|DR activation criteria | Predefined thresholds and conditions that determine when to declare a disaster and trigger recovery procedures. |\n|DR drill | A planned exercise to test disaster recovery procedures and validate recovery capabilities under controlled conditions. |\n|Failback     | The automated and/or manual shifting of production workload traffic from a failover region back to the primary region.        |\n|Failover     | The automated and/or manual shifting of production workload traffic from an unavailable region to an unaffected geographical region.        |\n|Point-in-time recovery | The ability to restore data to a specific moment in time, typically used to recover from data corruption or accidental changes. |\n|Recovery Point Objective (RPO) | The maximum acceptable amount of data loss measured in time, defining how much data a business can afford to lose during a disaster. |\n|Recovery Time Objective (RTO) | The maximum acceptable time to restore business operations after a disaster occurs. |\n|Synchronous replication | Data replication where changes are written to multiple locations simultaneously, ensuring zero data loss but potentially higher latency. |\n|Asynchronous replication | Data replication where changes are written to the primary location first and then copied to secondary locations, allowing for some data loss but lower latency. |\n|War room | A centralized location or communication channel where key personnel coordinate during disaster recovery operations. |\n\n## Prioritize by business impact\n\nCategorize your workload by criticality tiers defined by your organization, such as mission-critical, business-critical, business operational, and so on. Recognize that each tier warrants a distinct level of investment, resilience, and recovery sequencing. If the workload contains multiple flows or components with varying criticalities, document the recovery approach for each to avoid ambiguity during an event. \n\nThese criticality tiers influence the appropriate recovery objectives. Higher-criticality components demand faster recovery and more frequent data protection, while lower-criticality components can tolerate slower restoration. From these requirements, [derive clear RTO and RPO](./metrics.md#define-recovery-metrics) targets that align recovery expectations directly with business value.\n\n## Define disaster thresholds\n\nMake sure the team and business stakeholders understand exactly what counts as a disaster and what doesn't. Your strategy must differentiate between a full disaster, a major disruption, and a small issue that can be fixed quickly. Don't base this only on which components are failing. Instead, factor in how much the problem impacts users and the business as a whole.\n\nAfter you define the thresholds that separate minor incidents from true DR situations, build them into your [health model](../design-guides/health-modeling.md). This way, the monitoring can spot early warning signs and the appropriate recovery processes are triggered. \n\n## Establish communication protocols\n\nWithout clear communication, even the best-designed disaster recovery plan can break down. Build a clear communication strategy that defines who makes decisions, who gets informed, and how information flows during a DR event. \n\nStart by outlining roles and responsibilities within the workload team, as well as any external groups involved. These should include owners for declaring a disaster, closing an incident, running operations tasks, performing testing and validation, managing internal and external communication, and leading retrospectives or root-cause analysis.\n\nProvide step-by-step instructions, list all prerequisites (such as scripts, credentials, and configurations), and define responsibilities between your team and the cloud provider. Ensure root-cause issues are addressed before recovery begins to prevent repeated failures.\n\nEstablish cross-functional war rooms to ensure the right people can coordinate quickly, and prepare communication channels and message templates in advance so teams aren't improvising under pressure. \n\nDefine the escalation paths that the workload team must follow to ensure that recovery status is communicated to stakeholders.\n\n## Design recovery-aware architecture\n\nYour disaster recovery process should reflect how your workload is designed and, conversely, your recovery requirements should influence architectural decisions from the start. When designing your systems, consider how you intend to recover during a disaster and choose patterns (such as [active-passive cold standby](../design-guides/disaster-recovery.md#recovery-strategy-for-active-passive-cold-standby) or [active-passive warm standby](../design-guides/disaster-recovery.md#recovery-strategy-for-active-passive-warm-standby)) that support your recovery requirements. \n\nFor data recovery, use replication strategies based on RPO targets. For example, synchronous across availability zones for high-priority data, asynchronous across regions for lower priority. Ensure consistency models support recovery, implement frequent full backups and point-in-time recovery, account for dependencies between data stores, and automate integrity checks during recovery.\n\n> [!NOTE]\n> Design workloads with containment and isolation to allow partial failover of individual components. This reduces complexity, cost, and RTO, and may maintain partial availability without declaring a full disaster. Test partial failovers separately and document when they should be triggered.\n\n## Prepare infrastructure and recovery procedures\n\nPrepare the secondary region in advance. Build a checklist so that the team is ready when an incident occurs, like: \n\n- Compute layer: For warm active/passive workloads, predeploy minimal compute resources to support rapid failover. \n- Network infrastructure: Replicate topology, including VNets, subnets, routes, firewalls, and security groups, and confirm all configurations.\n- Identity and access management:  Duplicate account setups, RBAC permissions, and policies, ensuring the same security baseline as production.\n- Monitoring: Deploy monitoring infrastructure with alerts and dashboards configured for visibility. \n\nLayer your recovery processes. Structure procedures at the component level, data estate level, and workload level. Define the proper sequence to minimize impact. For example, restore databases before applications that depend on them. Define scope based on business impact. Decide which environments, production and, if necessary, non-production, require DR coverage, considering customer impact and cost.\n\nKeep failback strategy separate from failover.\n\n> :::image type=\"icon\" source=\"../_images/risk.svg\"::: **Risk:** The need to fail back depends on the situation: for example, if traffic was rerouted between regions for performance, restoring it to the original region is important. In other cases, workloads may function fully regardless of which environment is active. If failback is not treated as a distinct, well-defined process separate from failover, teams may experience confusion, leading to incomplete restoration, or prolonged downtime. \n>\n> To mitigate that risk, create a failback plan, build and maintain your failback plan using the same principles as your DR plan, including mirroring any manual steps from failover. Failback may occur immediately or over days or weeks but treat it as a separate process.\n\nPlan for post-failover work. Capture all tasks needed after failover, such as DNS updates, traffic routing, and connection string adjustments, to bring the workload fully back online.\n\n## Implement robust backup strategies\n\nChoose backup solutions tailored to each Azure service, define retention periods, and recognize that no single tool covers everything. Consider multi-region storage for cross-region recoverability, and for some resources, use redeployment from highly available repositories. Regularly test restores to validate backups, and review and update plans periodically, storing them securely and making them accessible to relevant teams.\n\n\n## Practice with regular drills\n\nA DR plan is only meaningful when validated under realistic conditions. Test multiple scenarios, including edge cases, and combine scheduled drills with surprise game days to see how systems and teams respond under pressure.\n\nIn your DR plan, include procedures and cadence for tabletop exercises, dry runs in non-production, and production-level drills. Tabletop drills help the team practice their roles, build familiarity, and train new members, while production drills are the only way to verify that your plan meets RTO and RPO targets in real conditions. For processes outside your control, like DNS propagation, validate potential delays when evaluating recovery times.\n\n> :::image type=\"icon\" source=\"../_images/risk.svg\"::: **Risk:** Performing DR drills directly in production can introduce unexpected, potentially severe failures. Test recovery procedures in non-production environments first to validate safety and uncover issues before running drills in production.\n\nHave a process in place that treats test results as inputs to improve the overall DR posture. For example, if a new operator is hesitant, review that procedure to ensure that it's clearly written.\n\nTest and verify both overall and component-level RTO and RPO separately from full DR drills. Include scenarios such as moving data across regions or restoring from cold storage to ensure targets are achievable.\n\n## Keep plans current and actionable\n\nTreat the DR plan as a living document. Your plan should evolve as your environment changes and should be reviewed regularly with all relevant teams, operations, technology leadership, and business stakeholders, ideally every six months. \n\nKeep your DR plan aligned with your FMA documentation, capturing how the system behaves during disasters and how to respond. As you discover new failure cases, through testing, monitoring, or real incidents, update your plan to include them. Ensure both your DR plan and FMA documentation are updated whenever the environment changes or testing uncovers unexpected behaviors. \n\nRefine procedures over time. Early in your DR practices, assume each procedure must run in sequence and allow extra time for unforeseen issues. As your DR practices mature, identify which steps can safely run in parallel. Refinement should also capture architectural changes. Whenever the workload architecture changes, update the DR plan to clearly define any adjustments to activation criteria or recovery processes.\n\nPlan for realistic recovery times. Use metrics from testing as the minimum time needed for recovery steps when scheduling drills.\n\n## Ensure accessibility during outages\n\nDisaster recovery succeeds only when both the plan and the tools needed to execute it remain available under all failure conditions.\n\nStore disaster recovery documentation, scripts, and recovery components in highly available, secure locations so they remain accessible even during regional outages. Protect all DR assets, including plans, credentials, certificates, and scripts, and replicate them across regions. Maintain offline or printed copies for worst case scenarios. Predeploy CI/CD pipelines in every region so they're ready to run immediately when needed.\n\n## Automate recovery procedures safely\n\nAutomate deployment and recovery procedures in failover environments wherever possible, ensuring they meet RTO targets. Use declarative, idempotent scripts for reliability, and build safeguards like retry and circuit-breaker logic for any custom code. Predeploy and configure DevOps pipelines so deployments can start immediately, using automated end-to-end processes with manual approval gates only when needed. Ensure deployment timelines align with your recovery targets.\n\nApply manual approvals when necessary to balance speed with control. When manual steps are required, document them clearly and define roles and responsibilities.\n\n> :::image type=\"icon\" source=\"../_images/risk.svg\"::: **Risk:** Automation poses risks. Even with automation, trained operators must oversee recovery processes and intervene if issues arise. Use thorough DR drills to test every phase, validate recovery targets, and adjust failover thresholds to reduce the risk of false positives.\n\n## Azure facilitation\n\nMany Azure products have built-in failover capabilities. Familiarize yourself with these capabilities and include them in recovery procedures. See the [DR for Azure data platform series](/azure/architecture/data-guide/disaster-recovery/dr-for-azure-data-platform-overview) for guidance about preparing an enterprise data estate for DR.\n\nFor IaaS (infrastructure as a service) systems, use [Azure Site Recovery](/azure/site-recovery/site-recovery-overview) to automate failover and recovery. Refer to the following articles for common PaaS products:\n\n- [Azure App Service](/azure/app-service/overview-disaster-recovery)\n- [Azure Container Apps](/azure/container-apps/disaster-recovery?tabs=azure-cli)\n- [Azure Kubernetes Service](/azure/aks/operator-best-practices-multi-region)\n- [Azure SQL Database](/azure/azure-sql/database/disaster-recovery-guidance)\n- [Azure Event Hubs](/azure/event-hubs/event-hubs-geo-dr?tabs=portal)\n- [Azure Managed Redis](/azure/reliability/reliability-managed-redis)\n\nMany Azure products have built-in backup capabilities. Familiarize yourself with these capabilities and include them in recovery procedures.\n\nFor IaaS (infrastructure as a service) systems, use [Azure Backup](/azure/backup/backup-overview) to facilitate backup of VMs and VM related services and some data services. Refer to the following articles for common products:\n\n- [Azure App Service](/azure/app-service/manage-backup)\n- [Azure Kubernetes Service](/azure/backup/azure-kubernetes-service-cluster-backup)\n- [Azure SQL Database](/azure/azure-sql/database/recovery-using-backups)\n- [Azure Files](/azure/backup/backup-azure-files?tabs=recovery-services-vault)\n\n## Related links\n\n- [Develop a disaster recovery plan for multi-region deployments](../design-guides/disaster-recovery.md)\n\n- [Recommendations for designing for redundancy](redundancy.md)\n\n- [Recommendations for using availability zones and regions](../design-guides/regions-availability-zones.md)\n\n## Reliability checklist  \n\nRefer to the complete set of recommendations. \n\n> [!div class=\"nextstepaction\"] \n> [Reliability checklist](checklist.md)",
+  "headings": [
+    {
+      "level": 1,
+      "text": "Architecture strategies for disaster recovery",
+      "line": 1,
+      "path": [
+        "Architecture strategies for disaster recovery"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Prioritize by business impact",
+      "line": 31,
+      "path": [
+        "Architecture strategies for disaster recovery",
+        "Prioritize by business impact"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Define disaster thresholds",
+      "line": 37,
+      "path": [
+        "Architecture strategies for disaster recovery",
+        "Define disaster thresholds"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Establish communication protocols",
+      "line": 43,
+      "path": [
+        "Architecture strategies for disaster recovery",
+        "Establish communication protocols"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Design recovery-aware architecture",
+      "line": 55,
+      "path": [
+        "Architecture strategies for disaster recovery",
+        "Design recovery-aware architecture"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Prepare infrastructure and recovery procedures",
+      "line": 64,
+      "path": [
+        "Architecture strategies for disaster recovery",
+        "Prepare infrastructure and recovery procedures"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Implement robust backup strategies",
+      "line": 83,
+      "path": [
+        "Architecture strategies for disaster recovery",
+        "Implement robust backup strategies"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Practice with regular drills",
+      "line": 88,
+      "path": [
+        "Architecture strategies for disaster recovery",
+        "Practice with regular drills"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Keep plans current and actionable",
+      "line": 100,
+      "path": [
+        "Architecture strategies for disaster recovery",
+        "Keep plans current and actionable"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Ensure accessibility during outages",
+      "line": 110,
+      "path": [
+        "Architecture strategies for disaster recovery",
+        "Ensure accessibility during outages"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Automate recovery procedures safely",
+      "line": 116,
+      "path": [
+        "Architecture strategies for disaster recovery",
+        "Automate recovery procedures safely"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Azure facilitation",
+      "line": 124,
+      "path": [
+        "Architecture strategies for disaster recovery",
+        "Azure facilitation"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Related links",
+      "line": 146,
+      "path": [
+        "Architecture strategies for disaster recovery",
+        "Related links"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Reliability checklist",
+      "line": 154,
+      "path": [
+        "Architecture strategies for disaster recovery",
+        "Reliability checklist"
+      ]
+    }
+  ],
+  "sections": [
+    {
+      "sectionOrder": 1,
+      "headingLevel": 1,
+      "headingText": "Architecture strategies for disaster recovery",
+      "headingPath": [
+        "Architecture strategies for disaster recovery"
+      ],
+      "markdown": "**Applies to this Azure Well-Architected Framework Reliability checklist recommendation:**\n\n|**RE:09**|Implement structured, tested, and documented disaster recovery (DR) plans that align with the recovery targets. Plans must cover all components and the system as a whole.   |\n|---|---|\n\nDisasters are significant incidents that require careful planning and proactive preparation by workloads and operations teams.\n\nThis article outlines the key strategies for disaster recovery, emphasizing resilient workload design, data integrity, and clearly defined objectives for failover and recovery. It focuses on the purpose and guiding principles of DR rather than step-by-step procedures. For detailed implementation guidance, including stepwise processes and playbooks, see the companion article: [Develop a disaster recovery plan for multi-region deployments](../design-guides/disaster-recovery.md).\n\n**Definitions**\n\n|Term  |Definition  |\n|---------|---------|\n|Active-passive cold standby | A DR deployment pattern where the secondary region has minimal or no infrastructure running until a disaster occurs, requiring full deployment during failover. |\n|Active-passive warm standby | A DR deployment pattern where the secondary region has some infrastructure pre-deployed and running at reduced capacity, enabling faster failover than cold standby. |\n|Backup | A copy of data stored separately from the primary system to enable data recovery if loss, corruption, or disaster occurs |\n|Business criticality | The classification of workloads or components based on their importance to business operations, influencing recovery priorities and investment levels. |\n|DR activation criteria | Predefined thresholds and conditions that determine when to declare a disaster and trigger recovery procedures. |\n|DR drill | A planned exercise to test disaster recovery procedures and validate recovery capabilities under controlled conditions. |\n|Failback     | The automated and/or manual shifting of production workload traffic from a failover region back to the primary region.        |\n|Failover     | The automated and/or manual shifting of production workload traffic from an unavailable region to an unaffected geographical region.        |\n|Point-in-time recovery | The ability to restore data to a specific moment in time, typically used to recover from data corruption or accidental changes. |\n|Recovery Point Objective (RPO) | The maximum acceptable amount of data loss measured in time, defining how much data a business can afford to lose during a disaster. |\n|Recovery Time Objective (RTO) | The maximum acceptable time to restore business operations after a disaster occurs. |\n|Synchronous replication | Data replication where changes are written to multiple locations simultaneously, ensuring zero data loss but potentially higher latency. |\n|Asynchronous replication | Data replication where changes are written to the primary location first and then copied to secondary locations, allowing for some data loss but lower latency. |\n|War room | A centralized location or communication channel where key personnel coordinate during disaster recovery operations. |",
+      "lineStart": 2,
+      "lineEnd": 30
+    },
+    {
+      "sectionOrder": 2,
+      "headingLevel": 2,
+      "headingText": "Prioritize by business impact",
+      "headingPath": [
+        "Architecture strategies for disaster recovery",
+        "Prioritize by business impact"
+      ],
+      "markdown": "Categorize your workload by criticality tiers defined by your organization, such as mission-critical, business-critical, business operational, and so on. Recognize that each tier warrants a distinct level of investment, resilience, and recovery sequencing. If the workload contains multiple flows or components with varying criticalities, document the recovery approach for each to avoid ambiguity during an event. \n\nThese criticality tiers influence the appropriate recovery objectives. Higher-criticality components demand faster recovery and more frequent data protection, while lower-criticality components can tolerate slower restoration. From these requirements, [derive clear RTO and RPO](./metrics.md#define-recovery-metrics) targets that align recovery expectations directly with business value.",
+      "lineStart": 32,
+      "lineEnd": 36
+    },
+    {
+      "sectionOrder": 3,
+      "headingLevel": 2,
+      "headingText": "Define disaster thresholds",
+      "headingPath": [
+        "Architecture strategies for disaster recovery",
+        "Define disaster thresholds"
+      ],
+      "markdown": "Make sure the team and business stakeholders understand exactly what counts as a disaster and what doesn't. Your strategy must differentiate between a full disaster, a major disruption, and a small issue that can be fixed quickly. Don't base this only on which components are failing. Instead, factor in how much the problem impacts users and the business as a whole.\n\nAfter you define the thresholds that separate minor incidents from true DR situations, build them into your [health model](../design-guides/health-modeling.md). This way, the monitoring can spot early warning signs and the appropriate recovery processes are triggered.",
+      "lineStart": 38,
+      "lineEnd": 42
+    },
+    {
+      "sectionOrder": 4,
+      "headingLevel": 2,
+      "headingText": "Establish communication protocols",
+      "headingPath": [
+        "Architecture strategies for disaster recovery",
+        "Establish communication protocols"
+      ],
+      "markdown": "Without clear communication, even the best-designed disaster recovery plan can break down. Build a clear communication strategy that defines who makes decisions, who gets informed, and how information flows during a DR event. \n\nStart by outlining roles and responsibilities within the workload team, as well as any external groups involved. These should include owners for declaring a disaster, closing an incident, running operations tasks, performing testing and validation, managing internal and external communication, and leading retrospectives or root-cause analysis.\n\nProvide step-by-step instructions, list all prerequisites (such as scripts, credentials, and configurations), and define responsibilities between your team and the cloud provider. Ensure root-cause issues are addressed before recovery begins to prevent repeated failures.\n\nEstablish cross-functional war rooms to ensure the right people can coordinate quickly, and prepare communication channels and message templates in advance so teams aren't improvising under pressure. \n\nDefine the escalation paths that the workload team must follow to ensure that recovery status is communicated to stakeholders.",
+      "lineStart": 44,
+      "lineEnd": 54
+    },
+    {
+      "sectionOrder": 5,
+      "headingLevel": 2,
+      "headingText": "Design recovery-aware architecture",
+      "headingPath": [
+        "Architecture strategies for disaster recovery",
+        "Design recovery-aware architecture"
+      ],
+      "markdown": "Your disaster recovery process should reflect how your workload is designed and, conversely, your recovery requirements should influence architectural decisions from the start. When designing your systems, consider how you intend to recover during a disaster and choose patterns (such as [active-passive cold standby](../design-guides/disaster-recovery.md#recovery-strategy-for-active-passive-cold-standby) or [active-passive warm standby](../design-guides/disaster-recovery.md#recovery-strategy-for-active-passive-warm-standby)) that support your recovery requirements. \n\nFor data recovery, use replication strategies based on RPO targets. For example, synchronous across availability zones for high-priority data, asynchronous across regions for lower priority. Ensure consistency models support recovery, implement frequent full backups and point-in-time recovery, account for dependencies between data stores, and automate integrity checks during recovery.\n\n> [!NOTE]\n> Design workloads with containment and isolation to allow partial failover of individual components. This reduces complexity, cost, and RTO, and may maintain partial availability without declaring a full disaster. Test partial failovers separately and document when they should be triggered.",
+      "lineStart": 56,
+      "lineEnd": 63
+    },
+    {
+      "sectionOrder": 6,
+      "headingLevel": 2,
+      "headingText": "Prepare infrastructure and recovery procedures",
+      "headingPath": [
+        "Architecture strategies for disaster recovery",
+        "Prepare infrastructure and recovery procedures"
+      ],
+      "markdown": "Prepare the secondary region in advance. Build a checklist so that the team is ready when an incident occurs, like: \n\n- Compute layer: For warm active/passive workloads, predeploy minimal compute resources to support rapid failover. \n- Network infrastructure: Replicate topology, including VNets, subnets, routes, firewalls, and security groups, and confirm all configurations.\n- Identity and access management:  Duplicate account setups, RBAC permissions, and policies, ensuring the same security baseline as production.\n- Monitoring: Deploy monitoring infrastructure with alerts and dashboards configured for visibility. \n\nLayer your recovery processes. Structure procedures at the component level, data estate level, and workload level. Define the proper sequence to minimize impact. For example, restore databases before applications that depend on them. Define scope based on business impact. Decide which environments, production and, if necessary, non-production, require DR coverage, considering customer impact and cost.\n\nKeep failback strategy separate from failover.\n\n> :::image type=\"icon\" source=\"../_images/risk.svg\"::: **Risk:** The need to fail back depends on the situation: for example, if traffic was rerouted between regions for performance, restoring it to the original region is important. In other cases, workloads may function fully regardless of which environment is active. If failback is not treated as a distinct, well-defined process separate from failover, teams may experience confusion, leading to incomplete restoration, or prolonged downtime. \n>\n> To mitigate that risk, create a failback plan, build and maintain your failback plan using the same principles as your DR plan, including mirroring any manual steps from failover. Failback may occur immediately or over days or weeks but treat it as a separate process.\n\nPlan for post-failover work. Capture all tasks needed after failover, such as DNS updates, traffic routing, and connection string adjustments, to bring the workload fully back online.",
+      "lineStart": 65,
+      "lineEnd": 82
+    },
+    {
+      "sectionOrder": 7,
+      "headingLevel": 2,
+      "headingText": "Implement robust backup strategies",
+      "headingPath": [
+        "Architecture strategies for disaster recovery",
+        "Implement robust backup strategies"
+      ],
+      "markdown": "Choose backup solutions tailored to each Azure service, define retention periods, and recognize that no single tool covers everything. Consider multi-region storage for cross-region recoverability, and for some resources, use redeployment from highly available repositories. Regularly test restores to validate backups, and review and update plans periodically, storing them securely and making them accessible to relevant teams.",
+      "lineStart": 84,
+      "lineEnd": 87
+    },
+    {
+      "sectionOrder": 8,
+      "headingLevel": 2,
+      "headingText": "Practice with regular drills",
+      "headingPath": [
+        "Architecture strategies for disaster recovery",
+        "Practice with regular drills"
+      ],
+      "markdown": "A DR plan is only meaningful when validated under realistic conditions. Test multiple scenarios, including edge cases, and combine scheduled drills with surprise game days to see how systems and teams respond under pressure.\n\nIn your DR plan, include procedures and cadence for tabletop exercises, dry runs in non-production, and production-level drills. Tabletop drills help the team practice their roles, build familiarity, and train new members, while production drills are the only way to verify that your plan meets RTO and RPO targets in real conditions. For processes outside your control, like DNS propagation, validate potential delays when evaluating recovery times.\n\n> :::image type=\"icon\" source=\"../_images/risk.svg\"::: **Risk:** Performing DR drills directly in production can introduce unexpected, potentially severe failures. Test recovery procedures in non-production environments first to validate safety and uncover issues before running drills in production.\n\nHave a process in place that treats test results as inputs to improve the overall DR posture. For example, if a new operator is hesitant, review that procedure to ensure that it's clearly written.\n\nTest and verify both overall and component-level RTO and RPO separately from full DR drills. Include scenarios such as moving data across regions or restoring from cold storage to ensure targets are achievable.",
+      "lineStart": 89,
+      "lineEnd": 99
+    },
+    {
+      "sectionOrder": 9,
+      "headingLevel": 2,
+      "headingText": "Keep plans current and actionable",
+      "headingPath": [
+        "Architecture strategies for disaster recovery",
+        "Keep plans current and actionable"
+      ],
+      "markdown": "Treat the DR plan as a living document. Your plan should evolve as your environment changes and should be reviewed regularly with all relevant teams, operations, technology leadership, and business stakeholders, ideally every six months. \n\nKeep your DR plan aligned with your FMA documentation, capturing how the system behaves during disasters and how to respond. As you discover new failure cases, through testing, monitoring, or real incidents, update your plan to include them. Ensure both your DR plan and FMA documentation are updated whenever the environment changes or testing uncovers unexpected behaviors. \n\nRefine procedures over time. Early in your DR practices, assume each procedure must run in sequence and allow extra time for unforeseen issues. As your DR practices mature, identify which steps can safely run in parallel. Refinement should also capture architectural changes. Whenever the workload architecture changes, update the DR plan to clearly define any adjustments to activation criteria or recovery processes.\n\nPlan for realistic recovery times. Use metrics from testing as the minimum time needed for recovery steps when scheduling drills.",
+      "lineStart": 101,
+      "lineEnd": 109
+    },
+    {
+      "sectionOrder": 10,
+      "headingLevel": 2,
+      "headingText": "Ensure accessibility during outages",
+      "headingPath": [
+        "Architecture strategies for disaster recovery",
+        "Ensure accessibility during outages"
+      ],
+      "markdown": "Disaster recovery succeeds only when both the plan and the tools needed to execute it remain available under all failure conditions.\n\nStore disaster recovery documentation, scripts, and recovery components in highly available, secure locations so they remain accessible even during regional outages. Protect all DR assets, including plans, credentials, certificates, and scripts, and replicate them across regions. Maintain offline or printed copies for worst case scenarios. Predeploy CI/CD pipelines in every region so they're ready to run immediately when needed.",
+      "lineStart": 111,
+      "lineEnd": 115
+    },
+    {
+      "sectionOrder": 11,
+      "headingLevel": 2,
+      "headingText": "Automate recovery procedures safely",
+      "headingPath": [
+        "Architecture strategies for disaster recovery",
+        "Automate recovery procedures safely"
+      ],
+      "markdown": "Automate deployment and recovery procedures in failover environments wherever possible, ensuring they meet RTO targets. Use declarative, idempotent scripts for reliability, and build safeguards like retry and circuit-breaker logic for any custom code. Predeploy and configure DevOps pipelines so deployments can start immediately, using automated end-to-end processes with manual approval gates only when needed. Ensure deployment timelines align with your recovery targets.\n\nApply manual approvals when necessary to balance speed with control. When manual steps are required, document them clearly and define roles and responsibilities.\n\n> :::image type=\"icon\" source=\"../_images/risk.svg\"::: **Risk:** Automation poses risks. Even with automation, trained operators must oversee recovery processes and intervene if issues arise. Use thorough DR drills to test every phase, validate recovery targets, and adjust failover thresholds to reduce the risk of false positives.",
+      "lineStart": 117,
+      "lineEnd": 123
+    },
+    {
+      "sectionOrder": 12,
+      "headingLevel": 2,
+      "headingText": "Azure facilitation",
+      "headingPath": [
+        "Architecture strategies for disaster recovery",
+        "Azure facilitation"
+      ],
+      "markdown": "Many Azure products have built-in failover capabilities. Familiarize yourself with these capabilities and include them in recovery procedures. See the [DR for Azure data platform series](/azure/architecture/data-guide/disaster-recovery/dr-for-azure-data-platform-overview) for guidance about preparing an enterprise data estate for DR.\n\nFor IaaS (infrastructure as a service) systems, use [Azure Site Recovery](/azure/site-recovery/site-recovery-overview) to automate failover and recovery. Refer to the following articles for common PaaS products:\n\n- [Azure App Service](/azure/app-service/overview-disaster-recovery)\n- [Azure Container Apps](/azure/container-apps/disaster-recovery?tabs=azure-cli)\n- [Azure Kubernetes Service](/azure/aks/operator-best-practices-multi-region)\n- [Azure SQL Database](/azure/azure-sql/database/disaster-recovery-guidance)\n- [Azure Event Hubs](/azure/event-hubs/event-hubs-geo-dr?tabs=portal)\n- [Azure Managed Redis](/azure/reliability/reliability-managed-redis)\n\nMany Azure products have built-in backup capabilities. Familiarize yourself with these capabilities and include them in recovery procedures.\n\nFor IaaS (infrastructure as a service) systems, use [Azure Backup](/azure/backup/backup-overview) to facilitate backup of VMs and VM related services and some data services. Refer to the following articles for common products:\n\n- [Azure App Service](/azure/app-service/manage-backup)\n- [Azure Kubernetes Service](/azure/backup/azure-kubernetes-service-cluster-backup)\n- [Azure SQL Database](/azure/azure-sql/database/recovery-using-backups)\n- [Azure Files](/azure/backup/backup-azure-files?tabs=recovery-services-vault)",
+      "lineStart": 125,
+      "lineEnd": 145
+    },
+    {
+      "sectionOrder": 13,
+      "headingLevel": 2,
+      "headingText": "Related links",
+      "headingPath": [
+        "Architecture strategies for disaster recovery",
+        "Related links"
+      ],
+      "markdown": "- [Develop a disaster recovery plan for multi-region deployments](../design-guides/disaster-recovery.md)\n\n- [Recommendations for designing for redundancy](redundancy.md)\n\n- [Recommendations for using availability zones and regions](../design-guides/regions-availability-zones.md)",
+      "lineStart": 147,
+      "lineEnd": 153
+    },
+    {
+      "sectionOrder": 14,
+      "headingLevel": 2,
+      "headingText": "Reliability checklist",
+      "headingPath": [
+        "Architecture strategies for disaster recovery",
+        "Reliability checklist"
+      ],
+      "markdown": "Refer to the complete set of recommendations. \n\n> [!div class=\"nextstepaction\"] \n> [Reliability checklist](checklist.md)",
+      "lineStart": 155,
+      "lineEnd": 159
+    }
+  ],
+  "localLinks": [
+    "../design-guides/disaster-recovery.md",
+    "../design-guides/health-modeling.md",
+    "../design-guides/regions-availability-zones.md",
+    "./metrics.md",
+    "checklist.md",
+    "redundancy.md"
+  ],
+  "lastModified": "2026-03-17T16:22:13.704Z"
+}

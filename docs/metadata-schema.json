@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Well-Architected Vibe Coding Chunk Metadata",
+  "type": "object",
+  "required": [
+    "chunk_id",
+    "pillar",
+    "subtopic",
+    "title",
+    "heading_path",
+    "source_path",
+    "repo_relative_path",
+    "content_type",
+    "file_name",
+    "repository_name",
+    "commit_hash",
+    "last_modified",
+    "section_order",
+    "chunk_order_in_section",
+    "ingestion_timestamp"
+  ],
+  "properties": {
+    "chunk_id": { "type": "string" },
+    "pillar": { "type": "string" },
+    "subtopic": { "type": "string" },
+    "title": { "type": "string" },
+    "heading_path": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "source_path": { "type": "string" },
+    "repo_relative_path": { "type": "string" },
+    "content_type": { "type": "string" },
+    "file_name": { "type": "string" },
+    "repository_name": { "type": "string" },
+    "commit_hash": { "type": "string" },
+    "last_modified": { "type": "string" },
+    "section_order": { "type": "integer" },
+    "chunk_order_in_section": { "type": "integer" },
+    "ingestion_timestamp": { "type": "string" },
+    "doc_group": { "type": "string" },
+    "workload_name": { "type": ["string", "null"] },
+    "service_name": { "type": ["string", "null"] },
+    "recommendation_code": { "type": ["string", "null"] },
+    "ms_topic": { "type": ["string", "null"] },
+    "ms_date": { "type": ["string", "null"] },
+    "ms_author": { "type": ["string", "null"] },
+    "link_targets_local": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "has_table": { "type": "boolean" },
+    "has_callout": { "type": "boolean" },
+    "token_count_estimate": { "type": "integer" },
+    "chunk_hash": { "type": "string" }
+  }
+}

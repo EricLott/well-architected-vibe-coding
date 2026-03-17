@@ -1,0 +1,101 @@
+{
+  "source": {
+    "absolutePath": "C:\\Users\\EricL\\source\\repos\\Well-Architected-Vibe-Coding\\well-architected-vibe-coding\\well-architected\\pillars.md",
+    "repoRelativePath": "well-architected/pillars.md",
+    "docsRelativePath": "pillars.md"
+  },
+  "frontMatter": {
+    "title": "Microsoft Azure Well-Architected Framework",
+    "description": "Learn about the five pillars of the Azure Well-Architected Framework and how they can produce a high- quality, stable, and efficient cloud architecture.",
+    "author": "PageWriter-MSFT",
+    "ms.author": "prwilk",
+    "ms.date": "1/22/2025",
+    "ms.topic": "concept-article",
+    "ms.update-cycle": "1095-days"
+  },
+  "title": "Microsoft Azure Well-Architected Framework",
+  "rawBody": "# Microsoft Azure Well-Architected Framework pillars\n\nThe Azure Well-Architected Framework pillars drive architectural excellence at the fundamental level of a workload.\n\nUse this matrix to familiarize yourself with the key concepts:\n\n| Pillar | Workload concern | Apply the principles | Strike a balance\n|--------|-------------|-------------------|-----------\n| [**Reliability**](reliability/index.yml) | Resiliency, availability, recovery | Design for business requirements, resilience, recovery, and operations, while keeping it simple. <br> [Design principles](reliability/principles.md) | [Tradeoffs](reliability/tradeoffs.md) |\n| [**Security**](security/index.yml) | Data protection, threat detection, and mitigation | Protect confidentiality, integrity, and availability. <br> [Design principles](security/principles.md)|[Tradeoffs](security/tradeoffs.md) |\n| [**Cost Optimization**](cost-optimization/index.yml) | Cost modeling, budgets, reduce waste | Optimize on usage and rate utilization while keeping a cost-efficient mindset. <br> [Design principles](cost-optimization/principles.md) | [Tradeoffs](cost-optimization/tradeoffs.md) |\n| [**Operational Excellence**](operational-excellence/index.yml) | Holistic observability, DevOps practices | Streamline operations with standards, comprehensive monitoring, and safe deployment practices. <br> [Design principles](operational-excellence/principles.md)|[Tradeoffs](operational-excellence/tradeoffs.md) |\n| [**Performance Efficiency**](performance-efficiency/index.yml) | Scalability, load testing | Scale horizontally, test early and often, and monitor the health of the solution. <br>[Design principles](performance-efficiency/principles.md)|[Tradeoffs](performance-efficiency/tradeoffs.md) |\n\n> [!IMPORTANT]\n>\n> The reference architectures available in the [**Azure Architecture Center**](/azure/architecture/browse/) are designed with the design principles in mind. The architecture articles describe a prescriptive path for applying the design principles and provide a holistic view on the [**Ten design principles for Azure applications**](/azure/architecture/guide/design-principles/).\n\n## Assessment review tool\n\nAssess your workload by using the core pillars to **identify and prioritize opportunities** for improving the posture of your workloads.\n\nStart your assessment with the [**Azure Well-Architected Review**](/assessments/azure-architecture-review/).\n\n:::image type=\"content\" source=\"./_images/well-architected-review.png\" alt-text=\"Screenshot of the Microsoft Azure Well-Architected Review.\" lightbox=\"./_images/well-architected-review.png\":::\n\n## Integrate with Azure recommendation services\n\n- [**Azure Advisor**](/azure/advisor/) uses the **core pillars** as a basis for analyzing your resource configuration and usage telemetry and provides appropriate recommendations.\n\n- [**Azure Advisor score**](/azure/advisor/azure-advisor-score) is a core feature of Azure Advisor that aggregates Advisor recommendations into a simple, actionable score. You can categorize the overall score into the core pillars of the Well-Architected Framework. Use the score to prioritize the actions that yield the biggest improvement.",
+  "headings": [
+    {
+      "level": 1,
+      "text": "Microsoft Azure Well-Architected Framework pillars",
+      "line": 1,
+      "path": [
+        "Microsoft Azure Well-Architected Framework pillars"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Assessment review tool",
+      "line": 19,
+      "path": [
+        "Microsoft Azure Well-Architected Framework pillars",
+        "Assessment review tool"
+      ]
+    },
+    {
+      "level": 2,
+      "text": "Integrate with Azure recommendation services",
+      "line": 27,
+      "path": [
+        "Microsoft Azure Well-Architected Framework pillars",
+        "Integrate with Azure recommendation services"
+      ]
+    }
+  ],
+  "sections": [
+    {
+      "sectionOrder": 1,
+      "headingLevel": 1,
+      "headingText": "Microsoft Azure Well-Architected Framework pillars",
+      "headingPath": [
+        "Microsoft Azure Well-Architected Framework pillars"
+      ],
+      "markdown": "The Azure Well-Architected Framework pillars drive architectural excellence at the fundamental level of a workload.\n\nUse this matrix to familiarize yourself with the key concepts:\n\n| Pillar | Workload concern | Apply the principles | Strike a balance\n|--------|-------------|-------------------|-----------\n| [**Reliability**](reliability/index.yml) | Resiliency, availability, recovery | Design for business requirements, resilience, recovery, and operations, while keeping it simple. <br> [Design principles](reliability/principles.md) | [Tradeoffs](reliability/tradeoffs.md) |\n| [**Security**](security/index.yml) | Data protection, threat detection, and mitigation | Protect confidentiality, integrity, and availability. <br> [Design principles](security/principles.md)|[Tradeoffs](security/tradeoffs.md) |\n| [**Cost Optimization**](cost-optimization/index.yml) | Cost modeling, budgets, reduce waste | Optimize on usage and rate utilization while keeping a cost-efficient mindset. <br> [Design principles](cost-optimization/principles.md) | [Tradeoffs](cost-optimization/tradeoffs.md) |\n| [**Operational Excellence**](operational-excellence/index.yml) | Holistic observability, DevOps practices | Streamline operations with standards, comprehensive monitoring, and safe deployment practices. <br> [Design principles](operational-excellence/principles.md)|[Tradeoffs](operational-excellence/tradeoffs.md) |\n| [**Performance Efficiency**](performance-efficiency/index.yml) | Scalability, load testing | Scale horizontally, test early and often, and monitor the health of the solution. <br>[Design principles](performance-efficiency/principles.md)|[Tradeoffs](performance-efficiency/tradeoffs.md) |\n\n> [!IMPORTANT]\n>\n> The reference architectures available in the [**Azure Architecture Center**](/azure/architecture/browse/) are designed with the design principles in mind. The architecture articles describe a prescriptive path for applying the design principles and provide a holistic view on the [**Ten design principles for Azure applications**](/azure/architecture/guide/design-principles/).",
+      "lineStart": 2,
+      "lineEnd": 18
+    },
+    {
+      "sectionOrder": 2,
+      "headingLevel": 2,
+      "headingText": "Assessment review tool",
+      "headingPath": [
+        "Microsoft Azure Well-Architected Framework pillars",
+        "Assessment review tool"
+      ],
+      "markdown": "Assess your workload by using the core pillars to **identify and prioritize opportunities** for improving the posture of your workloads.\n\nStart your assessment with the [**Azure Well-Architected Review**](/assessments/azure-architecture-review/).\n\n:::image type=\"content\" source=\"./_images/well-architected-review.png\" alt-text=\"Screenshot of the Microsoft Azure Well-Architected Review.\" lightbox=\"./_images/well-architected-review.png\":::",
+      "lineStart": 20,
+      "lineEnd": 26
+    },
+    {
+      "sectionOrder": 3,
+      "headingLevel": 2,
+      "headingText": "Integrate with Azure recommendation services",
+      "headingPath": [
+        "Microsoft Azure Well-Architected Framework pillars",
+        "Integrate with Azure recommendation services"
+      ],
+      "markdown": "- [**Azure Advisor**](/azure/advisor/) uses the **core pillars** as a basis for analyzing your resource configuration and usage telemetry and provides appropriate recommendations.\n\n- [**Azure Advisor score**](/azure/advisor/azure-advisor-score) is a core feature of Azure Advisor that aggregates Advisor recommendations into a simple, actionable score. You can categorize the overall score into the core pillars of the Well-Architected Framework. Use the score to prioritize the actions that yield the biggest improvement.",
+      "lineStart": 28,
+      "lineEnd": 31
+    }
+  ],
+  "localLinks": [
+    "cost-optimization/index.yml",
+    "cost-optimization/principles.md",
+    "cost-optimization/tradeoffs.md",
+    "operational-excellence/index.yml",
+    "operational-excellence/principles.md",
+    "operational-excellence/tradeoffs.md",
+    "performance-efficiency/index.yml",
+    "performance-efficiency/principles.md",
+    "performance-efficiency/tradeoffs.md",
+    "reliability/index.yml",
+    "reliability/principles.md",
+    "reliability/tradeoffs.md",
+    "security/index.yml",
+    "security/principles.md",
+    "security/tradeoffs.md"
+  ],
+  "lastModified": "2026-03-17T16:22:13.702Z"
+}

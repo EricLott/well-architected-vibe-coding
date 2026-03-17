@@ -1,0 +1,47 @@
+pillars:
+  reliability: reliability
+  security: security
+  cost-optimization: cost-optimization
+  operational-excellence: operational-excellence
+  performance-efficiency: performance-efficiency
+
+docGroups:
+  reliability: pillar
+  security: pillar
+  cost-optimization: pillar
+  operational-excellence: pillar
+  performance-efficiency: pillar
+  service-guides: service-guide
+  design-guides: design-guide
+  architect-role: architect-role
+  ai: workload
+  azure-virtual-desktop: workload
+  azure-vmware: workload
+  mission-critical: workload
+  hpc: workload
+  oracle-iaas: workload
+  saas: workload
+  sap: workload
+  sustainability: workload
+  "(root)": framework
+
+workloads:
+  ai: ai
+  azure-virtual-desktop: azure-virtual-desktop
+  azure-vmware: azure-vmware
+  mission-critical: mission-critical
+  hpc: hpc
+  oracle-iaas: oracle-iaas
+  saas: saas
+  sap: sap
+  sustainability: sustainability
+
+serviceGuide:
+  rootFolder: service-guides
+  splitByPillarHeading: true
+  pillarHeadings:
+    - Reliability
+    - Security
+    - Cost Optimization
+    - Operational Excellence
+    - Performance Efficiency

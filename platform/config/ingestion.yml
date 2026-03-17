@@ -1,0 +1,24 @@
+repositoryName: well-architected-vibe-coding
+docsRoot: well-architected
+artifactsRoot: platform/artifacts
+include:
+  - well-architected/**/*.md
+exclude:
+  - "**/_images/**"
+  - "**/images/**"
+  - "**/media/**"
+  - well-architected/feed.atom
+  - well-architected/docfx.json
+  - .github/**
+  - .docutune/**
+  - README.md
+  - LICENSE*
+  - SECURITY.md
+  - ThirdPartyNotices.md
+  - CODEOWNERS
+chunking:
+  targetMinTokens: 350
+  targetMaxTokens: 650
+  softMinTokens: 120
+  softMaxTokens: 800
+  overlapTokens: 60
