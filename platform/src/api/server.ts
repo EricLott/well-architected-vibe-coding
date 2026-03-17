@@ -1,15 +1,30 @@
 import express from "express";
+import path from "node:path";
+import { pathToFileURL } from "node:url";
 import { LexicalIndexer } from "../indexing/lexical/index.js";
 import { runIngestionPipeline } from "../ingestion/pipeline.js";
 import { loadIngestionConfig } from "../shared/config.js";
 import { RetrievalService } from "../retrieval/index.js";
 import { fileExists } from "../shared/fs.js";
 import type { RetrievalRequest } from "../shared/types.js";
-import path from "node:path";
 
 export interface ApiServerOptions {
   repositoryRoot: string;
   port?: number;
+}
+
+async function getIndexFilePath(repositoryRoot: string): Promise<string> {
+  const ingestionConfig = await loadIngestionConfig(repositoryRoot);
+  return path.resolve(
+    repositoryRoot,
+    ingestionConfig.artifactsRoot,
+    "indexes/lexical_index.json",
+  );
+}
+
+export async function hasLexicalIndex(repositoryRoot: string): Promise<boolean> {
+  const indexPath = await getIndexFilePath(repositoryRoot);
+  return fileExists(indexPath);
 }
 
 export async function createApiServer(options: ApiServerOptions) {
@@ -25,12 +40,7 @@ export async function createApiServer(options: ApiServerOptions) {
       return retrievalService;
     }
     const ingestionConfig = await loadIngestionConfig(repositoryRoot);
-    const indexFilePath = path.resolve(
-      repositoryRoot,
-      ingestionConfig.artifactsRoot,
-      "indexes/lexical_index.json",
-    );
-    const exists = await fileExists(indexFilePath);
+    const exists = await hasLexicalIndex(repositoryRoot);
     if (!exists) {
       return null;
     }
@@ -74,8 +84,7 @@ export async function createApiServer(options: ApiServerOptions) {
       if (!service) {
         res.status(400).json({
           status: "error",
-          message:
-            "No lexical index found. Run POST /ingest before calling /retrieve.",
+          message: "No index found. Run npm run ingest first.",
         });
         return;
       }
@@ -91,7 +100,7 @@ export async function createApiServer(options: ApiServerOptions) {
 
   return {
     app,
-    listen(port = options.port ?? 4000) {
+    listen(port = options.port ?? 3000) {
       return app.listen(port, () => {
         // Keep runtime output short and deterministic in scripts.
         // eslint-disable-next-line no-console
@@ -99,4 +108,38 @@ export async function createApiServer(options: ApiServerOptions) {
       });
     },
   };
+}
+
+function resolveRepositoryRootFromCwd(cwd: string): string {
+  // `npm run dev` is expected to run from `platform/`.
+  return path.resolve(cwd, "..");
+}
+
+async function runFromCli(): Promise<void> {
+  const repositoryRoot = resolveRepositoryRootFromCwd(process.cwd());
+  const indexExists = await hasLexicalIndex(repositoryRoot);
+  if (!indexExists) {
+    // eslint-disable-next-line no-console
+    console.error("No index found. Run npm run ingest first.");
+    process.exit(1);
+  }
+
+  const server = await createApiServer({
+    repositoryRoot,
+    port: Number(process.env.PORT ?? 3000),
+  });
+  server.listen(Number(process.env.PORT ?? 3000));
+}
+
+const isDirectExecution =
+  process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href;
+
+if (isDirectExecution) {
+  runFromCli().catch((error) => {
+    // eslint-disable-next-line no-console
+    console.error("[api] failed to start server");
+    // eslint-disable-next-line no-console
+    console.error(error);
+    process.exit(1);
+  });
 }

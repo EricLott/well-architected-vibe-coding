@@ -1,62 +1,43 @@
-# Well-Architected Vibe Coding platform (phase 1 MVP)
+# Well-Architected Vibe Coding platform
 
-This folder contains the deterministic ingestion and lexical retrieval foundation for phase 1.
-
-## Prerequisites
-
-- Node.js 20+
-- npm
-
-## Install
+## Quick Start
 
 ```bash
-cd platform
+git clone <repo>
+cd <repo>/platform
 npm install
-```
-
-## Run ingestion
-
-```bash
 npm run ingest
+npm run dev
 ```
 
-This scans `../well-architected/**/*.md`, parses and chunks content, extracts metadata, writes artifacts, and builds a lexical index.
+## What this does
 
-## Run API
+- parses the `well-architected/` markdown corpus
+- chunks content and extracts normalized metadata
+- builds a lexical retrieval index under `platform/artifacts/`
+- starts a local retrieval API
+
+## Test it
 
 ```bash
-npm run api
+curl -X POST http://localhost:3000/retrieve \
+  -H "Content-Type: application/json" \
+  -d '{"query":"authentication strategy","topK":5}'
 ```
 
-Endpoints:
+Optional smoke test (with API running):
 
-- `GET /health`
-- `POST /ingest`
-- `POST /retrieve`
+```bash
+npm run test:retrieve
+```
 
-## Artifact output locations
+## Bring Your Own Key (future)
 
-- `platform/artifacts/inventory/source_manifest.json`
-- `platform/artifacts/inventory/ingestion_summary.json`
-- `platform/artifacts/normalized/*.json`
-- `platform/artifacts/chunks/chunks.jsonl`
-- `platform/artifacts/chunks/chunk_manifest.json`
-- `platform/artifacts/indexes/lexical_index.json`
+Ingestion and retrieval in phase 1 do **not** require user API keys.
+API keys will be introduced later for AI generation workflows.
 
-## Implemented in phase 1
+## Troubleshooting
 
-- deterministic source scanning and snapshot manifest
-- markdown parse with front matter, headings, sections, and local links
-- heading-aware chunking with table/callout handling
-- normalized metadata extraction
-- artifact writing and ingestion summaries
-- lexical retrieval index and metadata filters
-- minimal API for ingest/retrieve/health
-- baseline ingestion and retrieval tests
-
-## Deferred to phase 2
-
-- SQLite FTS5 backing store (current lexical index is file-backed abstraction)
-- vector embeddings and hybrid retrieval fusion
-- reranking and query expansion
-- orchestration and full agentic workflow layers
+- If API startup says index is missing: run `npm run ingest`
+- To rebuild from scratch: run `npm run reset`
+- To rebuild only lexical index from existing chunks: run `npm run build:index`

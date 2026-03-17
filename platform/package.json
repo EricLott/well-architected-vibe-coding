@@ -8,8 +8,12 @@
     "build": "tsc -p tsconfig.json",
     "test": "vitest run",
     "test:watch": "vitest",
-    "ingest": "tsx src/scripts/runIngest.ts",
-    "api": "tsx src/scripts/runApi.ts"
+    "ingest": "node --no-warnings --loader ts-node/esm scripts/ingest.ts",
+    "dev": "node --no-warnings --loader ts-node/esm src/api/server.ts",
+    "api": "npm run dev",
+    "build:index": "node --no-warnings --loader ts-node/esm scripts/build-index.ts",
+    "test:retrieve": "node --no-warnings --loader ts-node/esm scripts/test-retrieve.ts",
+    "reset": "rimraf artifacts && npm run ingest"
   },
   "dependencies": {
     "express": "^4.21.2",
@@ -21,6 +25,8 @@
     "@types/express": "^4.17.21",
     "@types/js-yaml": "^4.0.9",
     "@types/node": "^22.13.10",
+    "rimraf": "^6.0.1",
+    "ts-node": "^10.9.2",
     "tsx": "^4.19.3",
     "typescript": "^5.8.2",
     "vitest": "^3.2.4"
