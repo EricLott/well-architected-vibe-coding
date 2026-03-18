@@ -1,6 +1,6 @@
 {
   "source": {
-    "absolutePath": "C:\\Users\\EricL\\source\\repos\\Well-Architected-Vibe-Coding\\well-architected-vibe-coding\\well-architected\\design-guides\\incident-management.md",
+    "absolutePath": "C:\\Users\\Lott\\source\\repos\\well-architected-vibe-coding\\well-architected\\design-guides\\incident-management.md",
     "repoRelativePath": "well-architected/design-guides/incident-management.md",
     "docsRelativePath": "design-guides/incident-management.md"
   },
@@ -190,5 +190,5 @@
     "../operational-excellence/observability.md",
     "./disaster-recovery.md"
   ],
-  "lastModified": "2026-03-17T16:22:13.487Z"
+  "lastModified": "2026-03-17T23:50:26.997Z"
 }

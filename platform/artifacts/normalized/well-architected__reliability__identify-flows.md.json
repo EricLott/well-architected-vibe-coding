@@ -1,6 +1,6 @@
 {
   "source": {
-    "absolutePath": "C:\\Users\\EricL\\source\\repos\\Well-Architected-Vibe-Coding\\well-architected-vibe-coding\\well-architected\\reliability\\identify-flows.md",
+    "absolutePath": "C:\\Users\\Lott\\source\\repos\\well-architected-vibe-coding\\well-architected\\reliability\\identify-flows.md",
     "repoRelativePath": "well-architected/reliability/identify-flows.md",
     "docsRelativePath": "reliability/identify-flows.md"
   },
@@ -188,5 +188,5 @@
   "localLinks": [
     "../design-guides/optimize-workload-using-flows.md"
   ],
-  "lastModified": "2026-03-17T16:22:13.705Z"
+  "lastModified": "2026-03-17T23:50:27.263Z"
 }

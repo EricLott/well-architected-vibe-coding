@@ -1,6 +1,6 @@
 {
   "source": {
-    "absolutePath": "C:\\Users\\EricL\\source\\repos\\Well-Architected-Vibe-Coding\\well-architected-vibe-coding\\well-architected\\service-guides\\azure-service-fabric.md",
+    "absolutePath": "C:\\Users\\Lott\\source\\repos\\well-architected-vibe-coding\\well-architected\\service-guides\\azure-service-fabric.md",
     "repoRelativePath": "well-architected/service-guides/azure-service-fabric.md",
     "docsRelativePath": "service-guides/azure-service-fabric.md"
   },
@@ -478,5 +478,5 @@
     "./azure-disk-storage.md",
     "./virtual-machines.md"
   ],
-  "lastModified": "2026-03-17T16:22:13.815Z"
+  "lastModified": "2026-03-17T23:50:27.447Z"
 }

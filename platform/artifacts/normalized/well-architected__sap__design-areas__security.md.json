@@ -1,6 +1,6 @@
 {
   "source": {
-    "absolutePath": "C:\\Users\\EricL\\source\\repos\\Well-Architected-Vibe-Coding\\well-architected-vibe-coding\\well-architected\\sap\\design-areas\\security.md",
+    "absolutePath": "C:\\Users\\Lott\\source\\repos\\well-architected-vibe-coding\\well-architected\\sap\\design-areas\\security.md",
     "repoRelativePath": "well-architected/sap/design-areas/security.md",
     "docsRelativePath": "sap/design-areas/security.md"
   },
@@ -286,5 +286,5 @@
     "./networking-and-connectivity.md",
     "./operational-procedures.md"
   ],
-  "lastModified": "2026-03-17T16:22:13.733Z"
+  "lastModified": "2026-03-17T23:50:27.300Z"
 }

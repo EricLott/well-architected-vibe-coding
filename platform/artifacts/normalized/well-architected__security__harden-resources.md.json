@@ -1,6 +1,6 @@
 {
   "source": {
-    "absolutePath": "C:\\Users\\EricL\\source\\repos\\Well-Architected-Vibe-Coding\\well-architected-vibe-coding\\well-architected\\security\\harden-resources.md",
+    "absolutePath": "C:\\Users\\Lott\\source\\repos\\well-architected-vibe-coding\\well-architected\\security\\harden-resources.md",
     "repoRelativePath": "well-architected/security/harden-resources.md",
     "docsRelativePath": "security/harden-resources.md"
   },
@@ -274,5 +274,5 @@
     "checklist.md",
     "secure-development-lifecycle.md"
   ],
-  "lastModified": "2026-03-17T16:22:13.741Z"
+  "lastModified": "2026-03-17T23:50:27.312Z"
 }

@@ -1,6 +1,6 @@
 {
   "source": {
-    "absolutePath": "C:\\Users\\EricL\\source\\repos\\Well-Architected-Vibe-Coding\\well-architected-vibe-coding\\well-architected\\design-guides\\release-engineering-continuous-integration.md",
+    "absolutePath": "C:\\Users\\Lott\\source\\repos\\well-architected-vibe-coding\\well-architected\\design-guides\\release-engineering-continuous-integration.md",
     "repoRelativePath": "well-architected/design-guides/release-engineering-continuous-integration.md",
     "docsRelativePath": "design-guides/release-engineering-continuous-integration.md"
   },
@@ -236,5 +236,5 @@
     "_images/release-engineering-continuous-integration/azure-devops-tests.png",
     "_images/release-engineering-continuous-integration/github-status-badge.png"
   ],
-  "lastModified": "2026-03-17T16:22:13.489Z"
+  "lastModified": "2026-03-17T23:50:27.000Z"
 }

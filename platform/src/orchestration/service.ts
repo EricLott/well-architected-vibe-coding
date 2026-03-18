@@ -767,6 +767,10 @@ export class OrchestrationService {
       const selectedOption = normalizeText(
         decisionAssessment.selectedOption ?? userMessage,
       );
+      
+      // Route to suggested pillar if AI identified one, otherwise use current context
+      const targetPillar = decisionAssessment.suggestedPillar || pillar;
+      
       const status: DecisionStatus =
         request.forceDecisionCapture || decisionAssessment.confidence < 0.8
           ? "proposed"
@@ -774,7 +778,7 @@ export class OrchestrationService {
       const rationale = normalizeText(
         decisionAssessment.rationale ||
           guidance.summary ||
-          `Captured from ${pillar} guided chat.`,
+          `Captured from ${targetPillar} guided chat.`,
       );
       const risks = dedupe([
         ...decisionAssessment.risks,
@@ -782,18 +786,18 @@ export class OrchestrationService {
       ]).slice(0, 3);
 
       const existingDecision = project.decisions.find(
-        (item) => item.pillar === pillar && normalizeKey(item.title) === normalizeKey(title),
+        (item) => item.pillar === targetPillar && normalizeKey(item.title) === normalizeKey(title),
       );
 
       const decision: DecisionItem = {
         id:
           existingDecision?.id ??
-          `decision-${pillar.toLowerCase().replace(/\s+/g, "-")}-${shortHash(`${title}:${selectedOption}`, 8)}`,
+          `decision-${targetPillar.toLowerCase().replace(/\s+/g, "-")}-${shortHash(`${title}:${selectedOption}`, 8)}`,
         title,
-        description: `Captured from ${pillar} guided chat.`,
+        description: `Captured from architecture guided chat.`,
         selectedOption,
         status,
-        pillar,
+        pillar: targetPillar,
         rationale,
         risks,
         relatedDecisionIds: existingDecision?.relatedDecisionIds ?? [],

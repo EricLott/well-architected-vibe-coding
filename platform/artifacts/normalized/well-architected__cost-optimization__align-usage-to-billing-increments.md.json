@@ -1,6 +1,6 @@
 {
   "source": {
-    "absolutePath": "C:\\Users\\EricL\\source\\repos\\Well-Architected-Vibe-Coding\\well-architected-vibe-coding\\well-architected\\cost-optimization\\align-usage-to-billing-increments.md",
+    "absolutePath": "C:\\Users\\Lott\\source\\repos\\well-architected-vibe-coding\\well-architected\\cost-optimization\\align-usage-to-billing-increments.md",
     "repoRelativePath": "well-architected/cost-optimization/align-usage-to-billing-increments.md",
     "docsRelativePath": "cost-optimization/align-usage-to-billing-increments.md"
   },
@@ -210,5 +210,5 @@
     "collect-review-cost-data.md",
     "optimize-data-costs.md"
   ],
-  "lastModified": "2026-03-17T16:22:13.454Z"
+  "lastModified": "2026-03-17T23:50:26.953Z"
 }

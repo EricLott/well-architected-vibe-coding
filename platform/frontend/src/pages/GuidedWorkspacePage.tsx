@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { StatusCard } from "../components/StatusCard";
 import { projectService } from "../services/projectService";
@@ -88,15 +88,6 @@ function looksLikeQuestion(value: string): boolean {
   );
 }
 
-function statusLabel(count: number): string {
-  if (count >= 3) {
-    return "strong";
-  }
-  if (count >= 1) {
-    return "in progress";
-  }
-  return "not started";
-}
 
 function decisionCountByPillar(
   decisions: DecisionItem[],
@@ -152,26 +143,18 @@ export function GuidedWorkspacePage() {
   const navigate = useNavigate();
   const project = state.currentProject;
   const [pillarCatalog, setPillarCatalog] = useState<PillarDefinition[]>([]);
-  const [pillarChats, setPillarChats] = useState<
-    Partial<Record<Pillar, PillarChatMessage[]>>
-  >({});
-  const [draftByPillar, setDraftByPillar] = useState<Partial<Record<Pillar, string>>>(
+  const [chatHistory, setChatHistory] = useState<PillarChatMessage[]>([]);
+  const [draftByPillar, setDraftByPillar] = useState<Partial<Record<string, string>>>(
     {},
   );
   const [chatLoading, setChatLoading] = useState(false);
   const [chatError, setChatError] = useState<string | null>(null);
   const [catalogError, setCatalogError] = useState<string | null>(null);
   const [decisionNotice, setDecisionNotice] = useState<string | null>(null);
+  const chatContainerRef = useRef<HTMLDivElement>(null);
 
   const counts = useMemo(() => decisionCountByPillar(state.decisions), [state.decisions]);
-  const selectedPillar = state.selectedPillar;
-  const pillars = useMemo(
-    () =>
-      pillarCatalog.length > 0
-        ? pillarCatalog.map((pillar) => pillar.name)
-        : [selectedPillar],
-    [pillarCatalog, selectedPillar],
-  );
+  const selectedPillar = state.selectedPillar || "Unified Architecture Chat";
   const selectedPillarDefinition = useMemo(
     () => pillarCatalog.find((pillar) => pillar.name === selectedPillar) ?? null,
     [pillarCatalog, selectedPillar],
@@ -187,26 +170,22 @@ export function GuidedWorkspacePage() {
         .filter((group) => group.pillars.length > 0),
     [pillarCatalog],
   );
-  const selectedChat = pillarChats[selectedPillar] ?? [];
+  
   const selectedDraft = draftByPillar[selectedPillar] ?? "";
   const selectedGuidance =
     state.pillarGuidance?.pillar === selectedPillar ? state.pillarGuidance : null;
 
-  const latestUserMessage = useMemo(
-    () => [...selectedChat].reverse().find((message) => message.role === "user"),
-    [selectedChat],
-  );
+
+  useEffect(() => {
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+    }
+  }, [chatHistory, chatLoading]);
 
   async function refreshPillarCatalog(projectId: string) {
     const definitions = await projectService.listPillars(projectId);
     setPillarCatalog(definitions);
     setCatalogError(null);
-    if (
-      definitions.length > 0 &&
-      !definitions.some((pillar) => pillar.name === selectedPillar)
-    ) {
-      dispatch({ type: "set-selected-pillar", payload: definitions[0].name });
-    }
   }
 
   useEffect(() => {
@@ -223,12 +202,6 @@ export function GuidedWorkspacePage() {
         }
         setPillarCatalog(definitions);
         setCatalogError(null);
-        if (
-          definitions.length > 0 &&
-          !definitions.some((pillar) => pillar.name === selectedPillar)
-        ) {
-          dispatch({ type: "set-selected-pillar", payload: definitions[0].name });
-        }
       } catch (error) {
         if (!active) {
           return;
@@ -240,7 +213,7 @@ export function GuidedWorkspacePage() {
     return () => {
       active = false;
     };
-  }, [dispatch, project?.id, selectedPillar]);
+  }, [project?.id]);
 
   useEffect(() => {
     const projectId = project?.id;
@@ -301,11 +274,12 @@ export function GuidedWorkspacePage() {
   }, [dispatch, project?.id]);
 
   useEffect(() => {
-    if (!project || selectedChat.length > 0) {
+    if (!project || chatHistory.length > 0) {
       return;
     }
     const currentPillar = selectedPillar;
     const selectedProjectId = project.id;
+    const projectIdentifier = project.name;
     let active = true;
 
     async function bootstrapChat() {
@@ -315,17 +289,14 @@ export function GuidedWorkspacePage() {
         const turn = await projectService.sendPillarChatTurn({
           projectId: selectedProjectId,
           pillar: currentPillar,
-          message: `Start ${currentPillar} exploration for this project.`,
+          message: `Start general architecture exploration for ${projectIdentifier}.`,
           aiSettings: state.aiSettings,
         });
         if (!active) {
           return;
         }
         dispatch({ type: "guide-request-success", payload: turn.guidance });
-        setPillarChats((current) => ({
-          ...current,
-          [currentPillar]: [buildAssistantMessage(currentPillar, turn.guidance)],
-        }));
+        setChatHistory([buildAssistantMessage(currentPillar, turn.guidance)]);
         if (turn.decisionLogged) {
           dispatch({ type: "decision-save-success", payload: turn.project });
         }
@@ -345,13 +316,7 @@ export function GuidedWorkspacePage() {
     return () => {
       active = false;
     };
-  }, [
-    dispatch,
-    project,
-    selectedChat.length,
-    selectedPillar,
-    state.aiSettings,
-  ]);
+  }, [dispatch, project, chatHistory.length, selectedPillar, state.aiSettings]);
 
   if (!project) {
     return null;
@@ -376,30 +341,32 @@ export function GuidedWorkspacePage() {
 
     if (!options?.suppressAssistantMessage) {
       const assistantMessage = buildAssistantMessage(pillar, turn.guidance);
-      setPillarChats((current) => ({
-        ...current,
-        [pillar]: [...(current[pillar] ?? []), assistantMessage],
-      }));
+      setChatHistory((current) => [...current, assistantMessage]);
     }
 
     if (turn.decisionLogged) {
       dispatch({ type: "decision-save-success", payload: turn.project });
+      const targetPillar = turn.decision?.pillar || pillar;
       setDecisionNotice(
-        `Decision logged: ${turn.decision?.title ?? `${pillar} approach`}.`,
+        `Decision logged under ${targetPillar}: ${turn.decision?.title ?? `${pillar} approach`}.`,
       );
       await refreshConflicts(turn.project.id);
       await refreshPillarCatalog(turn.project.id);
       return;
     }
 
-    setDecisionNotice(
-      decisionNoticeFromAssessment(pillar, turn.decisionAssessment),
-    );
+    if (turn.decisionAssessment.suggestedPillar && turn.decisionAssessment.suggestedPillar !== pillar) {
+      setDecisionNotice(`Routing architecture insights to ${turn.decisionAssessment.suggestedPillar}...`);
+    } else {
+      setDecisionNotice(
+        decisionNoticeFromAssessment(pillar, turn.decisionAssessment),
+      );
+    }
     await refreshPillarCatalog(turn.project.id);
   }
 
-  function switchPillar(pillar: Pillar) {
-    dispatch({ type: "set-selected-pillar", payload: pillar });
+  function switchPillar(pillarName: string) {
+    dispatch({ type: "set-selected-pillar", payload: pillarName });
     setChatError(null);
     setDecisionNotice(null);
   }
@@ -414,7 +381,7 @@ export function GuidedWorkspacePage() {
   async function sendMessage() {
     const message = normalize(selectedDraft);
     if (!message) {
-      setChatError(`Share your approach to ${selectedPillar} before sending.`);
+      setChatError(`Share your architecture thoughts before sending.`);
       return;
     }
 
@@ -427,10 +394,7 @@ export function GuidedWorkspacePage() {
       text: message,
       suggestions: [],
     };
-    setPillarChats((current) => ({
-      ...current,
-      [currentPillar]: [...(current[currentPillar] ?? []), userMessage],
-    }));
+    setChatHistory((current) => [...current, userMessage]);
     setDraftByPillar((current) => ({
       ...current,
       [currentPillar]: "",
@@ -452,68 +416,163 @@ export function GuidedWorkspacePage() {
     }
   }
 
-  async function savePillarDecision() {
-    const approach = normalize(selectedDraft) || normalize(latestUserMessage?.text ?? "");
-    if (!approach) {
-      dispatch({
-        type: "decision-save-failure",
-        payload: `Capture your ${selectedPillar} approach in chat before saving.`,
-      });
-      return;
-    }
-
-    const currentPillar = selectedPillar;
-    setChatError(null);
-    setDecisionNotice(null);
-    setChatLoading(true);
-    try {
-      const turn = await projectService.sendPillarChatTurn({
-        projectId: currentProjectId,
-        pillar: currentPillar,
-        message: approach,
-        aiSettings: state.aiSettings,
-        forceDecisionCapture: true,
-      });
-      await applyTurnResult(currentPillar, turn);
-    } catch (error) {
-      setChatError(getMessage(error));
-    } finally {
-      setChatLoading(false);
-    }
-  }
 
   const groundedGuidance = selectedGuidance?.retrievedGuidance ?? [];
 
   return (
     <main className="guided-layout">
-      <aside className="pillar-rail">
-        <div className="rail-header">
-          <p className="section-kicker">Project</p>
-          <h2>{project.name}</h2>
-          <p>{project.ideaText}</p>
+      <section className="guided-main">
+        <div className="chat-background-mesh" aria-hidden="true" />
+        <header className="guided-header">
+          <p className="section-kicker">Unified Architecture Chat</p>
+          <h1>{selectedPillar === "Unified Architecture Chat" ? project.name : selectedPillar}</h1>
+          <p>
+            {selectedPillar === "Unified Architecture Chat"
+              ? project.ideaSummary || "Architecting your system from a holistic viewpoint."
+              : selectedPillarDefinition?.summary ?? "Architecture coach ready to guide your pillar decisions."}
+          </p>
+        </header>
+
+        {state.pillarError && (
+          <div className="inline-error-banner" style={{ margin: "1rem 2.5rem", position: "relative", zIndex: 11 }}>
+            {state.pillarError}
+          </div>
+        )}
+
+        <section className="pillar-chat-card">
+          <div className="pillar-chat-thread" role="log" aria-live="polite" ref={chatContainerRef}>
+            {chatHistory.map((message) => (
+              <article
+                key={message.id}
+                className={`chat-message ${
+                  message.role === "assistant" ? "chat-assistant" : "chat-user"
+                }`}
+              >
+                <header className="chat-author">
+                  {message.role === "assistant" ? "Architecture Coach" : "Project Architect"}
+                </header>
+                <p>{message.text}</p>
+              </article>
+            ))}
+
+            {(chatLoading || state.pillarLoading) && (
+              <div className="chat-message chat-assistant thinking-bubble">
+                <header className="chat-author">Architecture Coach</header>
+                <p className="thinking-text">Analyzing architectural patterns and routing decisions...</p>
+              </div>
+            )}
+          </div>
+
+          <div className="pillar-chat-composer">
+            <div className="composer-container">
+              <textarea
+                id="pillar-chat-input"
+                className="idea-textarea-chat"
+                value={selectedDraft}
+                onChange={(event) => updateDraft(event.target.value)}
+                placeholder={selectedPillar === "Unified Architecture Chat" ? "Describe your overall system patterns..." : `Describe your ${selectedPillar} approach...`}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault();
+                    void sendMessage();
+                  }
+                }}
+              />
+              <div className="conversation-actions">
+                <button
+                  type="button"
+                  className="primary-button"
+                  onClick={() => void sendMessage()}
+                  disabled={chatLoading || state.pillarLoading || !selectedDraft.trim()}
+                >
+                  {chatLoading ? "..." : "Send"}
+                </button>
+              </div>
+            </div>
+            {chatError && <p className="error-text" style={{ padding: "0 1rem" }}>{chatError}</p>}
+            {decisionNotice && <p className="helper-text" style={{ color: "var(--accent)", padding: "0 1rem", fontSize: "0.85rem", fontWeight: 700 }}>{decisionNotice}</p>}
+          </div>
+        </section>
+      </section>
+
+      <aside className="workspace-rail">
+        <div className="workspace-rail-header">
+          <h2>Architecture Workspace</h2>
         </div>
-        <nav className="pillar-list" aria-label="Pillar journey">
-          {pillarCatalog.length === 0 ? (
-            pillars.map((pillar) => (
+        
+        <div className="workspace-content-scroll">
+          {catalogError && (
+            <div className="inline-error-banner" style={{ fontSize: "0.85rem" }}>
+              {catalogError}
+            </div>
+          )}
+
+          <section className="pillar-list-section">
+            <p className="section-kicker" style={{ marginBottom: "0.8rem" }}>Context & Focus</p>
+            <nav className="pillar-list" style={{ display: "flex", flexDirection: "column", gap: "0.6rem" }}>
               <button
-                key={pillar}
                 type="button"
                 className={`pillar-item${
-                  selectedPillar === pillar ? " pillar-item-active" : ""
+                  selectedPillar === "Unified Architecture Chat" ? " pillar-item-active" : ""
                 }`}
-                onClick={() => switchPillar(pillar)}
+                onClick={() => switchPillar("Unified Architecture Chat")}
               >
-                <span>{pillar}</span>
-                <span className="pillar-meta">
-                  {statusLabel(counts[pillar] ?? 0)} ({counts[pillar] ?? 0})
-                </span>
+                <span>Unified Overview</span>
+                <span className="pillar-meta">Project Chat</span>
               </button>
-            ))
-          ) : (
-            groupedPillars.map((group) => (
-              <div key={group.category} className="pillar-group">
-                <p className="pillar-group-label">{group.label}</p>
-                {group.pillars.map((pillar) => (
+              
+              <div style={{ height: "1px", background: "var(--border-soft)", margin: "0.5rem 0" }} />
+
+              {groupedPillars.find(g => g.category === 'well-architected')?.pillars.map((pillar) => (
+                <button
+                  key={pillar.name}
+                  type="button"
+                  className={`pillar-item${
+                    selectedPillar === pillar.name ? " pillar-item-active" : ""
+                  }`}
+                  onClick={() => switchPillar(pillar.name)}
+                >
+                  <span>{pillar.name}</span>
+                  <span className="pillar-meta">
+                    {counts[pillar.name] ?? 0} logged
+                  </span>
+                </button>
+              ))}
+            </nav>
+          </section>
+
+          <StatusCard title="Next Actions">
+            {state.guideResponse?.nextActions.length ? (
+              <ul style={{ fontSize: "0.85rem", paddingLeft: "1.2rem", color: "var(--text-secondary)" }}>
+                {state.guideResponse.nextActions.map((action) => (
+                  <li key={action} style={{ marginBottom: "0.4rem" }}>{action}</li>
+                ))}
+              </ul>
+            ) : (
+              <p style={{ fontSize: "0.85rem", color: "var(--text-muted)" }}>Guidance will appear here.</p>
+            )}
+          </StatusCard>
+
+          <StatusCard title="Grounded Guidance">
+            {groundedGuidance.length > 0 ? (
+              <ul style={{ fontSize: "0.85rem", paddingLeft: "1.2rem", color: "var(--text-secondary)" }}>
+                {groundedGuidance.slice(0, 3).map((item) => (
+                  <li key={item.chunk_id} style={{ marginBottom: "0.4rem" }}>
+                    {item.citation.heading_path.join(" > ") || item.citation.title}
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p style={{ fontSize: "0.85rem", color: "var(--text-muted)" }}>Reference guidance found.</p>
+            )}
+          </StatusCard>
+
+          <section className="pillar-list-section">
+            <p className="section-kicker" style={{ marginBottom: "0.8rem" }}>Tailored Modules</p>
+            <nav className="pillar-list" style={{ display: "flex", flexDirection: "column", gap: "0.6rem" }}>
+              {pillarCatalog
+                .filter(p => p.category !== 'well-architected')
+                .map((pillar) => (
                   <button
                     key={pillar.name}
                     type="button"
@@ -521,188 +580,16 @@ export function GuidedWorkspacePage() {
                       selectedPillar === pillar.name ? " pillar-item-active" : ""
                     }`}
                     onClick={() => switchPillar(pillar.name)}
-                    title={pillar.summary}
                   >
                     <span>{pillar.name}</span>
                     <span className="pillar-meta">
-                      {statusLabel(counts[pillar.name] ?? 0)} ({counts[pillar.name] ?? 0})
+                      {counts[pillar.name] ?? 0}
                     </span>
                   </button>
                 ))}
-              </div>
-            ))
-          )}
-        </nav>
-        {catalogError ? (
-          <p className="error-text" role="alert">
-            {catalogError}
-          </p>
-        ) : null}
-        <div className="rail-footer">
-          <button
-            type="button"
-            className="secondary-button"
-            onClick={() => navigate("/settings")}
-          >
-            AI settings
-          </button>
+            </nav>
+          </section>
         </div>
-      </aside>
-
-      <section className="guided-main">
-        <header className="guided-header">
-          <p className="section-kicker">Guided pillar chat</p>
-          <h1>{selectedPillar}</h1>
-          <p>
-            {selectedPillarDefinition?.summary ??
-              "Retrieved framework guidance drives this conversation so your decisions stay grounded."}
-          </p>
-        </header>
-
-        {state.pillarError ? (
-          <p className="error-text" role="alert">
-            {state.pillarError}
-          </p>
-        ) : null}
-
-        <section className="pillar-chat-card">
-          <div className="pillar-chat-thread" role="log" aria-live="polite">
-            {selectedChat.map((message) => (
-              <article
-                key={message.id}
-                className={`chat-message ${
-                  message.role === "assistant" ? "chat-assistant" : "chat-user"
-                }`}
-              >
-                <p className="chat-author">
-                  {message.role === "assistant" ? "Architecture coach" : "You"}
-                </p>
-                <p>{message.text}</p>
-                {message.role === "assistant" && message.suggestions.length > 0 ? (
-                  <div className="chat-suggestions">
-                    {message.suggestions.map((suggestion) => (
-                      <button
-                        key={suggestion}
-                        type="button"
-                        className="chat-suggestion-chip"
-                        onClick={() => updateDraft(suggestion)}
-                      >
-                        {suggestion}
-                      </button>
-                    ))}
-                  </div>
-                ) : null}
-              </article>
-            ))}
-
-            {chatLoading || state.pillarLoading ? (
-              <p className="helper-text">Generating guidance from retrieved sources...</p>
-            ) : null}
-          </div>
-
-          <form
-            className="pillar-chat-composer"
-            onSubmit={(event) => {
-              event.preventDefault();
-              void sendMessage();
-            }}
-          >
-            <label htmlFor="pillar-chat-input" className="form-label">
-              {`Describe your ${selectedPillar} approach`}
-            </label>
-            <textarea
-              id="pillar-chat-input"
-              className="idea-textarea"
-              rows={4}
-              value={selectedDraft}
-              onChange={(event) => updateDraft(event.target.value)}
-              placeholder="Describe your approach in 1-3 practical sentences."
-            />
-            <div className="conversation-actions">
-              <button
-                type="submit"
-                className="primary-button"
-                disabled={chatLoading || state.pillarLoading}
-              >
-                {chatLoading ? "Thinking..." : "Send"}
-              </button>
-              <button
-                type="button"
-                className="secondary-button"
-                onClick={() => void savePillarDecision()}
-                disabled={chatLoading}
-              >
-                {chatLoading ? "Saving..." : "Force log decision"}
-              </button>
-            </div>
-          </form>
-
-          {chatError ? (
-            <p className="error-text" role="alert">
-              {chatError}
-            </p>
-          ) : null}
-          {state.decisionError ? (
-            <p className="error-text" role="alert">
-              {state.decisionError}
-            </p>
-          ) : null}
-          {state.guideResponse?.warning ? (
-            <p className="warning-text" role="status">
-              {state.guideResponse.warning}
-            </p>
-          ) : null}
-          {decisionNotice ? <p className="helper-text">{decisionNotice}</p> : null}
-        </section>
-      </section>
-
-      <aside className="insight-rail">
-        <StatusCard title="Next actions" tone="accent">
-          {state.guideResponse?.nextActions.length ? (
-            <ul>
-              {state.guideResponse.nextActions.map((action) => (
-                <li key={action}>{action}</li>
-              ))}
-            </ul>
-          ) : (
-            <p>Start the pillar chat and guidance-backed next actions will appear here.</p>
-          )}
-        </StatusCard>
-
-        <StatusCard title="Grounded guidance">
-          {groundedGuidance.length > 0 ? (
-            <ul>
-              {groundedGuidance.slice(0, 3).map((item) => (
-                <li key={item.chunk_id}>
-                  <strong>
-                    {item.citation.heading_path.join(" > ") || item.citation.title}
-                  </strong>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p>No retrieved guidance loaded for this pillar yet.</p>
-          )}
-        </StatusCard>
-
-        <StatusCard title="Risk pulse" tone="warning">
-          <p>{state.conflicts?.summary ?? "Save pillar decisions to unlock risk analysis."}</p>
-          {state.conflicts?.conflicts.slice(0, 2).map((conflict) => (
-            <p key={conflict.id}>
-              <strong>{conflict.severity.toUpperCase()}:</strong> {conflict.title}
-            </p>
-          ))}
-        </StatusCard>
-
-        <StatusCard title="Decision coverage">
-          <ul>
-            {pillars.map((pillar) => (
-              <li key={pillar}>
-                {pillar}: {counts[pillar] ?? 0}
-              </li>
-            ))}
-          </ul>
-        </StatusCard>
       </aside>
     </main>
   );

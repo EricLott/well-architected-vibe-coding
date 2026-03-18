@@ -1,6 +1,6 @@
 {
   "source": {
-    "absolutePath": "C:\\Users\\EricL\\source\\repos\\Well-Architected-Vibe-Coding\\well-architected-vibe-coding\\well-architected\\architect-role\\ongoing-support.md",
+    "absolutePath": "C:\\Users\\Lott\\source\\repos\\well-architected-vibe-coding\\well-architected\\architect-role\\ongoing-support.md",
     "repoRelativePath": "well-architected/architect-role/ongoing-support.md",
     "docsRelativePath": "architect-role/ongoing-support.md"
   },
@@ -148,5 +148,5 @@
     "./design-diagrams.md",
     "checklist.md"
   ],
-  "lastModified": "2026-03-17T16:22:13.417Z"
+  "lastModified": "2026-03-17T23:50:26.905Z"
 }

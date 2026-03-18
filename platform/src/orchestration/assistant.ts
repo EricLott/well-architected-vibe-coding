@@ -472,6 +472,7 @@ function parseDecisionAssessmentPayload(
   const selectedOption = normalize(String(payload.selectedOption ?? "")) || null;
   const rationale = normalize(String(payload.rationale ?? "")) || null;
   const risks = parseRiskArray(payload.risks);
+  const suggestedPillar = normalize(String(payload.suggestedPillar ?? "")) || null;
   return {
     isDecision: isDecisionRaw,
     confidence: clampConfidence(confidenceRaw),
@@ -480,6 +481,7 @@ function parseDecisionAssessmentPayload(
     selectedOption,
     rationale,
     risks,
+    suggestedPillar: suggestedPillar || undefined,
   };
 }
 
@@ -618,7 +620,7 @@ export async function assessDecisionCandidate(options: {
   }
 
   const systemPrompt =
-    "You classify user chat turns for architecture decision logging. Output strict JSON only with keys isDecision,confidence,reason,title,selectedOption,rationale,risks. confidence is 0-1. risks is a string array. No markdown.";
+    "You classify user chat turns for architecture decision logging. Output strict JSON only with keys isDecision,confidence,reason,title,selectedOption,rationale,risks,suggestedPillar. confidence is 0-1. risks is a string array. Output suggestedPillar only if it differs from the provided pillar or if no pillar was provided. No markdown.";
   const userPrompt = JSON.stringify({
     pillar: request.pillar ?? null,
     userMessage: message,

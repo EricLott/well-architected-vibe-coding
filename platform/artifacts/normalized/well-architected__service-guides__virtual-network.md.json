@@ -1,6 +1,6 @@
 {
   "source": {
-    "absolutePath": "C:\\Users\\EricL\\source\\repos\\Well-Architected-Vibe-Coding\\well-architected-vibe-coding\\well-architected\\service-guides\\virtual-network.md",
+    "absolutePath": "C:\\Users\\Lott\\source\\repos\\well-architected-vibe-coding\\well-architected\\service-guides\\virtual-network.md",
     "repoRelativePath": "well-architected/service-guides/virtual-network.md",
     "docsRelativePath": "service-guides/virtual-network.md"
   },
@@ -473,5 +473,5 @@
     "../security/checklist.md",
     "./_images/v-net.png"
   ],
-  "lastModified": "2026-03-17T16:22:13.820Z"
+  "lastModified": "2026-03-17T23:50:27.480Z"
 }

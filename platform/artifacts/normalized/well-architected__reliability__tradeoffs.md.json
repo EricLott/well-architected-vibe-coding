@@ -1,6 +1,6 @@
 {
   "source": {
-    "absolutePath": "C:\\Users\\EricL\\source\\repos\\Well-Architected-Vibe-Coding\\well-architected-vibe-coding\\well-architected\\reliability\\tradeoffs.md",
+    "absolutePath": "C:\\Users\\Lott\\source\\repos\\well-architected-vibe-coding\\well-architected\\reliability\\tradeoffs.md",
     "repoRelativePath": "well-architected/reliability/tradeoffs.md",
     "docsRelativePath": "reliability/tradeoffs.md"
   },
@@ -151,5 +151,5 @@
     "./checklist.md",
     "./principles.md"
   ],
-  "lastModified": "2026-03-17T16:22:13.714Z"
+  "lastModified": "2026-03-17T23:50:27.276Z"
 }

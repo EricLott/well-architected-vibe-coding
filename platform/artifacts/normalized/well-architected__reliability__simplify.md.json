@@ -1,6 +1,6 @@
 {
   "source": {
-    "absolutePath": "C:\\Users\\EricL\\source\\repos\\Well-Architected-Vibe-Coding\\well-architected-vibe-coding\\well-architected\\reliability\\simplify.md",
+    "absolutePath": "C:\\Users\\Lott\\source\\repos\\well-architected-vibe-coding\\well-architected\\reliability\\simplify.md",
     "repoRelativePath": "well-architected/reliability/simplify.md",
     "docsRelativePath": "reliability/simplify.md"
   },
@@ -257,5 +257,5 @@
     "identify-flows.md",
     "metrics.md"
   ],
-  "lastModified": "2026-03-17T16:22:13.713Z"
+  "lastModified": "2026-03-17T23:50:27.275Z"
 }

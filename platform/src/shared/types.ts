@@ -341,6 +341,7 @@ export interface DecisionAssessment {
   selectedOption: string | null;
   rationale: string | null;
   risks: string[];
+  suggestedPillar?: PillarName;
 }
 
 export interface PillarChatTurnRequest {

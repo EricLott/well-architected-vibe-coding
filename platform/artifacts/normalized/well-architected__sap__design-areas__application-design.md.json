@@ -1,6 +1,6 @@
 {
   "source": {
-    "absolutePath": "C:\\Users\\EricL\\source\\repos\\Well-Architected-Vibe-Coding\\well-architected-vibe-coding\\well-architected\\sap\\design-areas\\application-design.md",
+    "absolutePath": "C:\\Users\\Lott\\source\\repos\\well-architected-vibe-coding\\well-architected\\sap\\design-areas\\application-design.md",
     "repoRelativePath": "well-architected/sap/design-areas/application-design.md",
     "docsRelativePath": "sap/design-areas/application-design.md"
   },
@@ -107,5 +107,5 @@
     "./operational-procedures.md",
     "./security.md"
   ],
-  "lastModified": "2026-03-17T16:22:13.731Z"
+  "lastModified": "2026-03-17T23:50:27.297Z"
 }

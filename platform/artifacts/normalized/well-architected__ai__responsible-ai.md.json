@@ -1,6 +1,6 @@
 {
   "source": {
-    "absolutePath": "C:\\Users\\EricL\\source\\repos\\Well-Architected-Vibe-Coding\\well-architected-vibe-coding\\well-architected\\ai\\responsible-ai.md",
+    "absolutePath": "C:\\Users\\Lott\\source\\repos\\well-architected-vibe-coding\\well-architected\\ai\\responsible-ai.md",
     "repoRelativePath": "well-architected/ai/responsible-ai.md",
     "docsRelativePath": "ai/responsible-ai.md"
   },
@@ -277,5 +277,5 @@
     "./application-design.md",
     "./personas.md"
   ],
-  "lastModified": "2026-03-17T16:22:13.410Z"
+  "lastModified": "2026-03-17T23:50:26.896Z"
 }

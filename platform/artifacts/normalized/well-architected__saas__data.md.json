@@ -1,6 +1,6 @@
 {
   "source": {
-    "absolutePath": "C:\\Users\\EricL\\source\\repos\\Well-Architected-Vibe-Coding\\well-architected-vibe-coding\\well-architected\\saas\\data.md",
+    "absolutePath": "C:\\Users\\Lott\\source\\repos\\well-architected-vibe-coding\\well-architected\\saas\\data.md",
     "repoRelativePath": "well-architected/saas/data.md",
     "docsRelativePath": "saas/data.md"
   },
@@ -554,5 +554,5 @@
     "../reliability/metrics.md",
     "./devops.md"
   ],
-  "lastModified": "2026-03-17T16:22:13.718Z"
+  "lastModified": "2026-03-17T23:50:27.280Z"
 }

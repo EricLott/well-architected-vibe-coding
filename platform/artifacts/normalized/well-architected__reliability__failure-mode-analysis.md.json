@@ -1,6 +1,6 @@
 {
   "source": {
-    "absolutePath": "C:\\Users\\EricL\\source\\repos\\Well-Architected-Vibe-Coding\\well-architected-vibe-coding\\well-architected\\reliability\\failure-mode-analysis.md",
+    "absolutePath": "C:\\Users\\Lott\\source\\repos\\well-architected-vibe-coding\\well-architected\\reliability\\failure-mode-analysis.md",
     "repoRelativePath": "well-architected/reliability/failure-mode-analysis.md",
     "docsRelativePath": "reliability/failure-mode-analysis.md"
   },
@@ -261,5 +261,5 @@
     "redundancy.md",
     "self-preservation.md"
   ],
-  "lastModified": "2026-03-17T16:22:13.704Z"
+  "lastModified": "2026-03-17T23:50:27.262Z"
 }

@@ -1,6 +1,6 @@
 {
   "source": {
-    "absolutePath": "C:\\Users\\EricL\\source\\repos\\Well-Architected-Vibe-Coding\\well-architected-vibe-coding\\well-architected\\security\\design-patterns.md",
+    "absolutePath": "C:\\Users\\Lott\\source\\repos\\well-architected-vibe-coding\\well-architected\\security\\design-patterns.md",
     "repoRelativePath": "well-architected/security/design-patterns.md",
     "docsRelativePath": "security/design-patterns.md"
   },
@@ -65,5 +65,5 @@
     "../performance-efficiency/design-patterns.md",
     "../reliability/design-patterns.md"
   ],
-  "lastModified": "2026-03-17T16:22:13.740Z"
+  "lastModified": "2026-03-17T23:50:27.309Z"
 }

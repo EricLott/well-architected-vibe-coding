@@ -1,9 +1,9 @@
 {
   "repository_name": "well-architected-vibe-coding",
-  "repository_root": "C:\\Users\\EricL\\source\\repos\\Well-Architected-Vibe-Coding\\well-architected-vibe-coding",
+  "repository_root": "C:\\Users\\Lott\\source\\repos\\well-architected-vibe-coding",
   "docs_root": "well-architected",
-  "commit_hash": "0c2ea72b39b928cdc488754f4eddc6cb9f381222",
-  "ingestion_timestamp": "2026-03-17T17:57:15.842Z",
+  "commit_hash": "755af1d332f2b8b979d27cb434f5ed9d2fc4c8ee",
+  "ingestion_timestamp": "2026-03-17T23:58:26.431Z",
   "included_file_count": 233,
   "excluded_file_count": 0,
   "included_files": [

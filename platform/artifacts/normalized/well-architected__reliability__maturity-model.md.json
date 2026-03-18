@@ -1,6 +1,6 @@
 {
   "source": {
-    "absolutePath": "C:\\Users\\EricL\\source\\repos\\Well-Architected-Vibe-Coding\\well-architected-vibe-coding\\well-architected\\reliability\\maturity-model.md",
+    "absolutePath": "C:\\Users\\Lott\\source\\repos\\well-architected-vibe-coding\\well-architected\\reliability\\maturity-model.md",
     "repoRelativePath": "well-architected/reliability/maturity-model.md",
     "docsRelativePath": "reliability/maturity-model.md"
   },
@@ -868,5 +868,5 @@
     "./redundancy.md",
     "checklist.md"
   ],
-  "lastModified": "2026-03-17T16:22:13.706Z"
+  "lastModified": "2026-03-17T23:50:27.265Z"
 }

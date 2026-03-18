@@ -1,6 +1,6 @@
 {
   "source": {
-    "absolutePath": "C:\\Users\\EricL\\source\\repos\\Well-Architected-Vibe-Coding\\well-architected-vibe-coding\\well-architected\\azure-virtual-desktop\\landing-zone-integration.md",
+    "absolutePath": "C:\\Users\\Lott\\source\\repos\\well-architected-vibe-coding\\well-architected\\azure-virtual-desktop\\landing-zone-integration.md",
     "repoRelativePath": "well-architected/azure-virtual-desktop/landing-zone-integration.md",
     "docsRelativePath": "azure-virtual-desktop/landing-zone-integration.md"
   },
@@ -424,5 +424,5 @@
     "./index.yml",
     "./overview.md"
   ],
-  "lastModified": "2026-03-17T16:22:13.426Z"
+  "lastModified": "2026-03-17T23:50:26.917Z"
 }

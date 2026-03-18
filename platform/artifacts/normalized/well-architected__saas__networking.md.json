@@ -1,6 +1,6 @@
 {
   "source": {
-    "absolutePath": "C:\\Users\\EricL\\source\\repos\\Well-Architected-Vibe-Coding\\well-architected-vibe-coding\\well-architected\\saas\\networking.md",
+    "absolutePath": "C:\\Users\\Lott\\source\\repos\\well-architected-vibe-coding\\well-architected\\saas\\networking.md",
     "repoRelativePath": "well-architected/saas/networking.md",
     "docsRelativePath": "saas/networking.md"
   },
@@ -353,5 +353,5 @@
     "./data.md",
     "./resource-organization.md"
   ],
-  "lastModified": "2026-03-17T16:22:13.728Z"
+  "lastModified": "2026-03-17T23:50:27.295Z"
 }

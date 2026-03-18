@@ -1,6 +1,6 @@
 {
   "source": {
-    "absolutePath": "C:\\Users\\EricL\\source\\repos\\Well-Architected-Vibe-Coding\\well-architected-vibe-coding\\well-architected\\design-guides\\disaster-recovery.md",
+    "absolutePath": "C:\\Users\\Lott\\source\\repos\\well-architected-vibe-coding\\well-architected\\design-guides\\disaster-recovery.md",
     "repoRelativePath": "well-architected/design-guides/disaster-recovery.md",
     "docsRelativePath": "design-guides/disaster-recovery.md"
   },
@@ -574,5 +574,5 @@
     "./health-modeling.md",
     "./incident-management.md"
   ],
-  "lastModified": "2026-03-17T16:22:13.485Z"
+  "lastModified": "2026-03-17T23:50:26.994Z"
 }

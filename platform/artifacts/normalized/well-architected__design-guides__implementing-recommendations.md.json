@@ -1,6 +1,6 @@
 {
   "source": {
-    "absolutePath": "C:\\Users\\EricL\\source\\repos\\Well-Architected-Vibe-Coding\\well-architected-vibe-coding\\well-architected\\design-guides\\implementing-recommendations.md",
+    "absolutePath": "C:\\Users\\Lott\\source\\repos\\well-architected-vibe-coding\\well-architected\\design-guides\\implementing-recommendations.md",
     "repoRelativePath": "well-architected/design-guides/implementing-recommendations.md",
     "docsRelativePath": "design-guides/implementing-recommendations.md"
   },
@@ -230,5 +230,5 @@
   "localLinks": [
     "../_images/guidance-overview.png"
   ],
-  "lastModified": "2026-03-17T16:22:13.487Z"
+  "lastModified": "2026-03-17T23:50:26.996Z"
 }

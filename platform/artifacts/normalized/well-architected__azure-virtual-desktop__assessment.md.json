@@ -1,6 +1,6 @@
 {
   "source": {
-    "absolutePath": "C:\\Users\\EricL\\source\\repos\\Well-Architected-Vibe-Coding\\well-architected-vibe-coding\\well-architected\\azure-virtual-desktop\\assessment.md",
+    "absolutePath": "C:\\Users\\Lott\\source\\repos\\well-architected-vibe-coding\\well-architected\\azure-virtual-desktop\\assessment.md",
     "repoRelativePath": "well-architected/azure-virtual-desktop/assessment.md",
     "docsRelativePath": "azure-virtual-desktop/assessment.md"
   },
@@ -63,5 +63,5 @@
   "localLinks": [
     "./design-principles.md"
   ],
-  "lastModified": "2026-03-17T16:22:13.418Z"
+  "lastModified": "2026-03-17T23:50:26.906Z"
 }

@@ -1,6 +1,6 @@
 {
   "source": {
-    "absolutePath": "C:\\Users\\EricL\\source\\repos\\Well-Architected-Vibe-Coding\\well-architected-vibe-coding\\well-architected\\ai\\design-methodology.md",
+    "absolutePath": "C:\\Users\\Lott\\source\\repos\\well-architected-vibe-coding\\well-architected\\ai\\design-methodology.md",
     "repoRelativePath": "well-architected/ai/design-methodology.md",
     "docsRelativePath": "ai/design-methodology.md"
   },
@@ -167,5 +167,5 @@
   "localLinks": [
     "./design-principles.md"
   ],
-  "lastModified": "2026-03-17T16:22:13.390Z"
+  "lastModified": "2026-03-17T23:50:26.874Z"
 }

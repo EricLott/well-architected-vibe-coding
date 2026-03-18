@@ -1,6 +1,6 @@
 {
   "source": {
-    "absolutePath": "C:\\Users\\EricL\\source\\repos\\Well-Architected-Vibe-Coding\\well-architected-vibe-coding\\well-architected\\saas\\billing-cost-management.md",
+    "absolutePath": "C:\\Users\\Lott\\source\\repos\\well-architected-vibe-coding\\well-architected\\saas\\billing-cost-management.md",
     "repoRelativePath": "well-architected/saas/billing-cost-management.md",
     "docsRelativePath": "saas/billing-cost-management.md"
   },
@@ -286,5 +286,5 @@
     "../cost-optimization/principles.md",
     "./governance.md"
   ],
-  "lastModified": "2026-03-17T16:22:13.716Z"
+  "lastModified": "2026-03-17T23:50:27.278Z"
 }

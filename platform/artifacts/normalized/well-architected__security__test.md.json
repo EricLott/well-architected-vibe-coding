@@ -1,6 +1,6 @@
 {
   "source": {
-    "absolutePath": "C:\\Users\\EricL\\source\\repos\\Well-Architected-Vibe-Coding\\well-architected-vibe-coding\\well-architected\\security\\test.md",
+    "absolutePath": "C:\\Users\\Lott\\source\\repos\\well-architected-vibe-coding\\well-architected\\security\\test.md",
     "repoRelativePath": "well-architected/security/test.md",
     "docsRelativePath": "security/test.md"
   },
@@ -358,5 +358,5 @@
     "incident-response.md",
     "secure-development-lifecycle.md"
   ],
-  "lastModified": "2026-03-17T16:22:13.788Z"
+  "lastModified": "2026-03-17T23:50:27.374Z"
 }

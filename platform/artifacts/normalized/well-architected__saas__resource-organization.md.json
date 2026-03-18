@@ -1,6 +1,6 @@
 {
   "source": {
-    "absolutePath": "C:\\Users\\EricL\\source\\repos\\Well-Architected-Vibe-Coding\\well-architected-vibe-coding\\well-architected\\saas\\resource-organization.md",
+    "absolutePath": "C:\\Users\\Lott\\source\\repos\\well-architected-vibe-coding\\well-architected\\saas\\resource-organization.md",
     "repoRelativePath": "well-architected/saas/resource-organization.md",
     "docsRelativePath": "saas/resource-organization.md"
   },
@@ -240,5 +240,5 @@
     "../design-guides/regions-availability-zones.md",
     "./identity-access.md"
   ],
-  "lastModified": "2026-03-17T16:22:13.729Z"
+  "lastModified": "2026-03-17T23:50:27.296Z"
 }

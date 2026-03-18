@@ -1,6 +1,6 @@
 {
   "source": {
-    "absolutePath": "C:\\Users\\EricL\\source\\repos\\Well-Architected-Vibe-Coding\\well-architected-vibe-coding\\well-architected\\operational-excellence\\tools-processes.md",
+    "absolutePath": "C:\\Users\\Lott\\source\\repos\\well-architected-vibe-coding\\well-architected\\operational-excellence\\tools-processes.md",
     "repoRelativePath": "well-architected/operational-excellence/tools-processes.md",
     "docsRelativePath": "operational-excellence/tools-processes.md"
   },
@@ -295,5 +295,5 @@
     "checklist.md",
     "workload-supply-chain.md"
   ],
-  "lastModified": "2026-03-17T16:22:13.684Z"
+  "lastModified": "2026-03-17T23:50:27.232Z"
 }

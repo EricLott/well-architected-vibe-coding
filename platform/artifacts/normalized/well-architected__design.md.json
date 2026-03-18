@@ -1,6 +1,6 @@
 {
   "source": {
-    "absolutePath": "C:\\Users\\EricL\\source\\repos\\Well-Architected-Vibe-Coding\\well-architected-vibe-coding\\well-architected\\design.md",
+    "absolutePath": "C:\\Users\\Lott\\source\\repos\\well-architected-vibe-coding\\well-architected\\design.md",
     "repoRelativePath": "well-architected/design.md",
     "docsRelativePath": "design.md"
   },
@@ -69,5 +69,5 @@
     "./design-guides/regions-availability-zones.md",
     "./design-guides/release-engineering-continuous-integration.md"
   ],
-  "lastModified": "2026-03-17T16:22:13.490Z"
+  "lastModified": "2026-03-17T23:50:27.000Z"
 }

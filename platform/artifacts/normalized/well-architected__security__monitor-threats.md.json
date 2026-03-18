@@ -1,6 +1,6 @@
 {
   "source": {
-    "absolutePath": "C:\\Users\\EricL\\source\\repos\\Well-Architected-Vibe-Coding\\well-architected-vibe-coding\\well-architected\\security\\monitor-threats.md",
+    "absolutePath": "C:\\Users\\Lott\\source\\repos\\well-architected-vibe-coding\\well-architected\\security\\monitor-threats.md",
     "repoRelativePath": "well-architected/security/monitor-threats.md",
     "docsRelativePath": "security/monitor-threats.md"
   },
@@ -351,5 +351,5 @@
     "checklist.md",
     "harden-resources.md"
   ],
-  "lastModified": "2026-03-17T16:22:13.785Z"
+  "lastModified": "2026-03-17T23:50:27.371Z"
 }

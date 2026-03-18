@@ -1,6 +1,6 @@
 {
   "source": {
-    "absolutePath": "C:\\Users\\EricL\\source\\repos\\Well-Architected-Vibe-Coding\\well-architected-vibe-coding\\well-architected\\operational-excellence\\formalize-operations-tasks.md",
+    "absolutePath": "C:\\Users\\Lott\\source\\repos\\well-architected-vibe-coding\\well-architected\\operational-excellence\\formalize-operations-tasks.md",
     "repoRelativePath": "well-architected/operational-excellence/formalize-operations-tasks.md",
     "docsRelativePath": "operational-excellence/formalize-operations-tasks.md"
   },
@@ -274,5 +274,5 @@
     "enable-automation.md",
     "formalize-development-practices.md"
   ],
-  "lastModified": "2026-03-17T16:22:13.676Z"
+  "lastModified": "2026-03-17T23:50:27.221Z"
 }

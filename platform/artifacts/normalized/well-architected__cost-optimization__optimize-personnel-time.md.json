@@ -1,6 +1,6 @@
 {
   "source": {
-    "absolutePath": "C:\\Users\\EricL\\source\\repos\\Well-Architected-Vibe-Coding\\well-architected-vibe-coding\\well-architected\\cost-optimization\\optimize-personnel-time.md",
+    "absolutePath": "C:\\Users\\Lott\\source\\repos\\well-architected-vibe-coding\\well-architected\\cost-optimization\\optimize-personnel-time.md",
     "repoRelativePath": "well-architected/cost-optimization/optimize-personnel-time.md",
     "docsRelativePath": "cost-optimization/optimize-personnel-time.md"
   },
@@ -527,5 +527,5 @@
     "../_images/trade-off.svg",
     "checklist.md"
   ],
-  "lastModified": "2026-03-17T16:22:13.462Z"
+  "lastModified": "2026-03-17T23:50:26.963Z"
 }

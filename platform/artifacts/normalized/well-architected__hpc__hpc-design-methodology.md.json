@@ -1,6 +1,6 @@
 {
   "source": {
-    "absolutePath": "C:\\Users\\EricL\\source\\repos\\Well-Architected-Vibe-Coding\\well-architected-vibe-coding\\well-architected\\hpc\\hpc-design-methodology.md",
+    "absolutePath": "C:\\Users\\Lott\\source\\repos\\well-architected-vibe-coding\\well-architected\\hpc\\hpc-design-methodology.md",
     "repoRelativePath": "well-architected/hpc/hpc-design-methodology.md",
     "docsRelativePath": "hpc/hpc-design-methodology.md"
   },
@@ -166,5 +166,5 @@
   "localLinks": [
     "get-started-overview.md"
   ],
-  "lastModified": "2026-03-17T16:22:13.492Z"
+  "lastModified": "2026-03-17T23:50:27.003Z"
 }

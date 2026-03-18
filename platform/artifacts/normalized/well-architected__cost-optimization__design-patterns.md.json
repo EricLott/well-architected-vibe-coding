@@ -1,6 +1,6 @@
 {
   "source": {
-    "absolutePath": "C:\\Users\\EricL\\source\\repos\\Well-Architected-Vibe-Coding\\well-architected-vibe-coding\\well-architected\\cost-optimization\\design-patterns.md",
+    "absolutePath": "C:\\Users\\Lott\\source\\repos\\well-architected-vibe-coding\\well-architected\\cost-optimization\\design-patterns.md",
     "repoRelativePath": "well-architected/cost-optimization/design-patterns.md",
     "docsRelativePath": "cost-optimization/design-patterns.md"
   },
@@ -65,5 +65,5 @@
     "../reliability/design-patterns.md",
     "../security/design-patterns.md"
   ],
-  "lastModified": "2026-03-17T16:22:13.457Z"
+  "lastModified": "2026-03-17T23:50:26.957Z"
 }

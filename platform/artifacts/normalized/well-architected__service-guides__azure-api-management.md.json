@@ -1,6 +1,6 @@
 {
   "source": {
-    "absolutePath": "C:\\Users\\EricL\\source\\repos\\Well-Architected-Vibe-Coding\\well-architected-vibe-coding\\well-architected\\service-guides\\azure-api-management.md",
+    "absolutePath": "C:\\Users\\Lott\\source\\repos\\well-architected-vibe-coding\\well-architected\\service-guides\\azure-api-management.md",
     "repoRelativePath": "well-architected/service-guides/azure-api-management.md",
     "docsRelativePath": "service-guides/azure-api-management.md"
   },
@@ -494,5 +494,5 @@
     "./azure-front-door.md",
     "./virtual-network.md"
   ],
-  "lastModified": "2026-03-17T16:22:13.800Z"
+  "lastModified": "2026-03-17T23:50:27.399Z"
 }

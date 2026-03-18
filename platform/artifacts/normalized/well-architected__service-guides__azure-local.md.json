@@ -1,6 +1,6 @@
 {
   "source": {
-    "absolutePath": "C:\\Users\\EricL\\source\\repos\\Well-Architected-Vibe-Coding\\well-architected-vibe-coding\\well-architected\\service-guides\\azure-local.md",
+    "absolutePath": "C:\\Users\\Lott\\source\\repos\\well-architected-vibe-coding\\well-architected\\service-guides\\azure-local.md",
     "repoRelativePath": "well-architected/service-guides/azure-local.md",
     "docsRelativePath": "service-guides/azure-local.md"
   },
@@ -523,5 +523,5 @@
     "../security/security-principles.md",
     "../service-guides/azure-log-analytics.md"
   ],
-  "lastModified": "2026-03-17T16:22:13.811Z"
+  "lastModified": "2026-03-17T23:50:27.432Z"
 }

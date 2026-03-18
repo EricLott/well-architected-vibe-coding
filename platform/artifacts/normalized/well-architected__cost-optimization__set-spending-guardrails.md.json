@@ -1,6 +1,6 @@
 {
   "source": {
-    "absolutePath": "C:\\Users\\EricL\\source\\repos\\Well-Architected-Vibe-Coding\\well-architected-vibe-coding\\well-architected\\cost-optimization\\set-spending-guardrails.md",
+    "absolutePath": "C:\\Users\\Lott\\source\\repos\\well-architected-vibe-coding\\well-architected\\cost-optimization\\set-spending-guardrails.md",
     "repoRelativePath": "well-architected/cost-optimization/set-spending-guardrails.md",
     "docsRelativePath": "cost-optimization/set-spending-guardrails.md"
   },
@@ -231,5 +231,5 @@
     "checklist.md",
     "optimize-scaling-costs.md"
   ],
-  "lastModified": "2026-03-17T16:22:13.463Z"
+  "lastModified": "2026-03-17T23:50:26.965Z"
 }

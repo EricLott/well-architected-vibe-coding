@@ -1,6 +1,6 @@
 {
   "source": {
-    "absolutePath": "C:\\Users\\EricL\\source\\repos\\Well-Architected-Vibe-Coding\\well-architected-vibe-coding\\well-architected\\azure-vmware\\overview.md",
+    "absolutePath": "C:\\Users\\Lott\\source\\repos\\well-architected-vibe-coding\\well-architected\\azure-vmware\\overview.md",
     "repoRelativePath": "well-architected/azure-vmware/overview.md",
     "docsRelativePath": "azure-vmware/overview.md"
   },
@@ -220,5 +220,5 @@
     "./security.md",
     "landing-zone-integration.md"
   ],
-  "lastModified": "2026-03-17T16:22:13.451Z"
+  "lastModified": "2026-03-17T23:50:26.950Z"
 }

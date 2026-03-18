@@ -1,6 +1,6 @@
 {
   "source": {
-    "absolutePath": "C:\\Users\\EricL\\source\\repos\\Well-Architected-Vibe-Coding\\well-architected-vibe-coding\\well-architected\\ai\\training-data-design.md",
+    "absolutePath": "C:\\Users\\Lott\\source\\repos\\well-architected-vibe-coding\\well-architected\\ai\\training-data-design.md",
     "repoRelativePath": "well-architected/ai/training-data-design.md",
     "docsRelativePath": "ai/training-data-design.md"
   },
@@ -348,5 +348,5 @@
     "./test.md",
     "grounding-data-design.md"
   ],
-  "lastModified": "2026-03-17T16:22:13.412Z"
+  "lastModified": "2026-03-17T23:50:26.898Z"
 }

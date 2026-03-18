@@ -1,6 +1,6 @@
 {
   "source": {
-    "absolutePath": "C:\\Users\\EricL\\source\\repos\\Well-Architected-Vibe-Coding\\well-architected-vibe-coding\\well-architected\\design-guides\\regions-availability-zones.md",
+    "absolutePath": "C:\\Users\\Lott\\source\\repos\\well-architected-vibe-coding\\well-architected\\design-guides\\regions-availability-zones.md",
     "repoRelativePath": "well-architected/design-guides/regions-availability-zones.md",
     "docsRelativePath": "design-guides/regions-availability-zones.md"
   },
@@ -796,5 +796,5 @@
     "../reliability/principles.md",
     "handle-transient-faults.md"
   ],
-  "lastModified": "2026-03-17T16:22:13.489Z"
+  "lastModified": "2026-03-17T23:50:26.999Z"
 }

@@ -1,6 +1,6 @@
 {
   "source": {
-    "absolutePath": "C:\\Users\\EricL\\source\\repos\\Well-Architected-Vibe-Coding\\well-architected-vibe-coding\\well-architected\\reliability\\metrics.md",
+    "absolutePath": "C:\\Users\\Lott\\source\\repos\\well-architected-vibe-coding\\well-architected\\reliability\\metrics.md",
     "repoRelativePath": "well-architected/reliability/metrics.md",
     "docsRelativePath": "reliability/metrics.md"
   },
@@ -418,5 +418,5 @@
     "handle-transient-faults.md",
     "identify-flows.md"
   ],
-  "lastModified": "2026-03-17T16:22:13.710Z"
+  "lastModified": "2026-03-17T23:50:27.271Z"
 }

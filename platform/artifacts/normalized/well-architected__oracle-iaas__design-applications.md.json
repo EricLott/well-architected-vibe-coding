@@ -1,6 +1,6 @@
 {
   "source": {
-    "absolutePath": "C:\\Users\\EricL\\source\\repos\\Well-Architected-Vibe-Coding\\well-architected-vibe-coding\\well-architected\\oracle-iaas\\design-applications.md",
+    "absolutePath": "C:\\Users\\Lott\\source\\repos\\well-architected-vibe-coding\\well-architected\\oracle-iaas\\design-applications.md",
     "repoRelativePath": "well-architected/oracle-iaas/design-applications.md",
     "docsRelativePath": "oracle-iaas/design-applications.md"
   },
@@ -200,5 +200,5 @@
     "./optimize-business-continuity-disaster-recovery.md",
     "review-design-principles.md"
   ],
-  "lastModified": "2026-03-17T16:22:13.686Z"
+  "lastModified": "2026-03-17T23:50:27.235Z"
 }

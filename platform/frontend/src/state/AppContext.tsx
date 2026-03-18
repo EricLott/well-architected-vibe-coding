@@ -38,7 +38,7 @@ const initialState: AppState = {
   retrievalError: null,
   appLoading: false,
   appError: null,
-  selectedPillar: "Security",
+  selectedPillar: "Unified Architecture Chat",
   pillarGuidance: null,
   pillarLoading: false,
   pillarError: null,

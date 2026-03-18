@@ -1,6 +1,6 @@
 {
   "source": {
-    "absolutePath": "C:\\Users\\EricL\\source\\repos\\Well-Architected-Vibe-Coding\\well-architected-vibe-coding\\well-architected\\design-guides\\handle-transient-faults.md",
+    "absolutePath": "C:\\Users\\Lott\\source\\repos\\well-architected-vibe-coding\\well-architected\\design-guides\\handle-transient-faults.md",
     "repoRelativePath": "well-architected/design-guides/handle-transient-faults.md",
     "docsRelativePath": "design-guides/handle-transient-faults.md"
   },
@@ -384,5 +384,5 @@
     "../reliability/checklist.md",
     "../reliability/testing-strategy.md"
   ],
-  "lastModified": "2026-03-17T16:22:13.486Z"
+  "lastModified": "2026-03-17T23:50:26.995Z"
 }

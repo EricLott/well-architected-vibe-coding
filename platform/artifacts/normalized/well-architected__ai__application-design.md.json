@@ -1,6 +1,6 @@
 {
   "source": {
-    "absolutePath": "C:\\Users\\EricL\\source\\repos\\Well-Architected-Vibe-Coding\\well-architected-vibe-coding\\well-architected\\ai\\application-design.md",
+    "absolutePath": "C:\\Users\\Lott\\source\\repos\\well-architected-vibe-coding\\well-architected\\ai\\application-design.md",
     "repoRelativePath": "well-architected/ai/application-design.md",
     "docsRelativePath": "ai/application-design.md"
   },
@@ -824,5 +824,5 @@
     "./get-started.md",
     "application-platform.md"
   ],
-  "lastModified": "2026-03-17T16:22:13.388Z"
+  "lastModified": "2026-03-17T23:50:26.871Z"
 }

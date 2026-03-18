@@ -1,6 +1,6 @@
 {
   "source": {
-    "absolutePath": "C:\\Users\\EricL\\source\\repos\\Well-Architected-Vibe-Coding\\well-architected-vibe-coding\\well-architected\\oracle-iaas\\optimize-business-continuity-disaster-recovery.md",
+    "absolutePath": "C:\\Users\\Lott\\source\\repos\\well-architected-vibe-coding\\well-architected\\oracle-iaas\\optimize-business-continuity-disaster-recovery.md",
     "repoRelativePath": "well-architected/oracle-iaas/optimize-business-continuity-disaster-recovery.md",
     "docsRelativePath": "oracle-iaas/optimize-business-continuity-disaster-recovery.md"
   },
@@ -197,5 +197,5 @@
   "localLinks": [
     "optimize-security.md"
   ],
-  "lastModified": "2026-03-17T16:22:13.691Z"
+  "lastModified": "2026-03-17T23:50:27.240Z"
 }

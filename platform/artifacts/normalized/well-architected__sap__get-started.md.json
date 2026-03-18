@@ -1,6 +1,6 @@
 {
   "source": {
-    "absolutePath": "C:\\Users\\EricL\\source\\repos\\Well-Architected-Vibe-Coding\\well-architected-vibe-coding\\well-architected\\sap\\get-started.md",
+    "absolutePath": "C:\\Users\\Lott\\source\\repos\\well-architected-vibe-coding\\well-architected\\sap\\get-started.md",
     "repoRelativePath": "well-architected/sap/get-started.md",
     "docsRelativePath": "sap/get-started.md"
   },
@@ -61,5 +61,5 @@
   "localLinks": [
     "design-principles.md"
   ],
-  "lastModified": "2026-03-17T16:22:13.734Z"
+  "lastModified": "2026-03-17T23:50:27.301Z"
 }

@@ -1,6 +1,6 @@
 {
   "source": {
-    "absolutePath": "C:\\Users\\EricL\\source\\repos\\Well-Architected-Vibe-Coding\\well-architected-vibe-coding\\well-architected\\security\\segmentation.md",
+    "absolutePath": "C:\\Users\\Lott\\source\\repos\\well-architected-vibe-coding\\well-architected\\security\\segmentation.md",
     "repoRelativePath": "well-architected/security/segmentation.md",
     "docsRelativePath": "security/segmentation.md"
   },
@@ -462,5 +462,5 @@
     "identity-access.md",
     "networking.md"
   ],
-  "lastModified": "2026-03-17T16:22:13.787Z"
+  "lastModified": "2026-03-17T23:50:27.374Z"
 }

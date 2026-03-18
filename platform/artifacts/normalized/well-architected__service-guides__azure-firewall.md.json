@@ -1,6 +1,6 @@
 {
   "source": {
-    "absolutePath": "C:\\Users\\EricL\\source\\repos\\Well-Architected-Vibe-Coding\\well-architected-vibe-coding\\well-architected\\service-guides\\azure-firewall.md",
+    "absolutePath": "C:\\Users\\Lott\\source\\repos\\well-architected-vibe-coding\\well-architected\\service-guides\\azure-firewall.md",
     "repoRelativePath": "well-architected/service-guides/azure-firewall.md",
     "docsRelativePath": "service-guides/azure-firewall.md"
   },
@@ -473,5 +473,5 @@
     "../security/networking.md",
     "../security/segmentation.md"
   ],
-  "lastModified": "2026-03-17T16:22:13.807Z"
+  "lastModified": "2026-03-17T23:50:27.420Z"
 }
