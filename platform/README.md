@@ -5,10 +5,10 @@
 ```bash
 git clone <repo>
 cd <repo>/platform
-npm install
-npm run ingest
-npm run dev
+docker-compose up --build
 ```
+
+*(The workspace UI will be available at `http://localhost:5173` and the backend API at `http://localhost:3000`)*
 
 ## What this does
 
@@ -47,7 +47,9 @@ API keys will be introduced later for AI generation workflows.
 The frontend is located in `platform/frontend` and provides the first guided
 intake experience for architecture-first planning.
 
-Run it in a second terminal while the API is running:
+It is automatically built and served when you run `docker-compose up`.
+
+If running manually out-of-band:
 
 ```bash
 cd <repo>/platform/frontend
@@ -81,6 +83,7 @@ The API now includes local project orchestration and persistence endpoints:
 - `POST /assistant/guide` generate live guided next steps (heuristic fallback or
   provider-backed using BYO OpenAI/Anthropic key passed per request)
 
-Project and decision state is persisted locally at:
+Project and decision state is persisted locally in a Dockerized MySQL database:
 
-- `platform/artifacts/workspace/projects.json`
+- Automatically started alongside the API via `docker-compose up --build`.
+- Credentials and schema details are defined in `platform/docker-compose.yml`.

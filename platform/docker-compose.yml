@@ -1,0 +1,63 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: well_architected_mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: vibe_platform
+      MYSQL_USER: vibe_user
+      MYSQL_PASSWORD: vibe_password
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: well_architected_api
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      - DB_HOST=mysql
+      - DB_USER=vibe_user
+      - DB_PASSWORD=vibe_password
+      - DB_NAME=vibe_platform
+    ports:
+      - "3000:3000"
+    working_dir: /app/platform
+    volumes:
+      # Mount whole repo to /app so ingestion can traverse to ../well-architected
+      - ..:/app
+      # Prevent host node_modules from overriding container node_modules
+      - /app/platform/node_modules
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: well_architected_frontend
+    depends_on:
+      - api
+    environment:
+      - API_HOST=api
+      # Optional: Vite watches filesystem events, polling helps in some docker environments
+      - CHOKIDAR_USEPOLLING=true
+    ports:
+      - "5173:5173"
+    working_dir: /app/platform/frontend
+    volumes:
+      - ./frontend:/app/platform/frontend
+      - /app/platform/frontend/node_modules
+
+volumes:
+  mysql_data:
